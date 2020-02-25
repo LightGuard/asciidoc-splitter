@@ -9,21 +9,23 @@ import org.asciidoctor.ast.Section;
 
 public class Assembly {
     private String id;
+    private String idWithoutContext;
     private String context;
     private List<ExtractedModule> modules;
     private StringBuilder source;
 
     public Assembly(Section section) {
-        this.id = section.getId().split("_")[0];
+        this.id = section.getId();
+        this.idWithoutContext = this.id.split("_")[0];
         this.context = section.getId();
         this.modules = new ArrayList<>();
         this.source = new StringBuilder();
 
         // Adding the id of the module
-        this.source.append("[id=\"").append(this.id).append("_{context}\"]\n")
+        this.source.append("[id=\"").append(this.idWithoutContext).append("_{context}\"]\n")
                     // Adding the section title
                    .append("= ").append(section.getTitle()).append("\n")
-                   .append(":context: ").append(this.id).append("\n\n");
+                   .append(":context: ").append(this.idWithoutContext).append("\n\n");
 
         section.getBlocks().forEach(sectionBlock -> {
             // This is a module
@@ -72,6 +74,6 @@ public class Assembly {
     }
 
     public String getFilename() {
-        return id + ".adoc";
+        return idWithoutContext + ".adoc";
     }
 }

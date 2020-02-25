@@ -1,7 +1,6 @@
 package com.redhat.documentation.asciidoc;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.stream.Collectors;
 
 import org.asciidoctor.Asciidoctor;
@@ -22,7 +21,7 @@ public class SectionTreeProcessorTest {
         optionsBuilder = OptionsBuilder.options();
         asciidoctor = Asciidoctor.Factory.create();
         cut = new SectionTreeProcessor();
-        sample = new File(SectionTreeProcessor.class.getClassLoader().getResource("docs/sample.adoc").toURI());
+        sample = new File(SectionTreeProcessor.class.getClassLoader().getResource("docs/basic/sample.adoc").toURI());
 
         // We need access to the line numbers and source
         optionsBuilder.sourcemap(true);

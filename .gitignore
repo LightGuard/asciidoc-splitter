@@ -25,3 +25,6 @@ hs_err_pid*
 # IDE files
 .idea
 .project
+
+# Build files
+target

@@ -11,6 +11,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,26 +47,19 @@ class ExtractionRunnerTest {
         var cut = new ExtractionRunner(this.config);
         cut.run();
 
+        // Modules
         var modulesDir = new File(this.outputDirectory, "modules");
         assertThat(modulesDir.exists()).isTrue();
         assertThat(modulesDir.listFiles()).hasSize(4);
+
+        // Assemblies
+        assertThat(this.outputDirectory.listFiles(new AsciidocFileFilter())).hasSize(2);
+        assertThat(Arrays.stream(Objects.requireNonNull(this.outputDirectory.listFiles(new AsciidocFileFilter())))
+                            .map(File::getName)
+                            .collect(Collectors.toList()))
+                .containsExactly("assembly-1.adoc", "assembly-2.adoc");
     }
 
     // TODO: I need a test to check the contents of the file(s)
 }
 
-class DeletionFileVisitor extends SimpleFileVisitor<Path> {
-    @Override
-    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        Files.deleteIfExists(file);
-        return FileVisitResult.CONTINUE;
-    }
-
-    @Override
-    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-        if (exc != null)
-            throw exc;
-        Files.deleteIfExists(dir);
-        return FileVisitResult.CONTINUE;
-    }
-}

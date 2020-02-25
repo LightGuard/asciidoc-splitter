@@ -12,6 +12,7 @@ import java.util.Objects;
 
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.OptionsBuilder;
+import org.asciidoctor.ast.Section;
 import org.asciidoctor.jruby.AsciiDocDirectoryWalker;
 
 public class ExtractionRunner {
@@ -33,9 +34,34 @@ public class ExtractionRunner {
         asciidoctor.javaExtensionRegistry().treeprocessor(processor);
 
         for (File file : new AsciiDocDirectoryWalker(this.config.getSourceDirectory().getAbsolutePath())) {
-            asciidoctor.loadFile(file, optionsBuilder.asMap());
+            var doc = asciidoctor.loadFile(file, optionsBuilder.asMap());
             writeModules(processor);
-            // TODO: Extract and write assemblies
+            writeAssemblies(processor);
+        }
+    }
+
+    private void writeAssemblies(SectionTreeProcessor processor) {
+        // Setup templates for modules
+        try {
+            String templateStart = getTemplateContents("templates/start.adoc");
+            String templateEnd = getTemplateContents("templates/end.adoc");
+
+            for (Assembly a : processor.getAssemblies()) {
+                var outputFile = Paths.get(this.config.getOutputDirectory().getAbsolutePath(), a.getFilename());
+                try (Writer output = new FileWriter(outputFile.toFile())) {
+                    output.append(templateStart)
+                          .append("\n\n")
+                          .append(a.getSource())
+                          .append("\n\n")
+                          .append(templateEnd);
+                } catch (IOException e) {
+                    // TODO: better catch when we can't open or write
+                    throw new RuntimeException(e);
+                }
+            }
+        } catch (URISyntaxException | IOException e) {
+            e.printStackTrace();
+
         }
     }
 
@@ -46,30 +72,24 @@ public class ExtractionRunner {
             Path modulesDir = Files.createDirectories(Paths.get(this.config.getOutputDirectory().getAbsolutePath(),
                                                         "modules"));
 
-            // Setup templates for modules
-            String templateStart = getTemplateContents("templates/start.adoc");
-            String templateEnd = getTemplateContents("templates/end.adoc");
-
             for (ExtractedModule module : processor.getModules()) {
                 // Create output file
                 Path moduleOutputFile = Files.createFile(Paths.get(modulesDir.toString(), module.getFileName()));
 
                 // Output the module
                 try (Writer output = new FileWriter(moduleOutputFile.toFile())) {
-                    output.append(templateStart)
-                            .append("\n\n")
+                    output.append("\n\n")
                             // Adding the id of the module
                             .append("[id=\"").append(module.getId()).append("_{context}\"]\n")
                             // Adding the section title
                             .append("= ").append(module.getSection().getTitle()).append("\n")
                             // Adding the content of the module
                             .append(String.join("\n", module.getSources()))
-                            .append("\n\n")
-                            .append(templateEnd);
+                            .append("\n\n");
                 }
             }
 
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException e) {
             // TODO: We blew-up handle this
             throw new RuntimeException(e);
         }

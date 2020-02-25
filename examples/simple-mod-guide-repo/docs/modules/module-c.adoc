@@ -1,0 +1,4 @@
+[id="module-c-{context}"]
+= Module C
+
+This is module C.

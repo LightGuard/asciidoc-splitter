@@ -1,0 +1,4 @@
+:toc:
+:ProjectName: My{nbsp}Project
+:ProjectNameID: my-project
+:ProjectVersion: 0.1

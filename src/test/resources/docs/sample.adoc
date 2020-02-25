@@ -1,0 +1,64 @@
+:toc:
+:ProjectName: My{nbsp}Project
+:ProjectNameID: my-project
+:ProjectVersion: 0.1
+
+= Documentation for {ProjectName}
+:context: {ProjectNameID}
+
+ifdef::context[:parent-context: {context}]
+
+[id="assembly-1_{context}"]
+== Assembly 1
+:context: assembly-1
+
+[id="module-a_{context}"]
+=== Module A
+
+This is module A. Its ID is `module-a_assembly-1` in Assembly 1, but `module-a_assembly-2` in Assembly 2.
+
+[id="module-b_{context}"]
+=== Module B
+
+This is module B. Its ID is `module-b_assembly-1` in Assembly 1, but `module-b_assembly-2` in Assembly 2.
+
+ifeval::["{context}" == "assembly-2"]
+This sentence appears only in Assembly 2.
+endif::[]
+
+[id="module-c_{context}"]
+=== Module C
+
+This is module C.
+
+ifdef::parent-context[:context: {parent-context}]
+ifndef::parent-context[:!context:]
+
+ifdef::context[:parent-context: {context}]
+
+[id="assembly-2_{context}"]
+== Assembly 2
+:context: assembly-2
+
+[id="module-a_{context}"]
+=== Module A
+
+This is module A. Its ID is `module-a_assembly-1` in Assembly 1, but `module-a_assembly-2` in Assembly 2.
+
+[id="module-b_{context}"]
+=== Module B
+
+This is module B. Its ID is `module-b_assembly-1` in Assembly 1, but `module-b_assembly-2` in Assembly 2.
+
+ifeval::["{context}" == "assembly-2"]
+This sentence appears only in Assembly 2.
+endif::[]
+
+[id="module-d_{context}"]
+=== Module D
+
+This is module D.
+
+ifdef::parent-context[:context: {parent-context}]
+ifndef::parent-context[:!context:]
+

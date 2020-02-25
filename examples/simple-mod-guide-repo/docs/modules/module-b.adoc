@@ -1,0 +1,8 @@
+[id="module-b-{context}"]
+= Module B
+
+This is module B. Its ID is `module-b-assembly-1` in Assembly 1, but `module-b-assembly-2` in Assembly 2.
+
+ifeval::["{context}" == "assembly-2"]
+This sentence appears only in Assembly 2.
+endif::[]

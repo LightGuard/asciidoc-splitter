@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ExtractionRunnerTest {
-    private Configuration config;
     private File outputDirectory;
 
     @BeforeEach
@@ -31,10 +30,6 @@ class ExtractionRunnerTest {
 
         if (!this.outputDirectory.exists())
             Files.createDirectory(this.outputDirectory.toPath());
-
-        final var sourceDirectory = new File(SectionTreeProcessor.class.getClassLoader().getResource("docs").toURI());
-
-        this.config = new Configuration(sourceDirectory, outputDirectory);
     }
 
     @AfterEach
@@ -44,7 +39,10 @@ class ExtractionRunnerTest {
 
     @Test
     void testRun() throws Exception {
-        var cut = new ExtractionRunner(this.config);
+        final var sourceDirectory = new File(SectionTreeProcessor.class.getClassLoader().getResource("docs/basic").toURI());
+
+        var config = new Configuration(sourceDirectory, outputDirectory);
+        var cut = new ExtractionRunner(config);
         cut.run();
 
         // Modules
@@ -58,6 +56,23 @@ class ExtractionRunnerTest {
                             .map(File::getName)
                             .collect(Collectors.toList()))
                 .containsExactly("assembly-1.adoc", "assembly-2.adoc");
+    }
+
+    @Test
+    void testRunRealWorld() throws Exception {
+        final var sourceDirectory = new File(SectionTreeProcessor.class.getClassLoader().getResource("docs/real-world").toURI());
+
+        var config = new Configuration(sourceDirectory, outputDirectory);
+        var cut = new ExtractionRunner(config);
+        cut.run();
+
+        // Modules
+        var modulesDir = new File(this.outputDirectory, "modules");
+        assertThat(modulesDir.exists()).isTrue();
+        assertThat(modulesDir.listFiles()).hasSize(3);
+
+        // Assemblies
+        assertThat(this.outputDirectory.listFiles(new AsciidocFileFilter())).hasSize(7);
     }
 
     // TODO: I need a test to check the contents of the file(s)

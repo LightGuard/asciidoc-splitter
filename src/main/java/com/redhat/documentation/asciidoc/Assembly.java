@@ -16,8 +16,13 @@ public class Assembly {
 
     public Assembly(Section section) {
         this.id = section.getId();
+        // If there isn't an explicit id, it starts with an _
+        if (this.id.startsWith("_")) {
+            // Don't use the first character (an underscore) and replace underscore with hyphen
+            this.id = this.id.substring(1).replaceAll("_", "-");
+        }
         this.idWithoutContext = this.id.split("_")[0];
-        this.context = section.getId();
+        this.context = this.id;
         this.modules = new ArrayList<>();
         this.source = new StringBuilder();
 
@@ -41,13 +46,16 @@ public class Assembly {
             // Add it to the actual source
             if (sectionBlock instanceof Block) {
                 final var block = (Block) sectionBlock;
+                // TODO: I need to check the type of block and get the attributes
                 this.source.append(block.getSource())
                            .append("\n\n");
-                // TODO: Probably need to do something about metadata here if it exists
             }
 
+            // TODO: context - Listing (need the attributes [style, language, title, subs])
+            //                 A listing is (in this context) a block of code
+            //                 If there are call outs the next block will be a listing block
             // TODO: Table
-            // TODO: List
+            // TODO: List - Could be a regular ol or ul list or it could be a colist (call out)
             // TODO: DescriptionList
             // TODO: Any others?
         });

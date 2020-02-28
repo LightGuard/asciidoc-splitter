@@ -24,11 +24,11 @@ public class SectionTreeProcessor extends Treeprocessor {
     }
 
     private void findSections(Document doc) {
+        // TODO: What should we do with preamble?
         doc.getBlocks().forEach(node -> {
             if (node instanceof Section && node.getLevel() == 1) {
                 var assembly = new Assembly((Section) node);
                 this.assemblies.add(assembly);
-
                 this.modules.addAll(assembly.getModules());
             }
         });

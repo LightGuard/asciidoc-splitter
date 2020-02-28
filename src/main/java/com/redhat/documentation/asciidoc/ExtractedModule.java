@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 
 import org.asciidoctor.ast.Block;
-import org.asciidoctor.ast.ContentNode;
 import org.asciidoctor.ast.Section;
 
 public class ExtractedModule {
@@ -17,19 +16,24 @@ public class ExtractedModule {
     public ExtractedModule(Section section) {
         // According to the modular docs, there should only be one underscore used to split the context.
         // We want the first part of that split
-        this.id = section.getId().split("_")[0];
+        // If there isn't an explicit id, it starts with an _
+        if (section.getId().startsWith("_")) {
+            // Don't use the first character (an underscore) and replace underscore with hyphen
+            this.id = section.getId().substring(1).replaceAll("_", "-");
+        } else {
+            this.id = section.getId().split("_")[0];
+        }
+
         this.section = section;
         this.sources = new ArrayList<>();
 
         section.getBlocks().stream()
-                            .filter(ContentNode::isBlock)
+                            .filter(Block.class::isInstance)
                             .map(Block.class::cast)
                             .map(Block::getLines)
-                            .forEach(this::addSource);
-    }
+                            .forEach(sources -> this.sources.addAll(sources));
 
-    private void addSource(List<String> strings) {
-        strings.stream().forEach(this::addSource);
+        // TODO: I need to do something about things that aren't blocks
     }
 
     public void addSource(String source) {

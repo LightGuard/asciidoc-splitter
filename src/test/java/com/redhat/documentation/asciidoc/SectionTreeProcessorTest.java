@@ -10,21 +10,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SectionTreeProcessorTest {
-    private Asciidoctor asciidoctor;
-    private OptionsBuilder optionsBuilder;
+public class SectionTreeProcessorTest extends AsciidocExtractionTest {
     private SectionTreeProcessor cut;
     private File sample;
 
     @BeforeEach
     void setUp() throws Exception {
-        optionsBuilder = OptionsBuilder.options();
-        asciidoctor = Asciidoctor.Factory.create();
         cut = new SectionTreeProcessor();
         sample = new File(SectionTreeProcessor.class.getClassLoader().getResource("docs/basic/sample.adoc").toURI());
-
-        // We need access to the line numbers and source
-        optionsBuilder.sourcemap(true);
 
         // Have to register our instance of the extension so we can pull information from it
         asciidoctor.javaExtensionRegistry().treeprocessor(cut);

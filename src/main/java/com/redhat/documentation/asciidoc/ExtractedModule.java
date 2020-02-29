@@ -27,6 +27,7 @@ public class ExtractedModule {
         this.section = section;
         this.sources = new ArrayList<>();
 
+        // TODO: Eventually this will need be refactored to use the SourceExtractor
         section.getBlocks().stream()
                             .filter(Block.class::isInstance)
                             .map(Block.class::cast)

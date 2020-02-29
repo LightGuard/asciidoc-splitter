@@ -26,6 +26,8 @@ public class Assembly {
         this.modules = new ArrayList<>();
         this.source = new StringBuilder();
 
+        // TODO Figure out where/how to refactor this to use the SourceExtractor
+
         // Adding the id of the module
         this.source.append("[id=\"").append(this.idWithoutContext).append("_{context}\"]\n")
                     // Adding the section title

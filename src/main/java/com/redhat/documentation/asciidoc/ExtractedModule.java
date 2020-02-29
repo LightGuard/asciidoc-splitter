@@ -27,14 +27,7 @@ public class ExtractedModule {
         this.section = section;
         this.sources = new ArrayList<>();
 
-        // TODO: Eventually this will need be refactored to use the SourceExtractor
-        section.getBlocks().stream()
-                            .filter(Block.class::isInstance)
-                            .map(Block.class::cast)
-                            .map(Block::getLines)
-                            .forEach(sources -> this.sources.addAll(sources));
-
-        // TODO: I need to do something about things that aren't blocks
+        section.getBlocks().forEach(block -> this.addSource(new SourceExtractor(block).getSource()));
     }
 
     public void addSource(String source) {

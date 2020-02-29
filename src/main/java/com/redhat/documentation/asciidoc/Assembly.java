@@ -43,23 +43,11 @@ public class Assembly {
                            .append(extractedModule.getFileName())
                            .append("[leveloffset=+1]")
                            .append("\n\n");
+            } else {
+                // Add it to the actual source
+                this.source.append(new SourceExtractor(sectionBlock).getSource())
+                        .append("\n\n");
             }
-
-            // Add it to the actual source
-            if (sectionBlock instanceof Block) {
-                final var block = (Block) sectionBlock;
-                // TODO: I need to check the type of block and get the attributes
-                this.source.append(block.getSource())
-                           .append("\n\n");
-            }
-
-            // TODO: context - Listing (need the attributes [style, language, title, subs])
-            //                 A listing is (in this context) a block of code
-            //                 If there are call outs the next block will be a listing block
-            // TODO: Table
-            // TODO: List - Could be a regular ol or ul list or it could be a colist (call out)
-            // TODO: DescriptionList
-            // TODO: Any others?
         });
     }
 

@@ -31,7 +31,7 @@ class ExtractionRunnerTest {
 
     @Test
     void testRun() throws Exception {
-        final var sourceDirectory = new File(SectionTreeProcessor.class.getClassLoader().getResource("docs/basic").toURI());
+        final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/basic").toURI());
 
         var config = new Configuration(sourceDirectory, outputDirectory);
         var cut = new ExtractionRunner(config);
@@ -52,7 +52,7 @@ class ExtractionRunnerTest {
 
     @Test
     void testRunRealWorld() throws Exception {
-        final var sourceDirectory = new File(SectionTreeProcessor.class.getClassLoader().getResource("docs/real-world").toURI());
+        final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/real-world").toURI());
 
         var config = new Configuration(sourceDirectory, outputDirectory);
         var cut = new ExtractionRunner(config);

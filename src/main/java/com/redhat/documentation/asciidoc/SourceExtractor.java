@@ -1,10 +1,12 @@
 package com.redhat.documentation.asciidoc;
 
+import java.util.Iterator;
 import java.util.StringJoiner;
 
 import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.ContentNode;
 import org.asciidoctor.ast.DescriptionList;
+import org.asciidoctor.ast.DescriptionListEntry;
 import org.asciidoctor.ast.List;
 import org.asciidoctor.ast.ListItem;
 import org.asciidoctor.ast.Section;
@@ -187,6 +189,35 @@ public class SourceExtractor {
 
     private void extractDescriptionList() {
         var descriptionList = (DescriptionList) node;
+
+        for (var listEntryIter = descriptionList.getItems().iterator(); listEntryIter.hasNext(); ) {
+            var entry = listEntryIter.next();// each term
+            // It is easier to use an iterator to know if we need a space or new line at the end
+            for (var termIter = entry.getTerms().iterator(); termIter.hasNext(); ) {
+                var term = termIter.next();
+
+                if (term.getBlocks().isEmpty())
+                    source.append(term.getSource());
+                else
+                    term.getBlocks().forEach(block -> source.append(new SourceExtractor(block).getSource()));
+
+                if (termIter.hasNext())
+                    source.append("::\n");
+                else
+                    source.append(":: ");
+            }
+
+            // description
+            final var description = entry.getDescription();
+            if (description.getBlocks().isEmpty()) {
+                source.append(description.getSource());
+            } else {
+                description.getBlocks().forEach(block -> source.append(new SourceExtractor(block).getSource()));
+            }
+
+            if (listEntryIter.hasNext())
+                source.append("\n");
+        }
     }
 
     private boolean hasRoles() {

@@ -18,6 +18,11 @@
       <version>2.2.0</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>info.picocli</groupId>
+      <artifactId>picocli</artifactId>
+      <version>4.2.0</version>
+    </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -41,8 +46,15 @@
         <version>3.8.0</version>
         <configuration>
           <release>13</release>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>info.picocli</groupId>
+              <artifactId>picocli-codegen</artifactId>
+              <version>4.2.0</version>
+            </path>
+          </annotationProcessorPaths>
           <compilerArgs>
-            --enable-preview
+            <arg>-Aproject=${groupId}/${artifactId}</arg>
           </compilerArgs>
         </configuration>
       </plugin>
@@ -51,6 +63,19 @@
         <version>3.0.0-M3</version>
         <configuration>
           <argLine>--enable-preview</argLine>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.1.1</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>com.redhat.documentation.asciidoc.cli.ExtractionRunner</mainClass>
+            </manifest>
+          </archive>
         </configuration>
       </plugin>
     </plugins>

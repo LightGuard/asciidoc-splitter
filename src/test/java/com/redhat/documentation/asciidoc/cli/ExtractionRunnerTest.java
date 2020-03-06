@@ -1,4 +1,4 @@
-package com.redhat.documentation.asciidoc;
+package com.redhat.documentation.asciidoc.cli;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,9 +7,13 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.redhat.documentation.asciidoc.extraction.AsciidocFileFilter;
+import com.redhat.documentation.asciidoc.extraction.DeletionFileVisitor;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import picocli.CommandLine;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,8 +24,10 @@ class ExtractionRunnerTest {
     void setUp() throws Exception {
         this.outputDirectory = new File("target/output-docs");
 
-        if (!this.outputDirectory.exists())
-            Files.createDirectory(this.outputDirectory.toPath());
+        if (this.outputDirectory.exists()) {
+            tearDown(); // clean-up from a previous botched run
+        }
+        Files.createDirectory(this.outputDirectory.toPath());
     }
 
     @AfterEach
@@ -32,10 +38,10 @@ class ExtractionRunnerTest {
     @Test
     void testRun() throws Exception {
         final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/basic").toURI());
+        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
-        var config = new Configuration(sourceDirectory, outputDirectory);
-        var cut = new ExtractionRunner(config);
-        cut.run();
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
 
         // Modules
         var modulesDir = new File(this.outputDirectory, "modules");
@@ -43,7 +49,7 @@ class ExtractionRunnerTest {
         assertThat(modulesDir.listFiles()).hasSize(4);
 
         // Assemblies
-        assertThat(this.outputDirectory.listFiles(new AsciidocFileFilter())).hasSize(2);
+        Assertions.assertThat(this.outputDirectory.listFiles(new AsciidocFileFilter())).hasSize(2);
         assertThat(Arrays.stream(Objects.requireNonNull(this.outputDirectory.listFiles(new AsciidocFileFilter())))
                             .map(File::getName)
                             .collect(Collectors.toList()))
@@ -53,10 +59,10 @@ class ExtractionRunnerTest {
     @Test
     void testRunRealWorld() throws Exception {
         final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/real-world").toURI());
+        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
-        var config = new Configuration(sourceDirectory, outputDirectory);
-        var cut = new ExtractionRunner(config);
-        cut.run();
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
 
         // Modules
         var modulesDir = new File(this.outputDirectory, "modules");

@@ -1,12 +1,10 @@
-package com.redhat.documentation.asciidoc;
+package com.redhat.documentation.asciidoc.extraction;
 
-import java.util.Iterator;
 import java.util.StringJoiner;
 
 import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.ContentNode;
 import org.asciidoctor.ast.DescriptionList;
-import org.asciidoctor.ast.DescriptionListEntry;
 import org.asciidoctor.ast.List;
 import org.asciidoctor.ast.ListItem;
 import org.asciidoctor.ast.Section;
@@ -201,17 +199,18 @@ public class SourceExtractor {
                 else
                     term.getBlocks().forEach(block -> source.append(new SourceExtractor(block).getSource()));
 
+                source.append("::");
                 if (termIter.hasNext())
-                    source.append("::\n");
-                else
-                    source.append(":: ");
+                    source.append("\n");
             }
 
             // description
             final var description = entry.getDescription();
             if (description.getBlocks().isEmpty()) {
+                source.append(" ");
                 source.append(description.getSource());
             } else {
+                source.append("\n+\n");
                 description.getBlocks().forEach(block -> source.append(new SourceExtractor(block).getSource()));
             }
 

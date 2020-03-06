@@ -1,10 +1,9 @@
-package com.redhat.documentation.asciidoc;
+package com.redhat.documentation.asciidoc.extraction;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.Section;
 
 public class Assembly {

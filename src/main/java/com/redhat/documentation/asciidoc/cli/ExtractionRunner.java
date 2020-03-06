@@ -1,4 +1,4 @@
-package com.redhat.documentation.asciidoc;
+package com.redhat.documentation.asciidoc.cli;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -13,40 +13,63 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
+import com.redhat.documentation.asciidoc.Configuration;
+import com.redhat.documentation.asciidoc.extraction.Assembly;
+import com.redhat.documentation.asciidoc.extraction.ExtractedModule;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.Section;
 import org.asciidoctor.jruby.AsciiDocDirectoryWalker;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 
-public class ExtractionRunner {
-    private Configuration config;
+@Command(name = "extract", mixinStandardHelpOptions = true, version = "1.0",
+         description = "Create a modular documentation layout from a directory of asciidoc files.")
+public class ExtractionRunner implements Callable<Integer> {
     private List<Assembly> assemblies;
     private Set<ExtractedModule> modules;
 
-    public ExtractionRunner(Configuration conf) {
-        this.config = conf;
+    @Option(names = {"-s", "--sourceDir"}, description = "Directory containing the input asciidoc files.")
+    File inputDir;
 
+    @Option(names = {"-o", "--outputDir"}, description = "Directory to place generated modules and assemblies.")
+    File outputDir;
+
+    public ExtractionRunner() {
         this.assemblies = new ArrayList<>();
         this.modules = new HashSet<>();
     }
 
-    public void run() {
+    public static void main(String... args) {
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(args);
+        System.exit(exitCode);
+    }
+
+    @Override
+    public Integer call() throws Exception {
+        var config = new Configuration(this.inputDir, this.outputDir);
+
         OptionsBuilder optionsBuilder = OptionsBuilder.options();
         Asciidoctor asciidoctor = Asciidoctor.Factory.create();
 
         // We need access to the line numbers and source
         optionsBuilder.sourcemap(true);
 
-        for (File file : new AsciiDocDirectoryWalker(this.config.getSourceDirectory().getAbsolutePath())) {
+        for (File file : new AsciiDocDirectoryWalker(config.getSourceDirectory().getAbsolutePath())) {
             var doc = asciidoctor.loadFile(file, optionsBuilder.asMap());
 
             findSections(doc);
 
-            writeModules();
-            writeAssemblies();
+            writeModules(config);
+            writeAssemblies(config);
         }
+
+        return 0;
     }
 
     private void findSections(Document doc) {
@@ -62,14 +85,14 @@ public class ExtractionRunner {
         // We should have all the assemblies, and all of their modules now
     }
 
-    private void writeAssemblies() {
+    private void writeAssemblies(Configuration config) {
         // Setup templates for modules
         try {
             String templateStart = getTemplateContents("templates/start.adoc");
             String templateEnd = getTemplateContents("templates/end.adoc");
 
             this.assemblies.forEach(a -> {
-                var outputFile = Paths.get(this.config.getOutputDirectory().getAbsolutePath(), a.getFilename());
+                var outputFile = Paths.get(config.getOutputDirectory().getAbsolutePath(), a.getFilename());
                 try (Writer output = new FileWriter(outputFile.toFile())) {
                     output.append(templateStart)
                             .append("\n\n")
@@ -87,11 +110,11 @@ public class ExtractionRunner {
         }
     }
 
-    private void writeModules() {
+    private void writeModules(Configuration config) {
         // Create the modules directory and write the files
         try {
             // Create the output directories
-            Path modulesDir = Files.createDirectories(Paths.get(this.config.getOutputDirectory().getAbsolutePath(),
+            Path modulesDir = Files.createDirectories(Paths.get(config.getOutputDirectory().getAbsolutePath(),
                                                         "modules"));
 
             for (ExtractedModule module : this.modules) {

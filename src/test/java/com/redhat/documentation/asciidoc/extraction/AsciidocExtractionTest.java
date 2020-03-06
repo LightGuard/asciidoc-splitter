@@ -1,4 +1,4 @@
-package com.redhat.documentation.asciidoc;
+package com.redhat.documentation.asciidoc.extraction;
 
 import java.io.File;
 
@@ -7,8 +7,8 @@ import org.asciidoctor.OptionsBuilder;
 import org.junit.jupiter.api.BeforeEach;
 
 public abstract class AsciidocExtractionTest {
-    Asciidoctor asciidoctor;
-    OptionsBuilder optionsBuilder;
+    protected Asciidoctor asciidoctor;
+    protected OptionsBuilder optionsBuilder;
 
     @BeforeEach
     void asciidoctorSetup() throws Exception {

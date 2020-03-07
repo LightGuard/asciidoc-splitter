@@ -1,6 +1,8 @@
 package com.redhat.documentation.asciidoc.extraction;
 
 import java.util.StringJoiner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.ContentNode;
@@ -25,6 +27,7 @@ public class SourceExtractor {
         PASSTHROUGH("++++"),
         STEM("++++"),
         ADMONITION("===="),
+        EXAMPLE("===="),
         SOURCE("----"),
         PARAGRAPH(""),
         LISTING("----");
@@ -84,7 +87,8 @@ public class SourceExtractor {
                 .append("\n")
                 .append("=".repeat(Math.max(0, level))).append(" ").append(title)
                 .append("\n")
-                .append(":context: ").append(context);
+                .append(":context: ").append(context)
+                .append("\n\n");
     }
 
     private void extractBlock() {
@@ -102,31 +106,37 @@ public class SourceExtractor {
         // and so they don't need a new line before or after the delimiter
         var joiner = (delimiter.isEmpty()) ? new StringJoiner("")
                                            : new StringJoiner("", delimiter + "\n", "\n" + delimiter);
-        source.append(joiner.add(block.getSource()));
-    }
 
-//        Regex to look for the numbered callout in regular source and xml
-//        var hasCallout = block.getSource().matches("<(!--)?(\\d+|\\.)(--)?>");
-//        if ((hasCallout)) {
-//            source.append("\n");
-//        } else {
-//            source.append("\n\n");
-//        }
+        boolean hasCallout = false;
+        Pattern coPattern = Pattern.compile("<(!--)?(\\d+|\\.)(--)?>");
+        if ("compound".equals(block.getContentModel())) {
+            for (StructuralNode innerBlock : block.getBlocks()) {
+                joiner.add(new SourceExtractor(innerBlock).getSource());
+
+                // Regex to look for the numbered callout in regular source and xml
+                // I have to know if there's a callout, even just one
+                // so we'll keep doing this until we're true or end the loop
+                if (!hasCallout && innerBlock instanceof Block)
+                    hasCallout = coPattern.matcher(((Block) innerBlock).getSource()).find();
+            }
+        }
+
+        source.append(joiner.add(block.getSource()));
+
+        // We need to separate the text with an empty new line, unless there's a callout list
+        if (!hasCallout) {
+            source.append("\n");
+        }
+    }
 
     private void extractList() {
         var list = (List) node;
+        var listItemJoiner = new StringJoiner("\n");
+        boolean nested = false;
 
-        // It SHOULD be safe to assume that there's at least one entry
-        var tempMarker = ((ListItem) list.getItems().get(0)).getMarker();
-
-        // Do a little dance to get just the marker if they used numbers before the marker
-        var marker = tempMarker.matches("\\d+\\.") ? tempMarker.replaceAll("\\d", "")
-                                                         : tempMarker;
-        var listItemJoiner = new StringJoiner("\n" + marker + " ", marker + " ", "");
-
-        list.getItems().forEach(node -> {
-            // Nested lists, should also work if a list has more than just a basic text for an item
-            var item = (ListItem) node;
+        // Nested lists, should also work if a list has more than just a basic text for an item
+        for (StructuralNode structuralNode : list.getItems()) {
+            var item = (ListItem) structuralNode;
             if (item.getBlocks() != null && item.getBlocks().size() > 0) {
                 // We need the item that has the nested list or block as well
                 StringBuilder itemSource = new StringBuilder(item.getSource());
@@ -142,21 +152,45 @@ public class SourceExtractor {
 
                     itemSource.append(new SourceExtractor(listItemBlock).getSource());
                 });
-                // Now add list/blocks to the main list
-                listItemJoiner.add(itemSource);
-            } else { // Just a normal list item, nothing special
-                listItemJoiner.add(item.getSource());
-            }
-        });
+                // TODO: fix up callouts so they have the correct number
 
-        // new line after the metadata
+                // If the marker is more than one character and it doesn't start with a number
+                // then this should be a nested list
+                if (item.getMarker().length() > 1 && !item.getMarker().matches("^\\d+\\."))
+                    nested = true;
+
+                // Now add list/blocks to the main list
+                listItemJoiner.add(item.getMarker() + " " + itemSource);
+            } else { // Just a normal list item, nothing special
+                listItemJoiner.add(item.getMarker() + " " + item.getSource());
+            }
+        }
+
+        // new line after the metadata, but only if there is metadata
         if (source.length() > 0)
             source.append("\n");
 
+        // Add the title of the list, if there is one
         if (list.getTitle() != null)
             source.append(".").append(list.getTitle()).append("\n");
 
         source.append(listItemJoiner.toString());
+
+        // Little bit of nasty code below
+        // I need to figure out if the previous item in the list was a nested list
+        // so we can get the newlines figured out correctly
+        // I'm doing this by splitting the item joiner by new line and taking the first item
+        // in the array returned, then I check to see if the second character is a space.
+        // If it is not a space, then we're in a nested list
+        // TODO: I think this breaks if the nest list is ordered and they use numbers and periods
+        //       Maybe callouts break this too? But you don't find nested call outs....
+        if (!" ".equals(listItemJoiner.toString().split("\n")[0].substring(1, 2)))
+            nested = true;
+
+        // We should end with a blank line if this is not a nested lest
+        // and not a callout list
+        if (!nested && !"colist".equals(list.getContext()))
+            source.append("\n\n");
     }
 
     private void extractTable() {
@@ -217,6 +251,8 @@ public class SourceExtractor {
             if (listEntryIter.hasNext())
                 source.append("\n");
         }
+
+        source.append("\n\n");
     }
 
     private boolean hasRoles() {
@@ -284,6 +320,10 @@ public class SourceExtractor {
                 // You typically see source and language together, so we'll put them together as well.
                 if (node.hasAttribute("language"))
                     joiner.add(node.getAttribute("language").toString());
+                // Sometimes the language will be a positional attribute
+                else if ("source".equals(node.getAttribute("1")) && node.hasAttribute("2")) {
+                    joiner.add(node.getAttribute("2").toString());
+                }
             }
 
             if (hasRoles)

@@ -1,0 +1,26 @@
+== Assembly One
+
+Here's some preamble for an assembly.
+
+Then one more paragraph.
+
+=== Module One
+
+I think I will start things off with a list
+
+* One
+* Two
+** Two-one
+** Two-two
+* Three
+
+[source,java]
+====
+public class HelloWorld { // <1>
+    public static void main(String... args) {
+        System.out.println("Hello World"); // <2>
+    }
+}
+====
+<1> First Java Class
+<2> Output to standard out

@@ -95,9 +95,9 @@ public class ExtractionRunner implements Callable<Integer> {
                 var outputFile = Paths.get(config.getOutputDirectory().getAbsolutePath(), a.getFilename());
                 try (Writer output = new FileWriter(outputFile.toFile())) {
                     output.append(templateStart)
-                            .append("\n\n")
+                            .append("\n")
                             .append(a.getSource())
-                            .append("\n\n")
+                            .append("\n")
                             .append(templateEnd);
                 } catch (IOException e) {
                     // TODO: better catch when we can't open or write
@@ -123,14 +123,13 @@ public class ExtractionRunner implements Callable<Integer> {
 
                 // Output the module
                 try (Writer output = new FileWriter(moduleOutputFile.toFile())) {
-                    output.append("\n\n")
+                    output
                             // Adding the id of the module
                             .append("[id=\"").append(module.getId()).append("_{context}\"]\n")
                             // Adding the section title
-                            .append("= ").append(module.getSection().getTitle()).append("\n")
+                            .append("= ").append(module.getSection().getTitle()).append("\n\n")
                             // Adding the content of the module
-                            .append(String.join("\n", module.getSources()))
-                            .append("\n\n");
+                            .append(String.join("\n", module.getSources()));
                 }
             }
 

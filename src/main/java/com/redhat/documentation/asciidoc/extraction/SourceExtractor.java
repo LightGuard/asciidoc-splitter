@@ -135,8 +135,17 @@ public class SourceExtractor {
         boolean nested = false;
 
         // Nested lists, should also work if a list has more than just a basic text for an item
-        for (StructuralNode structuralNode : list.getItems()) {
+        java.util.List<StructuralNode> items = list.getItems();
+        for (int i = 0; i < items.size(); i++) {
+            StructuralNode structuralNode = items.get(i);
             var item = (ListItem) structuralNode;
+            var marker = item.getMarker();
+
+            // TODO: fix up callouts so they have the correct number
+            if ("<1>".equals(marker)) {
+                marker = marker.replaceAll("\\d+", String.valueOf(i + 1));
+            }
+
             if (item.getBlocks() != null && item.getBlocks().size() > 0) {
                 // We need the item that has the nested list or block as well
                 StringBuilder itemSource = new StringBuilder(item.getSource());
@@ -152,17 +161,17 @@ public class SourceExtractor {
 
                     itemSource.append(new SourceExtractor(listItemBlock).getSource());
                 });
-                // TODO: fix up callouts so they have the correct number
 
                 // If the marker is more than one character and it doesn't start with a number
                 // then this should be a nested list
-                if (item.getMarker().length() > 1 && !item.getMarker().matches("^\\d+\\."))
+                if (item.getMarker().length() > 1 && !item.getMarker().matches("^\\d+\\.")) {
                     nested = true;
+                }
 
                 // Now add list/blocks to the main list
-                listItemJoiner.add(item.getMarker() + " " + itemSource);
+                listItemJoiner.add(marker + " " + itemSource);
             } else { // Just a normal list item, nothing special
-                listItemJoiner.add(item.getMarker() + " " + item.getSource());
+                listItemJoiner.add(marker + " " + item.getSource());
             }
         }
 

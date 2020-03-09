@@ -29,3 +29,5 @@ hs_err_pid*
 
 # Build files
 target
+dependency-reduced-pom.xml
+

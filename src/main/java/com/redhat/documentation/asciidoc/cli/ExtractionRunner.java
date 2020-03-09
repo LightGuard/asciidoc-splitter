@@ -1,8 +1,10 @@
 package com.redhat.documentation.asciidoc.cli;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import com.redhat.documentation.asciidoc.Configuration;
 import com.redhat.documentation.asciidoc.extraction.Assembly;
@@ -141,8 +144,9 @@ public class ExtractionRunner implements Callable<Integer> {
 
     private String getTemplateContents(String templateLocation) throws URISyntaxException, IOException {
         final var cl = ExtractionRunner.class.getClassLoader();
-        final var resource = cl.getResource(templateLocation);
+        final var resource = cl.getResourceAsStream(templateLocation);
+        assert resource != null;
 
-        return new String(Files.readAllBytes(Paths.get(Objects.requireNonNull(resource).toURI())));
+        return new BufferedReader(new InputStreamReader(resource)).lines().collect(Collectors.joining("\n"));
     }
 }

@@ -106,18 +106,9 @@ public class SourceExtractor {
         var joiner = (delimiter.isEmpty()) ? new StringJoiner("")
                                            : new StringJoiner("", delimiter + "\n", "\n" + delimiter);
 
-        boolean hasCallout = false;
         if ("compound".equals(block.getContentModel())) {
-            Pattern coPattern = Pattern.compile("<(!--)?(\\d+|\\.)(--)?>");
-
             for (StructuralNode innerBlock : block.getBlocks()) {
                 joiner.add(new SourceExtractor(innerBlock).getSource());
-
-                // Regex to look for the numbered callout in regular source and xml
-                // I have to know if there's a callout, even just one
-                // so we'll keep doing this until we're true or end the loop
-                if (!hasCallout && innerBlock instanceof Block)
-                    hasCallout = coPattern.matcher(((Block) innerBlock).getSource()).find();
             }
         }
 

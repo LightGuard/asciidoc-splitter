@@ -12,19 +12,24 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.redhat.documentation.asciidoc.Configuration;
 import com.redhat.documentation.asciidoc.extraction.Assembly;
 import com.redhat.documentation.asciidoc.extraction.ExtractedModule;
+import com.redhat.documentation.asciidoc.extraction.SourceExtractor;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.OptionsBuilder;
+import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.Section;
+import org.asciidoctor.ast.StructuralNode;
 import org.asciidoctor.jruby.AsciiDocDirectoryWalker;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -53,7 +58,7 @@ public class ExtractionRunner implements Callable<Integer> {
     }
 
     @Override
-    public Integer call() throws Exception {
+    public Integer call() {
         var config = new Configuration(this.inputDir, this.outputDir);
 
         OptionsBuilder optionsBuilder = OptionsBuilder.options();
@@ -89,27 +94,22 @@ public class ExtractionRunner implements Callable<Integer> {
 
     private void writeAssemblies(Configuration config) {
         // Setup templates for modules
-        try {
-            String templateStart = getTemplateContents("templates/start.adoc");
-            String templateEnd = getTemplateContents("templates/end.adoc");
+        String templateStart = getTemplateContents("templates/start.adoc");
+        String templateEnd = getTemplateContents("templates/end.adoc");
 
-            this.assemblies.forEach(a -> {
-                var outputFile = Paths.get(config.getOutputDirectory().getAbsolutePath(), a.getFilename());
-                try (Writer output = new FileWriter(outputFile.toFile())) {
-                    output.append(templateStart)
-                            .append("\n")
-                            .append(a.getSource())
-                            .append("\n")
-                            .append(templateEnd);
-                } catch (IOException e) {
-                    // TODO: better catch when we can't open or write
-                    throw new RuntimeException(e);
-                }
-            });
-        } catch (URISyntaxException | IOException e) {
-            e.printStackTrace();
-
-        }
+        this.assemblies.forEach(a -> {
+            var outputFile = Paths.get(config.getOutputDirectory().getAbsolutePath(), a.getFilename());
+            try (Writer output = new FileWriter(outputFile.toFile())) {
+                output.append(templateStart)
+                        .append("\n")
+                        .append(a.getSource())
+                        .append("\n")
+                        .append(templateEnd);
+            } catch (IOException e) {
+                // TODO: better catch when we can't open or write
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private void writeModules(Configuration config) {
@@ -129,9 +129,24 @@ public class ExtractionRunner implements Callable<Integer> {
                             // Adding the id of the module
                             .append("[id=\"").append(module.getId()).append("_{context}\"]\n")
                             // Adding the section title
-                            .append("= ").append(module.getSection().getTitle()).append("\n\n")
-                            // Adding the content of the module
-                            .append(String.join("\n", module.getSources()));
+                            .append("= ").append(module.getSection().getTitle()).append("\n\n");
+
+                    for (Iterator<String> iterator = module.getSources().iterator(); iterator.hasNext(); ) {
+                        String section = iterator.next();
+                        output.append(section);
+
+                        Pattern coPattern = Pattern.compile("<(!--)?(\\d+|\\.)(--)?>");
+                        var hasCallout = coPattern.matcher(section).find();
+
+                        // Use a single new line for source sections with callouts
+                        // otherwise a blank line between sections is what is needed
+                        if (iterator.hasNext()) { // If it is the last section, we don't need a newline
+                            if (hasCallout)
+                                output.append("\n");
+                            else
+                                output.append("\n\n");
+                        }
+                    }
                 }
             }
 
@@ -141,7 +156,7 @@ public class ExtractionRunner implements Callable<Integer> {
         }
     }
 
-    private String getTemplateContents(String templateLocation) throws URISyntaxException, IOException {
+    private String getTemplateContents(String templateLocation) {
         final var cl = ExtractionRunner.class.getClassLoader();
         final var resource = cl.getResourceAsStream(templateLocation);
         assert resource != null;

@@ -107,8 +107,9 @@ public class SourceExtractor {
                                            : new StringJoiner("", delimiter + "\n", "\n" + delimiter);
 
         boolean hasCallout = false;
-        Pattern coPattern = Pattern.compile("<(!--)?(\\d+|\\.)(--)?>");
         if ("compound".equals(block.getContentModel())) {
+            Pattern coPattern = Pattern.compile("<(!--)?(\\d+|\\.)(--)?>");
+
             for (StructuralNode innerBlock : block.getBlocks()) {
                 joiner.add(new SourceExtractor(innerBlock).getSource());
 
@@ -136,8 +137,9 @@ public class SourceExtractor {
             String marker = item.getMarker();
 
             // If the marker is more than one character and it doesn't start with a number
-            // then this should be a nested list
-            if (item.getMarker().length() > 1 && !item.getMarker().matches("^\\d+\\.")) {
+            // then this should be a nested list, and is not a callout list
+            if (item.getMarker().length() > 1
+                && !item.getMarker().matches("^\\d+\\.") && !"colist".equals(list.getContext())) {
                 nested = true;
             }
 
@@ -303,12 +305,14 @@ public class SourceExtractor {
             if (hasStyle) {
                 joiner.add(((StructuralNode) node).getStyle());
 
+                var blockAttributes = node.getAttributes();
+
                 // You typically see source and language together, so we'll put them together as well.
-                if (node.hasAttribute("language"))
+                if (blockAttributes.containsKey("language"))
                     joiner.add(node.getAttribute("language").toString());
                 // Sometimes the language will be a positional attribute
-                else if ("source".equals(node.getAttribute("1")) && node.hasAttribute("2")) {
-                    joiner.add(node.getAttribute("2").toString());
+                else if ("source".equals(blockAttributes.get("1")) && blockAttributes.containsKey("2")) {
+                    joiner.add(blockAttributes.get("2").toString());
                 }
             }
 

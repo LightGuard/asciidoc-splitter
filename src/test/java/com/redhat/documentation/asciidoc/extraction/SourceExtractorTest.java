@@ -312,4 +312,41 @@ class SourceExtractorTest extends AsciidocExtractionTest {
 
         assertThat(extractor.getSource()).isEqualTo(expected);
     }
+
+    @Test
+    public void testSourceBlock() {
+        var adoc = "[source,java]\n" +
+                   "====\n" +
+                   "public class HelloWorld { // <1>\n" +
+                   "    public static void main(String... args) {\n" +
+                   "        System.out.println(\"Hello World\"); // <2>\n" +
+                   "    }\n" +
+                   "}\n" +
+                   "====";
+
+        var document = asciidoctor.load(adoc, optionsBuilder.asMap());
+        var blocks = document.getBlocks();
+
+        assertThat(blocks).hasSize(1);
+        var extractor = new SourceExtractor(blocks.get(0));
+
+        assertThat(extractor.getSource()).isEqualTo(adoc);
+    }
+
+    @Test
+    public void testCalloutList() {
+        var adoc = "<1> First Java Class\n" +
+                   "<2> Output to standard out";
+
+        var document = asciidoctor.load(adoc, optionsBuilder.asMap());
+        var blocks = document.getBlocks();
+
+        assertThat(blocks).hasSize(1);
+        var extractor = new SourceExtractor(blocks.get(0));
+        var expected = "[arabic]\n" +
+                       "<1> First Java Class\n" +
+                       "<2> Output to standard out";
+
+        assertThat(extractor.getSource()).isEqualTo(expected);
+    }
 }

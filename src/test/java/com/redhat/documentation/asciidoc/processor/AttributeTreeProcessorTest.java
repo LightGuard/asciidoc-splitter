@@ -3,10 +3,12 @@ package com.redhat.documentation.asciidoc.processor;
 import java.util.Map;
 
 import com.redhat.documentation.asciidoc.extraction.AsciidocExtractionTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class AttributeTreeProcessorTest extends AsciidocExtractionTest {
     @Test
+    @Disabled("Mostly used for a trail of attributes")
     public void findAttributesTest() throws Exception {
         asciidoctor.javaExtensionRegistry().treeprocessor(AttributeTreeProcessor.class);
 

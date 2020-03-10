@@ -29,7 +29,6 @@ import org.asciidoctor.jruby.AsciiDocDirectoryWalker;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 @Command(name = "extract", mixinStandardHelpOptions = true, version = "1.0",
          description = "Create a modular documentation layout from a directory of asciidoc files.")
@@ -37,10 +36,10 @@ public class ExtractionRunner implements Callable<Integer> {
     private List<Assembly> assemblies;
     private Set<ExtractedModule> modules;
 
-    @Option(names = {"-s", "--sourceDir"}, description = "Directory containing the input asciidoc files.")
+    @Option(names = {"-s", "--sourceDir"}, description = "Directory containing the input asciidoc files.", required = true)
     File inputDir;
 
-    @Option(names = {"-o", "--outputDir"}, description = "Directory to place generated modules and assemblies.")
+    @Option(names = {"-o", "--outputDir"}, description = "Directory to place generated modules and assemblies.", required = true)
     File outputDir;
 
     public ExtractionRunner() {

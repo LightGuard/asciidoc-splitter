@@ -1,0 +1,20 @@
+= Asciidoc Splitter
+
+A Java utility to split asciidoc files into a modular documentation layout.
+At some point it will also include a way to run this via maven, and possibly gradle, however, at this point in time it is CLI only.
+
+== Usage
+
+Build using `mvnw` (until it's in a repo) then run the uberjar in `target` named `asciidoc-splitter-1.0-SNAPSHOT.jar` by using the java command:
+`java -jar target/asciidoc-splitter-1.0-SNAPSHOT.jar`.
+You will need to specify two options:
+
+`-s` or `--sourceDir`:: The directory containing the asciidoc files to process.
+`-o` or `--outputDir`:: Directory to place the generated files.
+
+NOTE: There is also a `-h` or `--help` if you need a refresher
+
+== Contributing
+
+I'll fill this out a bit more, but I'm going to be doing this all on GitHub.
+Please create an issue and send me a pull request.

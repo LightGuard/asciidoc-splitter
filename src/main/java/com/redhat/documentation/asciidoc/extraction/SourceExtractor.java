@@ -87,8 +87,7 @@ public class SourceExtractor {
                 .append("\n")
                 .append("=".repeat(Math.max(0, level))).append(" ").append(title)
                 .append("\n")
-                .append(":context: ").append(context)
-                .append("\n\n");
+                .append(":context: ").append(context);
     }
 
     private void extractBlock() {
@@ -122,11 +121,6 @@ public class SourceExtractor {
         }
 
         source.append(joiner.add(block.getSource()));
-
-        // We need to separate the text with an empty new line, unless there's a callout list
-        if (!hasCallout) {
-            source.append("\n");
-        }
     }
 
     private void extractList() {
@@ -135,14 +129,23 @@ public class SourceExtractor {
         boolean nested = false;
 
         // Nested lists, should also work if a list has more than just a basic text for an item
-        java.util.List<StructuralNode> items = list.getItems();
+        var items = list.getItems();
         for (int i = 0; i < items.size(); i++) {
             StructuralNode structuralNode = items.get(i);
             var item = (ListItem) structuralNode;
-            var marker = item.getMarker();
+            String marker = item.getMarker();
+
+            // If the marker is more than one character and it doesn't start with a number
+            // then this should be a nested list
+            if (item.getMarker().length() > 1 && !item.getMarker().matches("^\\d+\\.")) {
+                nested = true;
+            }
 
             // TODO: fix up callouts so they have the correct number
-            if ("<1>".equals(marker)) {
+            if ("olist".equals(list.getContext()) && !nested)
+                marker = ".";
+
+            if ("colist".equals(list.getContext()) && !nested) {
                 marker = marker.replaceAll("\\d+", String.valueOf(i + 1));
             }
 
@@ -162,12 +165,6 @@ public class SourceExtractor {
                     itemSource.append(new SourceExtractor(listItemBlock).getSource());
                 });
 
-                // If the marker is more than one character and it doesn't start with a number
-                // then this should be a nested list
-                if (item.getMarker().length() > 1 && !item.getMarker().matches("^\\d+\\.")) {
-                    nested = true;
-                }
-
                 // Now add list/blocks to the main list
                 listItemJoiner.add(marker + " " + itemSource);
             } else { // Just a normal list item, nothing special
@@ -184,22 +181,6 @@ public class SourceExtractor {
             source.append(".").append(list.getTitle()).append("\n");
 
         source.append(listItemJoiner.toString());
-
-        // Little bit of nasty code below
-        // I need to figure out if the previous item in the list was a nested list
-        // so we can get the newlines figured out correctly
-        // I'm doing this by splitting the item joiner by new line and taking the first item
-        // in the array returned, then I check to see if the second character is a space.
-        // If it is not a space, then we're in a nested list
-        // TODO: I think this breaks if the nest list is ordered and they use numbers and periods
-        //       Maybe callouts break this too? But you don't find nested call outs....
-        if (!" ".equals(listItemJoiner.toString().split("\n")[0].substring(1, 2)))
-            nested = true;
-
-        // We should end with a blank line if this is not a nested lest
-        // and not a callout list
-        if (!nested && !"colist".equals(list.getContext()))
-            source.append("\n\n");
     }
 
     private void extractTable() {
@@ -212,9 +193,7 @@ public class SourceExtractor {
         // TODO: what about a nested table?
         table.getBody().forEach(row -> {
             var cellJoiner = new StringJoiner(" | ");
-            row.getCells().forEach(cell -> {
-                cellJoiner.add(cell.getSource());
-            });
+            row.getCells().forEach(cell -> cellJoiner.add(cell.getSource()));
             bodyJoiner.merge(cellJoiner);
         });
 
@@ -260,8 +239,6 @@ public class SourceExtractor {
             if (listEntryIter.hasNext())
                 source.append("\n");
         }
-
-        source.append("\n\n");
     }
 
     private boolean hasRoles() {

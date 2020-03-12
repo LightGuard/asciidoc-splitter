@@ -30,7 +30,10 @@ public class SourceExtractor {
         EXAMPLE("===="),
         SOURCE("----"),
         PARAGRAPH(""),
-        LISTING("----");
+        LISTING("----"),
+        IMAGE("image::"),
+        THEMATIC_BREAK("'''");
+
 
         private String delimiter;
 
@@ -221,7 +224,16 @@ public class SourceExtractor {
 
             // description
             final var description = entry.getDescription();
-            if (description.getBlocks().isEmpty()) {
+            // TODO: null check added due to:
+            // Read Header::
+            //[source,http,options=nowrap]
+            //----
+            //Read: Accept: application/json
+            //----
+            // in infinispan/documentation/src/main/asciidoc/topics/endpoint_interop.adoc
+            if (description == null) {
+                //ignore
+            } else if (description.getBlocks().isEmpty()) {
                 source.append(" ");
                 source.append(description.getSource());
             } else {
@@ -320,7 +332,7 @@ public class SourceExtractor {
                 keys.stream()
                         // We don't really need the positional ones as they'll be listed as named (I think)
                         .filter(s -> s.matches("\\D+.*"))
-                        .forEach(key -> joiner.add(key + "=\"" + node.getAttribute(key).toString() + "\""));
+                        .forEach(key -> joiner.add(key + "=\"" + node.getAttribute(key) + "\"")); // TODO: getAttribute(key) can return null!
             }
 
             // Join everything together

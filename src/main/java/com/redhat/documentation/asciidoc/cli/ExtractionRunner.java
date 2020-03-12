@@ -119,9 +119,27 @@ public class ExtractionRunner implements Callable<Integer> {
             Path modulesDir = Files.createDirectories(Paths.get(config.getOutputDirectory().getAbsolutePath(),
                                                         "modules"));
 
+            Set<Path> accessedPaths = new HashSet<>();
+
             for (ExtractedModule module : this.modules) {
                 // Create output file
-                Path moduleOutputFile = Files.createFile(Paths.get(modulesDir.toString(), module.getFileName()));
+                Path wantedPath = Paths.get(modulesDir.toString(), module.getFileName());
+
+                Path moduleOutputFile = null;
+                if(!wantedPath.toFile().exists()) {
+                        System.out.println("Creating new file: " + wantedPath + " for module " + module.getId());
+                        moduleOutputFile = Files.createFile(wantedPath);
+                } else {
+                    if(accessedPaths.contains(wantedPath)) {
+                        System.out.println("File already existed: " + wantedPath + " for module " + module.getId());
+                        moduleOutputFile = wantedPath;
+                    } else {
+                        //System.out.println("Overwriting file " + wantedPath);
+                        moduleOutputFile = wantedPath;
+                    }
+                }
+
+                accessedPaths.add(moduleOutputFile);
 
                 // Output the module
                 try (Writer output = new FileWriter(moduleOutputFile.toFile())) {

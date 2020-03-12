@@ -53,7 +53,7 @@ class ExtractionRunnerTest {
         assertThat(Arrays.stream(Objects.requireNonNull(this.outputDirectory.listFiles(new AsciidocFileFilter())))
                             .map(File::getName)
                             .collect(Collectors.toList()))
-                .containsExactly("assembly-1.adoc", "assembly-2.adoc");
+                .containsExactlyInAnyOrder("assembly-1.adoc", "assembly-2.adoc");
     }
 
     @Test

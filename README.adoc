@@ -3,13 +3,18 @@
 A Java utility to split asciidoc files into a modular documentation layout.
 At some point it will also include a way to run this via maven, and possibly gradle, however, at this point in time it is CLI only.
 
-== Usage
+== Building and Running
 
-Build using `mvnw install -DskipTests` (until it's in a repo) then run the uberjar in `target` named `asciidoc-splitter-1.0-SNAPSHOT.jar` by using the java command:
-`java -jar target/asciidoc-splitter-1.0-SNAPSHOT.jar`.
-You will need to specify two options:
+Build using `./mvnw install -DskipTests` (until it's in a repo). This creates an
+uberjar named `asciidoc-splitter-1.0-SNAPSHOT.jar` in the `target` directory.
 
-`-s` or `--sourceDir`:: The directory containing the asciidoc files to process.
+Run as follows:
+
+`java -jar target/asciidoc-splitter-1.0-SNAPSHOT.jar`
+
+Specify two options:
+
+`-s` or `--sourceDir`:: Directory that contains the asciidoc files to process.
 `-o` or `--outputDir`:: Directory to place the generated files.
 
 NOTE: There is also a `-h` or `--help` if you need a refresher

@@ -5,7 +5,7 @@ At some point it will also include a way to run this via maven, and possibly gra
 
 == Usage
 
-Build using `mvnw` (until it's in a repo) then run the uberjar in `target` named `asciidoc-splitter-1.0-SNAPSHOT.jar` by using the java command:
+Build using `mvnw install -DskipTests` (until it's in a repo) then run the uberjar in `target` named `asciidoc-splitter-1.0-SNAPSHOT.jar` by using the java command:
 `java -jar target/asciidoc-splitter-1.0-SNAPSHOT.jar`.
 You will need to specify two options:
 

@@ -31,6 +31,7 @@ public class SourceExtractor {
         PARAGRAPH(""),
         IMAGE(""),
         THEMATIC_BREAK("'''", ""),
+        PAGE_BREAK("<<<", ""),
         LISTING("----");
 
         private String frontDelimiter;
@@ -115,7 +116,8 @@ public class SourceExtractor {
             return;
         }
 
-        if ("thematic_break".equals(node.getContext())) {
+        // Page Break and Thematic breaks are special cases
+        if ("thematic_break".equals(node.getContext()) || "page_break".equals(node.getContext())) {
             source.append(BlockType.valueOf(block.getContext().toUpperCase()).getFrontDelimiter());
             return;
         }

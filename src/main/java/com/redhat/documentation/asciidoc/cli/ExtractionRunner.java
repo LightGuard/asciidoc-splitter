@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -117,7 +118,7 @@ public class ExtractionRunner implements Callable<Integer> {
         try {
             // Create the output directories
             Path modulesDir = Files.createDirectories(Paths.get(config.getOutputDirectory().getAbsolutePath(),
-                                                        "modules"));
+                    "modules"));
 
             for (ExtractedModule module : this.modules) {
                 // Create output file
@@ -149,9 +150,12 @@ public class ExtractionRunner implements Callable<Integer> {
                     }
                 }
             }
-
         } catch (IOException e) {
-            // TODO: We blew-up handle this
+            if (e instanceof FileAlreadyExistsException) {
+                System.err.println("Could not write a file: " + ((FileAlreadyExistsException) e).getFile());
+                return;
+            }
+            // TODO: We blew-up in an unexpected way, handle this
             throw new RuntimeException(e);
         }
     }

@@ -151,7 +151,7 @@ class SourceExtractorTest extends AsciidocExtractionTest {
         assertThat(blocks).hasSize(1);
         var extractor = new SourceExtractor(blocks.get(0));
 
-        var expected = "[arabic,start=\"3\",reversed-option=\"\"]\n" +
+        var expected = "[arabic,start=\"3\"]\n" +
                        ".Title\n" +
                        ". Protons\n" +
                        ". Electrons\n" +
@@ -346,6 +346,25 @@ class SourceExtractorTest extends AsciidocExtractionTest {
         var expected = "[arabic]\n" +
                        "<1> First Java Class\n" +
                        "<2> Output to standard out";
+
+        assertThat(extractor.getSource()).isEqualTo(expected);
+    }
+
+    @Test
+    public void testImageBlock() {
+        var adoc = ".A mountain sunset\n" +
+                   "[#img-sunset]\n" +
+                   "[caption=\"Figure 1: \",link=https://www.flickr.com/photos/javh/5448336655]\n" +
+                   "image::sunset.jpg[Sunset,300,200]";
+
+        var document = asciidoctor.load(adoc, optionsBuilder.asMap());
+        var blocks = document.getBlocks();
+
+        assertThat(blocks).hasSize(1);
+        var extractor = new SourceExtractor(blocks.get(0));
+        var expected = ".A mountain sunset\n" +
+                       "[id=\"img-sunset_{context}\", caption=\"Figure 1: \",link=\"https://www.flickr.com/photos/javh/5448336655\",alt=\"Sunset\",width=\"300\",height=\"200\"]\n" +
+                       "image::sunset.jpg[]";
 
         assertThat(extractor.getSource()).isEqualTo(expected);
     }

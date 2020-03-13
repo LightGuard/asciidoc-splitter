@@ -1,8 +1,7 @@
 package com.redhat.documentation.asciidoc.extraction;
 
+import java.util.HashMap;
 import java.util.StringJoiner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.ContentNode;
@@ -30,16 +29,28 @@ public class SourceExtractor {
         EXAMPLE("===="),
         SOURCE("----"),
         PARAGRAPH(""),
+        IMAGE(""),
         LISTING("----");
 
-        private String delimiter;
+        private String frontDelimiter;
+        private String backDelimiter;
 
         BlockType(String delimiter) {
-            this.delimiter = delimiter;
+            this.frontDelimiter = delimiter;
+            this.backDelimiter = delimiter;
         }
 
-        public String delimiter() {
-            return this.delimiter;
+        BlockType(String frontDelimiter, String backDelimiter) {
+            this.frontDelimiter = frontDelimiter;
+            this.backDelimiter = backDelimiter;
+        }
+
+        public String getFrontDelimiter() {
+            return this.frontDelimiter;
+        }
+
+        public String getBackDelimiter() {
+            return this.backDelimiter;
         }
     }
 
@@ -97,14 +108,21 @@ public class SourceExtractor {
         if (source.length() > 0)
             source.append("\n");
 
+        // Images are a bit special
+        if ("image".equals(node.getContext())) {
+            source.append("image::").append(node.getAttributes().get("target")).append("[]");
+            return;
+        }
+
         // depending on the type of block, there are different delimiters
         // This should work for all different types of blocks
-        var delimiter = BlockType.valueOf(block.getContext().toUpperCase()).delimiter();
+        var frontDelimiter = BlockType.valueOf(block.getContext().toUpperCase()).getFrontDelimiter();
+        var backDelimiter = BlockType.valueOf(block.getContext().toUpperCase()).getBackDelimiter();
 
         // This is mostly for paragraphs which have no delimiter
         // and so they don't need a new line before or after the delimiter
-        var joiner = (delimiter.isEmpty()) ? new StringJoiner("")
-                                           : new StringJoiner("", delimiter + "\n", "\n" + delimiter);
+        var joiner = (frontDelimiter.isEmpty()) ? new StringJoiner("")
+                                           : new StringJoiner("", frontDelimiter + "\n", "\n" + backDelimiter);
 
         if ("compound".equals(block.getContentModel())) {
             for (StructuralNode innerBlock : block.getBlocks()) {
@@ -253,6 +271,13 @@ public class SourceExtractor {
                 && ((StructuralNode) node).getTitle() != null;
     }
 
+    private boolean hasCaption() {
+        // Section and List titles need to be handled differently
+        // True if node is not a Section or List and has a non-null title
+        return (node instanceof StructuralNode && !((node instanceof Section) || (node instanceof List)))
+                && ((StructuralNode) node).getCaption() != null;
+    }
+
     /**
      * Pulls the id, attributes, style, and roles from the node into the proper syntax
      */
@@ -263,10 +288,11 @@ public class SourceExtractor {
         var hasRoles = hasRoles();
         var hasStyle = hasStyle();
         var hasTitle = hasTitle();
+        var hasCaption = hasCaption();
 
         // If the node has any of these (id, roles, attributes, style, or title)
         // We need to handle it so it is above the node in the output
-        if (hasId || hasRoles || hasAttributes || hasStyle || hasTitle) {
+        if (hasId || hasRoles || hasAttributes || hasStyle || hasTitle || hasCaption) {
 
             // Titles could be an actual title (.Some title) above the node
             // or it could also be an attribute (though you rarely see that)
@@ -278,7 +304,7 @@ public class SourceExtractor {
             }
 
             // Now we're into the id, role, style, attributes which will surrounded by [ and ]
-            var mainJoiner = new StringJoiner(" ", "[", "]");
+            var mainJoiner = new StringJoiner(", ", "[", "]");
 
             if (hasId) {
                 // If there isn't an explicit id for a section, it starts with an _
@@ -310,17 +336,36 @@ public class SourceExtractor {
             if (hasRoles)
                 joiner.add("role=\"" + String.join(",", node.getRoles()) + "\"");
 
+            if (hasCaption)
+                joiner.add("caption=\"" + ((StructuralNode) node).getCaption() + "\"");
+
             if (hasAttributes) {
                 // We have already added some of the attributes above, we don't need to add them twice.
                 var keys = new java.util.HashSet<>(node.getAttributes().keySet());
                 keys.remove("style");
                 keys.remove("title");
                 keys.remove("language");
+                keys.remove("target"); // We'll handle target as a special case
+                keys.remove("id"); // We already took care of target above
+
+                var attributes = new HashMap<String, String>();
 
                 keys.stream()
-                        // We don't really need the positional ones as they'll be listed as named (I think)
+                        // We don't need positional attributes
                         .filter(s -> s.matches("\\D+.*"))
-                        .forEach(key -> joiner.add(key + "=\"" + node.getAttribute(key).toString() + "\""));
+                        .forEach(key -> {
+                            var value = node.getAttributes().get(key);
+
+                            if (value != null)
+                                attributes.put(key, value.toString());
+                            else // if we can't find it on the block, try and get it from the document, empty string if it isn't found
+                                attributes.put(key, node.getAttribute(key, "", true).toString());
+                        });
+
+                attributes.forEach((k, v) -> {
+                        if (v != null && !v.isEmpty())
+                            joiner.add(k + "=\"" + v + "\"");
+                        });
             }
 
             // Join everything together

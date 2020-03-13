@@ -368,4 +368,17 @@ class SourceExtractorTest extends AsciidocExtractionTest {
 
         assertThat(extractor.getSource()).isEqualTo(expected);
     }
+
+    @Test
+    public void testThematicBreak() {
+        var adoc = "'''";
+
+        var document = asciidoctor.load(adoc, optionsBuilder.asMap());
+        var blocks = document.getBlocks();
+
+        assertThat(blocks).hasSize(1);
+        var extractor = new SourceExtractor(blocks.get(0));
+
+        assertThat(extractor.getSource()).isEqualTo(adoc);
+    }
 }

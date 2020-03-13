@@ -30,6 +30,7 @@ public class SourceExtractor {
         SOURCE("----"),
         PARAGRAPH(""),
         IMAGE(""),
+        THEMATIC_BREAK("'''", ""),
         LISTING("----");
 
         private String frontDelimiter;
@@ -111,6 +112,11 @@ public class SourceExtractor {
         // Images are a bit special
         if ("image".equals(node.getContext())) {
             source.append("image::").append(node.getAttributes().get("target")).append("[]");
+            return;
+        }
+
+        if ("thematic_break".equals(node.getContext())) {
+            source.append(BlockType.valueOf(block.getContext().toUpperCase()).getFrontDelimiter());
             return;
         }
 

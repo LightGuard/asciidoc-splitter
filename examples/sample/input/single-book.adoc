@@ -1,0 +1,187 @@
+// This assembly is included in the following assemblies:
+//
+// assembly-service-admin-guide.adoc
+
+:parent-context: {context}
+[id='monitoring-{context}']
+
+= Monitoring {ProductName}
+
+You can monitor {ProductName} by deploying built-in monitoring tools or using your pre-existing monitoring infrastructure by deploying the required service monitors and Prometheus rules.
+
+[id='deploy-monitoring-infrastructure-{context}']
+== Installing monitoring infrastructure
+
+If you do not have a pre-existing infrastructure for monitoring, you must install one, which includes Prometheus, Alertmanager, Grafana, and `kube-state-metrics`.
+
+.Prerequisites
+
+ifeval::["{cmdcli}" == "oc"]
+* If using a version of OpenShift earlier than OpenShift 4 the link:https://github.com/coreos/prometheus-operator/tree/master/contrib/kube-prometheus[Prometheus Operator^] and Custom Resource Definitions must be installed.
+endif::[]
+ifeval::["{cmdcli}" == "kubectl"]
+* The link:https://github.com/coreos/prometheus-operator/tree/master/contrib/kube-prometheus[Prometheus Operator^] and Custom Resource Definitions must be installed.
+endif::[]
+
+.Procedure
+
+. (Optional) To change the default settings for Alertmanager and configure notifications:
+
+..   Create an Alertmanager configuration file. A sample file showing how email notifications are configured follows:
++
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: enmasse
+  name: alertmanager-config
+data:
+  alertmanager.yml: |
+    global:
+      resolve_timeout: 5m
+      smtp_smarthost: localhost
+      smtp_from: alerts@localhost
+      smtp_auth_username: admin
+      smtp_auth_password: password
+    route:
+      group_by: ['alertname']
+      group_wait: 60s
+      group_interval: 60s
+      repeat_interval: 1h
+      receiver: 'sysadmins'
+    receivers:
+    - name: 'sysadmins'
+      email_configs:
+      - to: sysadmin@localhost
+    inhibit_rules:
+      - source_match:
+          severity: 'critical'
+        target_match:
+          severity: 'warning'
+        equal: ['alertname']
+----
+
+..   Update the Alertmanager secret with the `base64` encoded file:
++
+[options="nowrap",subs="+quotes,attributes"]
+----
+sed -i s/alertmanager.yaml:*/$(<CONFIG_FILE> | base64 -w0)/g install/alertmanager/020-Secret-alertmanager.yaml
+----
+
+. Select the {ProductName} namespace:
++
+[options="nowrap",subs="+quotes,attributes"]
+----
+{cmdcli} project _{ProductNamespace}_
+----
+
+. Install using the `monitoring-infrastructure` bundle:
++
+[options="nowrap",subs="attributes"]
+----
+{cmdcli} apply -f install/bundles/monitoring
+----
+
+[id='deploy-service-monitors-{context}']
+== Deploying service monitors
+
+You must deploy the service monitors to enable Prometheus to monitor {ProductName}.
+
+.Prerequisites
+
+* Monitoring infrastructure must be present, whether pre-existing or link:{BookUrlBase}{BaseProductVersion}{BookNameUrl}#deploy-monitoring-infrastructure-messaging[installed following this procedure].
+
+.Procedure
+
+. Select the {ProductName} namespace:
++
+[options="nowrap",subs="+quotes,attributes"]
+----
+{cmdcli} project _{ProductNamespace}_
+----
+
+. Deploy the `service-monitors`:
++
+[options="nowrap",subs="attributes"]
+----
+{cmdcli} apply -f /install/components/service-monitors
+----
+
+[id='deploy-prometheus-rules-{context}']
+== Deploying Prometheus Rules for alerting
+
+You must deploy Prometheus rules to enable alerting for {ProductName}.
+
+.Prerequisites
+* Monitoring infrastructure must be present, whether pre-existing or link:{BookUrlBase}{BaseProductVersion}{BookNameUrl}#deploy-monitoring-infrastructure-messaging[installed following this procedure], and the link:{BookUrlBase}{BaseProductVersion}{BookNameUrl}#deploy-service-monitors-messaging[service monitors for {ProductName} must be deployed].
+
+.Procedure
+
+. Select the {ProductName} namespace:
++
+[options="nowrap",subs="+quotes,attributes"]
+----
+{cmdcli} project _{ProductNamespace}_
+----
+
+. Deploy the `prometheus-rules`:
++
+[options="nowrap",subs="attributes"]
+----
+{cmdcli} apply -f /install/components/prometheus
+----
+
+[id='restart-component-{context}']
+== Restarting a component
+
+.Procedure
+
+* Delete the component's pod:
++
+[options="nowrap",subs="+quotes,attributes"]
+----
+{cmdcli} delete pod -l name=_component_
+----
+
+The component will be automatically restarted in a new pod.
+
+[id='get-logs-broker-{context}']
+== Viewing router logs
+
+.Procedure
+
+. List all router pods and choose the pod for the relevant address space:
++
+[options="nowrap",subs="+quotes,attributes"]
+----
+{cmdcli} get pods -l name=qdrouterd -o go-template --template '{{range .items}}{{.metadata.name}}{{"\t"}}{{.metadata.annotations.addressSpace}}{{"\n"}}{{end}}'
+----
+
+. Display the logs for the pod:
++
+[options="nowrap",subs="+quotes,attributes"]
+----
+{cmdcli} logs _pod_ -c router
+----
+
+[id='get-logs-router-{context}']
+== Viewing broker logs
+
+.Procedure
+
+. List all broker pods and choose the pod for the relevant address space:
++
+[source,options="nowrap",subs="attributes"]
+----
+{cmdcli} get pods -l role=broker -o go-template --template '{{range .items}}{{.metadata.name}}{{"\t"}}{{.metadata.annotations.addressSpace}}{{"\n"}}{{end}}'
+----
+
+. Display the logs for the pod:
++
+[source,options="nowrap",subs="+quotes,attributes"]
+----
+{cmdcli} logs _pod_
+----
+
+:context: {parent-context}

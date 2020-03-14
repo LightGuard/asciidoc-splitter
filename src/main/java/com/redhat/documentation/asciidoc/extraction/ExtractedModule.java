@@ -5,12 +5,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import com.redhat.documentation.asciidoc.Util;
 import org.asciidoctor.ast.Section;
 
 public class ExtractedModule {
     private String id;
     private Section section;
     private List<String> sources;
+
+    @Override
+    public String toString() {
+        return "ExtractedModule{" +
+                "id='" + id + '\'' +
+                //", section=" + section +
+                // ", sources=" + sources +
+                ", parentid=" + Util.getFullId(section.getParent()) +
+                '}';
+    }
 
     public ExtractedModule(Section section) {
         // According to the modular docs, there should only be one underscore used to split the context.

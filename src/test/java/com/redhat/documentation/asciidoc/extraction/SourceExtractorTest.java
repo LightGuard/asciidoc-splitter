@@ -370,6 +370,23 @@ class SourceExtractorTest extends AsciidocExtractionTest {
     }
 
     @Test
+    public void testVideoBlock() {
+        var adoc = ".An ocean sunset\n" +
+                   "video::rPQoq7ThGAU[youtube,300,450]";
+
+        var document = asciidoctor.load(adoc, optionsBuilder.asMap());
+        var blocks = document.getBlocks();
+
+        assertThat(blocks).hasSize(1);
+        var extractor = new SourceExtractor(blocks.get(0));
+        var expected = ".An ocean sunset\n" +
+                       "[width=\"300\",poster=\"youtube\",height=\"450\"]\n" +
+                       "video::rPQoq7ThGAU[]";
+
+        assertThat(extractor.getSource()).isEqualTo(expected);
+    }
+
+    @Test
     public void testThematicBreak() {
         var adoc = "'''";
 

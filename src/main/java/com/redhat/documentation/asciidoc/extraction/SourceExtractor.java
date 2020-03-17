@@ -30,6 +30,7 @@ public class SourceExtractor {
         SOURCE("----"),
         PARAGRAPH(""),
         IMAGE(""),
+        VIDEO(""),
         THEMATIC_BREAK("'''", ""),
         PAGE_BREAK("<<<", ""),
         LISTING("----");
@@ -113,6 +114,12 @@ public class SourceExtractor {
         // Images are a bit special
         if ("image".equals(node.getContext())) {
             source.append("image::").append(node.getAttributes().get("target")).append("[]");
+            return;
+        }
+
+        // Video blocks
+        if ("video".equals(node.getContext())) {
+            source.append("video::").append(node.getAttributes().get("target")).append("[]");
             return;
         }
 

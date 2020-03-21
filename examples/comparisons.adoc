@@ -1,0 +1,70 @@
+= Comparison of standard asciidoc and processed asciidoc
+
+This is a table of comparisons with typical asciidoc syntax and what this utility returns.
+You can render this document and verify the two are functionally equivalent by using the asciidoctor command:
+
+[source,shell]
+----
+asciidoctor comparisons.adoc
+----
+
+This will result in an HTML file named `comparisons.html` which you can then inspect at the code level and within a browser for equivalence.
+
+[cols="a,a,a"]
+|===
+
+^h| Standard syntax
+^h| Processed output
+^h| Passes or issue link
+
+// New rows can be added here and should be created in pairs:
+// | A paragraph with _formatting_
+//
+//   [#next-paragraph]
+//   A new paragraph with an id.
+// | A paragraph with _formatting_
+//
+//   [id="next-paragraph"]
+//   A new paragraph with an id.
+
+// This is how a row should be used as a header to split the examples
+3+^h| Ordered List
+|
+. Protons
+. Electrons
+. Neutrons
+|
+[arabic]
+. Protons
+. Electrons
+. Neutrons
+// Each row show have a Passed cell or a cell with links to the issues
+| Passed
+
+3+^h| Ordered List Reversed
+|
+[%reversed,start=3]
+.Title
+. Protons
+. Electrons
+. Neutrons 
+|
+[arabic,start="3"]
+.Title
+. Protons
+. Electrons
+. Neutrons
+| Needs an issue created
+
+3+^h| Video
+|
+.An ocean sunset
+video::rPQoq7ThGAU[youtube,300,450, start=20, end=90, theme=light, lang=en, options="autoplay,loop,nofullscreen"]
+|
+.An ocean sunset
+[start="20",width="300",end="90",theme="light",lang="en",poster="youtube",height="450"]
+video::rPQoq7ThGAU[opts="autoplay,nofullscreen,loop"]
+| Passes
+
+|===
+

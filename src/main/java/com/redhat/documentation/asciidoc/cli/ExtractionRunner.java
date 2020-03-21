@@ -1,46 +1,32 @@
 package com.redhat.documentation.asciidoc.cli;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Writer;
-import java.net.URISyntaxException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import com.redhat.documentation.asciidoc.Configuration;
 import com.redhat.documentation.asciidoc.extraction.Assembly;
 import com.redhat.documentation.asciidoc.extraction.ExtractedModule;
-import com.redhat.documentation.asciidoc.extraction.SourceExtractor;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.OptionsBuilder;
-import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.Section;
-import org.asciidoctor.ast.StructuralNode;
 import org.asciidoctor.jruby.AsciiDocDirectoryWalker;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Command(name = "extract", mixinStandardHelpOptions = true, version = "1.0",
          description = "Create a modular documentation layout from a directory of asciidoc files.")
 public class ExtractionRunner implements Callable<Integer> {
     private List<Assembly> assemblies;
     private Set<ExtractedModule> modules;
+    private List<Issue> issues = new ArrayList<>();
 
     @Option(names = {"-s", "--sourceDir"}, description = "Directory containing the input asciidoc files.", required = true)
     File inputDir;
@@ -77,9 +63,14 @@ public class ExtractionRunner implements Callable<Integer> {
             writeAssemblies(config);
         }
 
+        long errors = this.issues.stream().filter(Issue::isError).count();
+
+        System.out.println("Found " + this.issues.size() + " issues. " + errors + " Errors.");
+
         return 0;
     }
 
+    /** returns true if all went well. false if there was some problem with uniqueness. */
     private void findSections(Document doc) {
         // TODO: What should we do with preamble?
         // TODO: This should probably be configurable
@@ -87,10 +78,23 @@ public class ExtractionRunner implements Callable<Integer> {
             if (node instanceof Section && node.getLevel() == 1) {
                 var assembly = new Assembly((Section) node);
                 this.assemblies.add(assembly);
-                this.modules.addAll(assembly.getModules());
+                for (var module : assembly.getModules()) {
+                    if (!this.modules.add(module)) {
+                        var duplicate = this.modules.stream().filter(m -> {
+                            return m.equals(module);
+                        }).findFirst();
+
+                        addIssue(Issue.error("Module with non-unique id. " + module + " is a duplicate of " + duplicate, node));
+                    }
+                }
             }
         });
         // We should have all the assemblies, and all of their modules now
+    }
+
+    private void addIssue(Issue error) {
+        System.out.println(error);
+        this.issues.add(error);
     }
 
     private void writeAssemblies(Configuration config) {
@@ -117,12 +121,22 @@ public class ExtractionRunner implements Callable<Integer> {
         // Create the modules directory and write the files
         try {
             // Create the output directories
-            Path modulesDir = Files.createDirectories(Paths.get(config.getOutputDirectory().getAbsolutePath(),
-                    "modules"));
+            Path modulesDir = Files.createDirectories(config.getOutputDirectory().toPath().resolve("modules"));
+            Set<Path> visitedPaths = new HashSet<>();
 
             for (ExtractedModule module : this.modules) {
                 // Create output file
-                Path moduleOutputFile = Files.createFile(Paths.get(modulesDir.toString(), module.getFileName()));
+                Path moduleOutputFile = Paths.get(modulesDir.toString(), module.getFileName());
+
+                if(moduleOutputFile.toFile().exists()) {
+                    if(visitedPaths.contains(moduleOutputFile)) {
+                        System.err.println("Already written to this file: " + moduleOutputFile + " for " + module);
+                        return;
+                    }
+                } else {
+                    moduleOutputFile = Files.createFile(moduleOutputFile);
+                }
+                visitedPaths.add(moduleOutputFile);
 
                 // Output the module
                 try (Writer output = new FileWriter(moduleOutputFile.toFile())) {
@@ -151,10 +165,6 @@ public class ExtractionRunner implements Callable<Integer> {
                 }
             }
         } catch (IOException e) {
-            if (e instanceof FileAlreadyExistsException) {
-                System.err.println("Could not write a file: " + ((FileAlreadyExistsException) e).getFile());
-                return;
-            }
             // TODO: We blew-up in an unexpected way, handle this
             throw new RuntimeException(e);
         }

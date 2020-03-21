@@ -2,6 +2,7 @@ package com.redhat.documentation.asciidoc.extraction;
 
 import java.util.HashMap;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.ContentNode;
@@ -119,7 +120,11 @@ public class SourceExtractor {
 
         // Video blocks
         if ("video".equals(node.getContext())) {
-            source.append("video::").append(node.getAttributes().get("target")).append("[]");
+            var options = block.getAttributes().keySet().stream()
+                                .filter(o -> o.contains("option"))
+                                .map(o -> o.split("-option")[0])
+                                .collect(Collectors.joining(","));
+            source.append("video::").append(node.getAttributes().get("target")).append("[opts=\"").append(options).append("\"]");
             return;
         }
 

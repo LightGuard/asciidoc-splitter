@@ -372,7 +372,7 @@ class SourceExtractorTest extends AsciidocExtractionTest {
     @Test
     public void testVideoBlock() {
         var adoc = ".An ocean sunset\n" +
-                   "video::rPQoq7ThGAU[youtube,300,450]";
+                   "video::rPQoq7ThGAU[youtube,300,450, start=20, end=90, theme=light, lang=en, opts=\"autoplay,loop,nofullscreen\"]";
 
         var document = asciidoctor.load(adoc, optionsBuilder.asMap());
         var blocks = document.getBlocks();
@@ -380,8 +380,8 @@ class SourceExtractorTest extends AsciidocExtractionTest {
         assertThat(blocks).hasSize(1);
         var extractor = new SourceExtractor(blocks.get(0));
         var expected = ".An ocean sunset\n" +
-                       "[width=\"300\",poster=\"youtube\",height=\"450\"]\n" +
-                       "video::rPQoq7ThGAU[]";
+                       "[start=\"20\",width=\"300\",end=\"90\",theme=\"light\",lang=\"en\",poster=\"youtube\",height=\"450\"]\n" +
+                       "video::rPQoq7ThGAU[opts=\"autoplay,nofullscreen,loop\"]";
 
         assertThat(extractor.getSource()).isEqualTo(expected);
     }

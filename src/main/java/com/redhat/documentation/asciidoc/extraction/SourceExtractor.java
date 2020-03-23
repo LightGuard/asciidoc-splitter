@@ -12,6 +12,7 @@ import org.asciidoctor.ast.ListItem;
 import org.asciidoctor.ast.Section;
 import org.asciidoctor.ast.StructuralNode;
 import org.asciidoctor.ast.Table;
+import org.asciidoctor.jruby.ast.impl.SectionImpl;
 
 public class SourceExtractor {
     private ContentNode node;
@@ -94,7 +95,8 @@ public class SourceExtractor {
             id = id.substring(1).replaceAll("_", "-");
         }
         var context = id;
-        var title = section.getTitle();
+        // WARNING: Dropping to internal API, potential for future break
+        var title = ((SectionImpl) section).getProperty("@title");
         var level = section.getLevel() < 2 ? 1 : section.getLevel() - 1;
 
         source

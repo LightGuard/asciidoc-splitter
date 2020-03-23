@@ -23,6 +23,24 @@ class SourceExtractorTest extends AsciidocExtractionTest {
     }
 
     @Test
+    // Covers Issue #27
+    public void testTitleWithInlineContent() {
+        var sectionAdoc = "== using `.jsh`";
+        var document = asciidoctor.load(sectionAdoc, optionsBuilder.asMap());
+        var blocks = document.getBlocks();
+
+        var expected = "[id=\"using-jsh_{context}\"]\n" +
+                       "= using `.jsh`\n" +
+                       ":context: using-jsh";
+
+        assertThat(blocks).isNotEmpty();
+        blocks.forEach(structuralNode -> {
+            var extractor = new SourceExtractor(structuralNode);
+            assertThat(extractor.getSource()).isEqualTo(expected);
+        });
+    }
+
+    @Test
     public void testBasicParagraph() throws Exception {
         var adoc = "Some basic text in a Paragraph.\n" +
                    "With two lines.";
@@ -101,6 +119,7 @@ class SourceExtractorTest extends AsciidocExtractionTest {
     public void testBasicOrderedList() throws Exception {
         var adoc = ". Protons\n" +
                    ". Electrons\n" +
+                   ". `Stuff`\n" +
                    ". Neutrons";
 
         var document = asciidoctor.load(adoc, optionsBuilder.asMap());
@@ -112,6 +131,7 @@ class SourceExtractorTest extends AsciidocExtractionTest {
         var expected = "[arabic]\n" +
                        ". Protons\n" +
                        ". Electrons\n" +
+                       ". `Stuff`\n" +
                        ". Neutrons";
 
         assertThat(extractor.getSource()).isEqualTo(expected);

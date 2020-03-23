@@ -12,11 +12,11 @@ public class AttributeTreeProcessorTest extends AsciidocExtractionTest {
     public void findAttributesTest() throws Exception {
         asciidoctor.javaExtensionRegistry().treeprocessor(AttributeTreeProcessor.class);
 
-        var adoc = "= Tests\n" +
+        var adoc = "= Tests `testing`\n" +
                    ":my-attribute: Hello\n" +
                    "\n" +
                    "[rewrite=\"all of it\"]\n" +
-                   "== New Section\n" +
+                   "== New Section with `.jsh`\n" +
                    ":my-attribute: Hola\n" +
                    "\n" +
                    "[my-attribute=\"Good-bye\"]\n" +

@@ -555,12 +555,1634 @@ You can render this document and verify the two are functionally equivalent by u
 <p>Passes</p>
 </div></div></td>
 </tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Audio</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="audioblock">
+<div class="title">Audio waves</div>
+<div class="content">
+<audio src="audio_waves.mp3" autoplay controls loop>
+Your browser does not support the audio tag.
+</audio>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>No output</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Unordered lists</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<div class="title">Kizmet&#8217;s Favorite Authors</div>
+<ul>
+<li>
+<p>Edgar Allen Poe</p>
+</li>
+<li>
+<p>Sheri S. Tepper</p>
+</li>
+<li>
+<p>Bill Bryson</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<div class="title">Kizmet&#8217;s Favorite Authors</div>
+<ul>
+<li>
+<p>Edgar Allen Poe</p>
+</li>
+<li>
+<p>Sheri S. Tepper</p>
+</li>
+<li>
+<p>Bill Bryson</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Nested unordered lists</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<div class="title">Possible DefOps manual locations</div>
+<ul>
+<li>
+<p>West wood maze</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Maze heart</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Reflection pool</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Secret exit</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Untracked file in git repository</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<div class="title">Possible DefOps manual locations</div>
+<ul>
+<li>
+<p>West wood maze</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Maze heart</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Reflection pool</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Secret exit</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Untracked file in git repository</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Complex list content</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p>The header in AsciiDoc is optional, but if
+it is used it must start with a document title.</p>
+</li>
+<li>
+<p>Optional Author and Revision information
+immediately follows the header title.</p>
+</li>
+<li>
+<p>The document header must be separated from
+the remainder of the document by one or more
+blank lines and cannot contain blank lines.</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p>The header in AsciiDoc is optional, but if
+it is used it must start with a document title.</p>
+</li>
+<li>
+<p>Optional Author and Revision information
+immediately follows the header title.</p>
+</li>
+<li>
+<p>The document header must be separated from
+the remainder of the document by one or more
+blank lines and cannot contain blank lines.</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">List continuation</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p>The header in AsciiDoc must start with a document title.</p>
+<div class="listingblock">
+<div class="content">
+<pre>= Document Title</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Keep in mind that the header is optional.</p>
+</div>
+</li>
+<li>
+<p>Optional Author and Revision information immediately follows the header title.</p>
+<div class="listingblock">
+<div class="content">
+<pre>= Document Title
+Doc Writer &lt;doc.writer@asciidoc.org&gt;
+v1.0, 2013-01-01</pre>
+</div>
+</div>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p>The header in AsciiDoc must start with a document title.</p>
+<div class="listingblock">
+<div class="content">
+<pre>= Document Title</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Keep in mind that the header is optional.</p>
+</div>
+</li>
+<li>
+<p>Optional Author and Revision information immediately follows the header title.</p>
+<div class="listingblock">
+<div class="content">
+<pre>= Document Title
+Doc Writer &lt;doc.writer@asciidoc.org&gt;
+v1.0, 2013-01-01</pre>
+</div>
+</div>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Dropping the principal text</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
+<ol class="arabic">
+<li>
+<p></p>
+<div class="listingblock">
+<div class="content">
+<pre>print("one")</pre>
+</div>
+</div>
+</li>
+<li>
+<p></p>
+<div class="listingblock">
+<div class="content">
+<pre>print("one")</pre>
+</div>
+</div>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
+<ol class="arabic">
+<li>
+<p></p>
+<div class="listingblock">
+<div class="content">
+<pre>print("one")</pre>
+</div>
+</div>
+</li>
+<li>
+<p></p>
+<div class="listingblock">
+<div class="content">
+<pre>print("one")</pre>
+</div>
+</div>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Nested block enclosed in open block</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p>grandparent list item</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>parent list item</p>
+<div class="ulist">
+<ul>
+<li>
+<p>child list item</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>paragraph attached to grandparent list item</p>
+</div>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p>grandparent list item</p>
+<div class="openblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>parent list item</p>
+<div class="ulist">
+<ul>
+<li>
+<p>child list item</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>paragraph attached to grandparent list item</p>
+</div>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Description lists</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="dlist">
+<dl>
+<dt class="hdlist1">CPU</dt>
+<dd>
+<p>The brain of the computer.</p>
+</dd>
+<dt class="hdlist1">Hard drive</dt>
+<dd>
+<p>Permanent storage for operating system and/or user files.</p>
+</dd>
+<dt class="hdlist1">RAM</dt>
+<dd>
+<p>Temporarily stores information the CPU uses during operation.</p>
+</dd>
+<dt class="hdlist1">Keyboard</dt>
+<dd>
+<p>Used to enter text or control items on the screen.</p>
+</dd>
+<dt class="hdlist1">Mouse</dt>
+<dd>
+<p>Used to point to and select items on your computer screen.</p>
+</dd>
+<dt class="hdlist1">Monitor</dt>
+<dd>
+<p>Displays information in visual form using text and graphics.</p>
+</dd>
+</dl>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="dlist">
+<dl>
+<dt class="hdlist1">CPU</dt>
+<dd>
+<p>The brain of the computer.</p>
+</dd>
+<dt class="hdlist1">Hard drive</dt>
+<dd>
+<p>Permanent storage for operating system and/or user files.</p>
+</dd>
+<dt class="hdlist1">RAM</dt>
+<dd>
+<p>Temporarily stores information the CPU uses during operation.</p>
+</dd>
+<dt class="hdlist1">Keyboard</dt>
+<dd>
+<p>Used to enter text or control items on the screen.</p>
+</dd>
+<dt class="hdlist1">Mouse</dt>
+<dd>
+<p>Used to point to and select items on your computer screen.</p>
+</dd>
+<dt class="hdlist1">Monitor</dt>
+<dd>
+<p>Displays information in visual form using text and graphics.</p>
+</dd>
+</dl>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Overriding ordered list number scheme</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist lowerroman">
+<ol class="lowerroman" type="i" start="5">
+<li>
+<p>Five</p>
+</li>
+<li>
+<p>Six</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>a</p>
+</li>
+<li>
+<p>b</p>
+</li>
+<li>
+<p>c</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Seven</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist lowerroman">
+<ol class="lowerroman" type="i" start="5">
+<li>
+<p>Five</p>
+</li>
+<li>
+<p>Six</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>a</p>
+</li>
+<li>
+<p>b</p>
+</li>
+<li>
+<p>c</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Seven</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Nested ordered list</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Step 1</p>
+</li>
+<li>
+<p>Step 2</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Step 2a</p>
+</li>
+<li>
+<p>Step 2b</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Step 3</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Step 1</p>
+</li>
+<li>
+<p>Step 2</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Step 2a</p>
+</li>
+<li>
+<p>Step 2b</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Step 3</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Admonitions</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">
+Wolpertingers are known to nest in server racks.
+Enter at your own risk.
+</td>
+</tr>
+</table>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Wolpertingers are known to nest in server racks.
+Enter at your own risk.</p>
+</div>
+</td>
+</tr>
+</table>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Line breaks using '+'</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Rubies are red,<br>
+Topazes are blue.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Rubies are red,<br>
+Topazes are blue.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Preserve Line breaks using hardbreak</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Ruby is red.<br>
+Java is black.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Ruby is red.
+Java is black.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Needs an issue created</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Implicit Literal text</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="literalblock">
+<div class="content">
+<pre>~/secure/vault/defops</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="literalblock">
+<div class="content">
+<pre>~/secure/vault/defops</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Literal style paragraph</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="literalblock">
+<div class="content">
+<pre>error: The requested operation returned error: 1954 Forbidden search for defensive operations manual
+absolutely fatal: operation initiation lost in the dodecahedron of doom
+would you like to die again? y/n</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="literalblock">
+<div class="content">
+<pre>error: The requested operation returned error: 1954 Forbidden search for defensive operations manual
+absolutely fatal: operation initiation lost in the dodecahedron of doom
+would you like to die again? y/n</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Literal delimited block</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="literalblock">
+<div class="content">
+<pre>Lazarus: Where is the *defensive operations manual*?
+
+Computer: Calculating ...
+Can not locate object that you are not authorized to know exists.
+Would you like to ask another question?
+
+Lazarus: Did the werewolves tell you to say that?
+
+Computer: Calculating ...</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="literalblock">
+<div class="content">
+<pre>Lazarus: Where is the *defensive operations manual*?
+
+Computer: Calculating ...
+Can not locate object that you are not authorized to know exists.
+Would you like to ask another question?
+
+Lazarus: Did the werewolves tell you to say that?
+
+Computer: Calculating ...</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Listing paragraph</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre>This is an example of a paragraph styled with `listing`.
+Notice that the monospace markup is preserved in the output.</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre>This is an example of a paragraph styled with `listing`.
+Notice that the monospace markup is preserved in the output.</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Delimited listing block</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre>This is an example of a _listing block_.
+The content inside is displayed as &lt;pre&gt; text.</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre>This is an example of a _listing block_.
+The content inside is displayed as &lt;pre&gt; text.</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Source block</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="title">app.rb</div>
+<div class="content">
+<pre class="highlight"><code class="language-ruby" data-lang="ruby">require 'sinatra'
+
+get '/hi' do
+  "Hello World!"
+end</code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="title">app.rb</div>
+<div class="content">
+<pre class="highlight"><code class="language-ruby" data-lang="ruby">require 'sinatra'
+
+get '/hi' do
+  "Hello World!"
+end</code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Listing block with custom substitutions</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+  &lt;groupId&gt;org.asciidoctor&lt;/groupId&gt;
+  &lt;artifactId&gt;asciidoctor-java-integration&lt;/artifactId&gt;
+  &lt;version&gt;1.5.6.1&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+  &lt;groupId&gt;org.asciidoctor&lt;/groupId&gt;
+  &lt;artifactId&gt;asciidoctor-java-integration&lt;/artifactId&gt;
+  &lt;version&gt;{version}&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Preserve version</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Listing block with custom substitutions</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-java" data-lang="java">public class ApplicationConfigurationProvider extends HttpConfigurationProvider
+{
+   @Override
+   public Configuration getConfiguration(ServletContext context)
+   {
+      return ConfigurationBuilder.begin()
+               .addRule()
+               .when(Direction.isInbound().and(Path.matches("/{path}")))
+               .perform(Log.message(Level.INFO, "Client requested path: {path}"))
+               .where("path").matches(".*");
+   }
+}</code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public class ApplicationConfigurationProvider extends HttpConfigurationProvider
+{
+   @Override
+   public Configuration getConfiguration(ServletContext context)
+   {
+      return ConfigurationBuilder.begin()
+               .addRule()
+               .when(Direction.isInbound().and(Path.matches("/{path}")))
+               .perform(Log.message(Level.INFO, "Client requested path: {path}"))
+               .where("path").matches(".*");
+   }
+}</code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Verse paragraph</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="verseblock">
+<pre class="content">The fog comes
+on little cat feet.</pre>
+<div class="attribution">
+&#8212; Carl Sandburg<br>
+<cite>two lines from the poem Fog</cite>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="verseblock">
+<pre class="content">The fog comes
+on little cat feet.</pre>
+<div class="attribution">
+&#8212; Carl Sandburg<br>
+<cite>two lines from the poem Fog</cite>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Verse delimited block</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="verseblock">
+<pre class="content">The fog comes
+on little cat feet.
+
+It sits looking
+over harbor and city
+on silent haunches
+and then moves on.</pre>
+<div class="attribution">
+&#8212; Carl Sandburg<br>
+<cite>Fog</cite>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="verseblock">
+<pre class="content">The fog comes
+on little cat feet.
+
+It sits looking
+over harbor and city
+on silent haunches
+and then moves on.</pre>
+<div class="attribution">
+&#8212; Carl Sandburg<br>
+<cite>Fog</cite>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Inline pass macro</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The text <u>underline me</u> is underlined.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The text <u>underline me</u> is underlined.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Ad-hoc quotes substitution</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre>I better not contain *bold* or _italic_ text.
+But I should contain <strong>bold</strong> text.</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre>I better not contain *bold* or _italic_ text.
+But I should contain <strong>bold</strong> text.</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Shorthand substitutions for inline pass macro</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The text <u>underline <strong>me</strong></u> is underlined and the word &#8220;me&#8221; is bold.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The text <u>underline <strong>me</strong></u> is underlined and the word &#8220;me&#8221; is bold.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Description unordered list</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="dlist">
+<dl>
+<dt class="hdlist1">Dairy</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>Milk</p>
+</li>
+<li>
+<p>Eggs</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">Bakery</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>Bread</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">Produce</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>Bananas</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="dlist">
+<dl>
+<dt class="hdlist1">Dairy</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>Milk</p>
+</li>
+<li>
+<p>Eggs</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">Bakery</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>Bread</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">Produce</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>Bananas</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Hybrid list</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="dlist">
+<dl>
+<dt class="hdlist1">Operating Systems</dt>
+<dd>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Linux</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Fedora</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Desktop</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Ubuntu</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Desktop</p>
+</li>
+<li>
+<p>Server</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</dd>
+<dt class="hdlist1">BSD</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>FreeBSD</p>
+</li>
+<li>
+<p>NetBSD</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</dd>
+<dt class="hdlist1">Cloud Providers</dt>
+<dd>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">PaaS</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>OpenShift</p>
+</li>
+<li>
+<p>CloudBees</p>
+</li>
+</ol>
+</div>
+</dd>
+<dt class="hdlist1">IaaS</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Amazon EC2</p>
+</li>
+<li>
+<p>Rackspace</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</dd>
+</dl>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>NullPointerException</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">External links</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The homepage for the Asciidoctor Project is <a href="https://asciidoctor.org" class="bare">https://asciidoctor.org</a>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The homepage for the Asciidoctor Project is <a href="https://asciidoctor.org" class="bare">https://asciidoctor.org</a>.</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">A list with complex content wrapped in an open block</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p>The header in AsciiDoc must start with a document title.</p>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>Here&#8217;s an example of a document title:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>= Document Title</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+The header is optional.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p>The header in AsciiDoc must start with a document title.</p>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>Here&#8217;s an example of a document title:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>= Document Title
+----[NOTE,caption="Note",textlabel="Note",name="note"]
+====
+The header is optional.
+====</pre>
+</div>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Needs an issue created</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Horizontal description lists</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+CPU
+</td>
+<td class="hdlist2">
+<p>The brain of the computer.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Hard drive
+</td>
+<td class="hdlist2">
+<p>Permanent storage for operating system and/or user files.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+RAM
+</td>
+<td class="hdlist2">
+<p>Temporarily stores information the CPU uses during operation.</p>
+</td>
+</tr>
+</table>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="dlist">
+<dl>
+<dt class="hdlist1">[horizontal]CPU</dt>
+<dd>
+<p>The brain of the computer.</p>
+</dd>
+<dt class="hdlist1">Hard drive</dt>
+<dd>
+<p>Permanent storage for operating system and/or user files.</p>
+</dd>
+<dt class="hdlist1">RAM</dt>
+<dd>
+<p>Temporarily stores information the CPU uses during operation.</p>
+</dd>
+</dl>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Needs an issue created</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Attach a paragraph to a grandparent list item using two leading blank lines</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p>grandparent list item</p>
+<div class="ulist">
+<ul>
+<li>
+<p>parent list item</p>
+<div class="ulist">
+<ul>
+<li>
+<p>child list item</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>paragraph attached to grandparent list item</p>
+</div>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p>grandparent list item</p>
+<div class="ulist">
+<ul>
+<li>
+<p>parent list item</p>
+<div class="ulist">
+<ul>
+<li>
+<p>child list item</p>
+<div class="paragraph">
+<p>paragraph attached to grandparent list item</p>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Needs an issue created</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Block metadata</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div id="gettysburg" class="quoteblock">
+<div class="title">Gettysburg Address</div>
+<blockquote>
+<div class="paragraph">
+<p>Four score and seven years ago our fathers brought forth
+on this continent a new nation&#8230;&#8203;</p>
+</div>
+<div class="paragraph">
+<p>Now we are engaged in a great civil war, testing whether
+that nation, or any nation so conceived and so dedicated,
+can long endure. &#8230;&#8203;</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; Abraham Lincoln<br>
+<cite>Address delivered at the dedication of the Cemetery at Gettysburg</cite>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div id="gettysburg_{context}" class="quoteblock">
+<div class="title">Gettysburg Address</div>
+<blockquote>
+<div class="paragraph">
+<p>Four score and seven years ago our fathers brought forth
+on this continent a new nation&#8230;&#8203;Now we are engaged in a great civil war, testing whether
+that nation, or any nation so conceived and so dedicated,
+can long endure. &#8230;&#8203;</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; quote<br>
+<cite>Address delivered at the dedication of the Cemetery at Gettysburg</cite>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Needs an issue created</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Admonition blocks</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This is an example of an admonition block.</p>
+</div>
+<div class="paragraph">
+<p>Unlike an admonition paragraph, it may contain any AsciiDoc content.
+The style can be any one of the admonition labels:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>NOTE</p>
+</li>
+<li>
+<p>TIP</p>
+</li>
+<li>
+<p>WARNING</p>
+</li>
+<li>
+<p>CAUTION</p>
+</li>
+<li>
+<p>IMPORTANT</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This is an example of an admonition block.Unlike an admonition paragraph, it may contain any AsciiDoc content.
+The style can be any one of the admonition labels:* NOTE
+* TIP
+* WARNING
+* CAUTION
+* IMPORTANT</p>
+</div>
+</td>
+</tr>
+</table>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Needs an issue created</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Listing source code blocks</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-ruby" data-lang="ruby">require 'asciidoctor'
+
+puts Asciidoctor.convert_file 'mysample.adoc', to_file: false</code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-ruby" data-lang="ruby">require 'asciidoctor'
+
+puts Asciidoctor.convert_file 'mysample.adoc', to_file: false</code></pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Listing source code blocks with callouts</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-ruby" data-lang="ruby">require 'asciidoctor'  # <b class="conum">(1)</b>
+
+Asciidoctor.convert_file 'mysample.adoc'  # <b class="conum">(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Imports the library</p>
+</li>
+<li>
+<p>Reads, parses, and converts the file</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-ruby" data-lang="ruby">require 'asciidoctor'  # <b class="conum">(1)</b>
+
+Asciidoctor.convert_file 'mysample.adoc'  # <b class="conum">(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Imports the library</p>
+</li>
+<li>
+<p>Reads, parses, and converts the file</p>
+</li>
+</ol>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Open block as sidebar</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="sidebarblock">
+<div class="content">
+<div class="title">Related information</div>
+<div class="paragraph">
+<p>This is aside text.</p>
+</div>
+<div class="paragraph">
+<p>It is used to present information related to the main content.</p>
+</div>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="sidebarblock">
+<div class="content">
+<div class="title">Related information</div>
+<div class="paragraph">
+<p>This is aside text.It is used to present information related to the main content.</p>
+</div>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Needs issue created</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Passthrough block</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><script src="https://gist.github.com/piscisaureus/3342247.js"></script></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>IllegalArgumentException</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Single line listings</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre>sudo dnf install asciidoc</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="listingblock">
+<div class="content">
+<pre>sudo dnf install asciidoc</pre>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Tables</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Firefox</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web Browser</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ruby</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Programming Language</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TorqueBox</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Application Server</p></td>
+</tr>
+</tbody>
+</table></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Needs an issue created(outputs something not parseable by asciidoctor)</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Horizontal rules</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><hr>
+<hr>
+<hr>
+<hr></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><hr>
+<hr>
+<hr>
+<hr></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Sidebar</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="sidebarblock">
+<div class="content">
+<div class="title">AsciiDoc history</div>
+<div class="paragraph">
+<p>AsciiDoc was first released in Nov 2002 by Stuart Rackham.
+It was designed from the start to be a shorthand syntax
+for producing professional documents like DocBook and LaTeX.</p>
+</div>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="sidebarblock">
+<div class="content">
+<div class="title">AsciiDoc history</div>
+<div class="paragraph">
+<p>AsciiDoc was first released in Nov 2002 by Stuart Rackham.
+It was designed from the start to be a shorthand syntax
+for producing professional documents like DocBook and LaTeX.</p>
+</div>
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Formula: Block stem content</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="stemblock">
+<div class="content">
+\$sqrt(4) = 2\$
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="stemblock">
+<div class="content">
+\[sqrt(4) = 2\]
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Needs an issue created</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Footnotes</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The hail-and-rainbow protocol can be initiated at five levels:
+double, tertiary, supernumerary, supermassive, and apocalyptic party.<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>
+A bold statement!<sup class="footnote" id="_footnote_disclaimer">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup></p>
+</div>
+<div class="paragraph">
+<p>Another outrageous statement.<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup></p>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnotedef_1">
+<a href="#_footnoteref_1">1</a>. The double hail-and-rainbow level makes my toes tingle.
+</div>
+<div class="footnote" id="_footnotedef_2">
+<a href="#_footnoteref_2">2</a>. Opinions are my own.
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The hail-and-rainbow protocol can be initiated at five levels:
+double, tertiary, supernumerary, supermassive, and apocalyptic party.<sup class="footnote">[<a id="_footnoteref_3" class="footnote" href="#_footnotedef_3" title="View footnote.">3</a>]</sup>
+A bold statement!<sup class="footnote" id="_footnote_disclaimer">[<a id="_footnoteref_4" class="footnote" href="#_footnotedef_4" title="View footnote.">4</a>]</sup></p>
+</div>
+<div class="paragraph">
+<p>Another outrageous statement.<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_4" title="View footnote.">4</a>]</sup></p>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnotedef_3">
+<a href="#_footnoteref_3">3</a>. The double hail-and-rainbow level makes my toes tingle.
+</div>
+<div class="footnote" id="_footnotedef_4">
+<a href="#_footnoteref_4">4</a>. Opinions are my own.
+</div>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Passes</p>
+</div></div></td>
+</tr>
+<tr>
+<th class="tableblock halign-center valign-top" colspan="3"><p class="tableblock">Include directives</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Unresolved directive in comparisons.adoc - include::abstract.adoc[]</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><a href="abstract.adoc" class="bare">abstract.adoc</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Needs issue created</p>
+</div></div></td>
+</tr>
 </tbody>
 </table>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-03-20 18:12:55 -0600
+Last updated 2020-03-25 09:35:09 -0600
 </div>
 </div>
 </body>

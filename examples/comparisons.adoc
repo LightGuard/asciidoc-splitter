@@ -66,5 +66,807 @@ video::rPQoq7ThGAU[youtube,300,450, start=20, end=90, theme=light, lang=en, opti
 video::rPQoq7ThGAU[opts="autoplay,nofullscreen,loop"]
 | Passes
 
-|===
+3+^h| Audio
+|
+.Audio waves
+audio::audio_waves.mp3[options="autoplay,loop"]
+|
+.Audio waves
+[]
+| No output
 
+3+^h| Unordered lists
+|
+.Kizmet's Favorite Authors
+* Edgar Allen Poe
+* Sheri S. Tepper
+* Bill Bryson
+|
+.Kizmet&#8217;s Favorite Authors
+* Edgar Allen Poe
+* Sheri S. Tepper
+* Bill Bryson
+| Passes
+
+3+^h| Nested unordered lists
+|
+.Possible DefOps manual locations
+* West wood maze
+** Maze heart
+*** Reflection pool
+** Secret exit
+* Untracked file in git repository
+|
+.Possible DefOps manual locations
+* West wood maze
+** Maze heart
+*** Reflection pool
+** Secret exit
+* Untracked file in git repository
+| Passes
+
+3+^h| Complex list content
+|
+* The header in AsciiDoc is optional, but if
+it is used it must start with a document title.
+
+* Optional Author and Revision information
+immediately follows the header title.
+
+* The document header must be separated from
+  the remainder of the document by one or more
+  blank lines and cannot contain blank lines.
+|
+* The header in AsciiDoc is optional, but if
+it is used it must start with a document title.
+
+* Optional Author and Revision information
+immediately follows the header title.
+
+* The document header must be separated from
+  the remainder of the document by one or more
+  blank lines and cannot contain blank lines.
+| Passes
+
+3+^h| List continuation
+|
+* The header in AsciiDoc must start with a document title.
++
+----
+= Document Title
+----
++
+Keep in mind that the header is optional.
+
+* Optional Author and Revision information immediately follows the header title.
++
+----
+= Document Title
+Doc Writer <doc.writer@asciidoc.org>
+v1.0, 2013-01-01
+----
+|
+* The header in AsciiDoc must start with a document title.
++
+[listing]
+----
+= Document Title
+----
++
+Keep in mind that the header is optional.
+* Optional Author and Revision information immediately follows the header title.
++
+[listing]
+----
+= Document Title
+Doc Writer <doc.writer@asciidoc.org>
+v1.0, 2013-01-01
+----
+| Passes
+
+3+^h| Dropping the principal text
+|
+. {blank}
++
+----
+print("one")
+----
+. {blank}
++
+----
+print("one")
+----
+|
+[arabic]
+. {blank}
++
+[listing]
+----
+print("one")
+----
+. {blank}
++
+[listing]
+----
+print("one")
+----
+| Passes
+
+3+^h| Nested block enclosed in open block
+|
+* grandparent list item
++
+--
+** parent list item
+*** child list item
+--
++
+paragraph attached to grandparent list item
+|
+* grandparent list item
++
+[open]
+--
+** parent list item
+*** child list item
+--
++
+paragraph attached to grandparent list item
+| Passes
+
+3+^h| Description lists
+|
+CPU:: The brain of the computer.
+Hard drive:: Permanent storage for operating system and/or user files.
+RAM:: Temporarily stores information the CPU uses during operation.
+Keyboard:: Used to enter text or control items on the screen.
+Mouse:: Used to point to and select items on your computer screen.
+Monitor:: Displays information in visual form using text and graphics.
+|
+CPU:: The brain of the computer.
+Hard drive:: Permanent storage for operating system and/or user files.
+RAM:: Temporarily stores information the CPU uses during operation.
+Keyboard:: Used to enter text or control items on the screen.
+Mouse:: Used to point to and select items on your computer screen.
+Monitor:: Displays information in visual form using text and graphics.
+| Passes
+
+3+^h| Overriding ordered list number scheme
+|
+[lowerroman, start=5]
+. Five
+. Six
+[loweralpha]
+.. a
+.. b
+.. c
+. Seven
+|
+[lowerroman,start="5"]
+. Five
+. Six
+[loweralpha]
+.. a
+.. b
+.. c
+. Seven
+| Passes
+
+3+^h| Nested ordered list
+|
+. Step 1
+. Step 2
+.. Step 2a
+.. Step 2b
+. Step 3
+|
+[arabic]
+. Step 1
+. Step 2
+[loweralpha]
+.. Step 2a
+.. Step 2b
+. Step 3
+| Passes
+
+3+^h| Admonitions
+|
+WARNING: Wolpertingers are known to nest in server racks.   
+Enter at your own risk.
+|
+
+[WARNING,caption="Warning",textlabel="Warning",name="warning"]
+====
+Wolpertingers are known to nest in server racks.
+Enter at your own risk.
+====
+| Passes
+
+3+^h| Line breaks using '+'
+|
+Rubies are red, +
+Topazes are blue.
+|
+Rubies are red, +
+Topazes are blue.   
+| Passes
+
+3+^h| Preserve Line breaks using hardbreak
+|
+[%hardbreaks]
+Ruby is red.
+Java is black.
+|
+[]
+Ruby is red.
+Java is black.
+| Needs an issue created
+
+3+^h| Implicit Literal text
+|
+
+  ~/secure/vault/defops
+
+|
+....
+~/secure/vault/defops
+....
+| Passes
+
+3+^h| Literal style paragraph
+|
+[literal]
+error: The requested operation returned error: 1954 Forbidden search for defensive operations manual
+absolutely fatal: operation initiation lost in the dodecahedron of doom
+would you like to die again? y/n
+|
+[literal]
+....
+error: The requested operation returned error: 1954 Forbidden search for defensive operations manual
+absolutely fatal: operation initiation lost in the dodecahedron of doom
+would you like to die again? y/n
+....
+| Passes
+
+3+^h| Literal delimited block
+|
+....
+Lazarus: Where is the *defensive operations manual*?
+
+Computer: Calculating ...
+Can not locate object that you are not authorized to know exists.
+Would you like to ask another question?
+
+Lazarus: Did the werewolves tell you to say that?
+
+Computer: Calculating ...
+....
+|
+[literal]
+....
+Lazarus: Where is the *defensive operations manual*?
+
+Computer: Calculating ...
+Can not locate object that you are not authorized to know exists.
+Would you like to ask another question?
+
+Lazarus: Did the werewolves tell you to say that?
+
+Computer: Calculating ...
+....
+| Passes
+
+3+^h| Listing paragraph
+|
+[listing]
+This is an example of a paragraph styled with `listing`.
+Notice that the monospace markup is preserved in the output.
+|
+[listing]
+----
+This is an example of a paragraph styled with `listing`.
+Notice that the monospace markup is preserved in the output.
+----
+| Passes
+
+3+^h| Delimited listing block
+|
+----
+This is an example of a _listing block_.
+The content inside is displayed as <pre> text.
+----
+|
+[listing]
+----
+This is an example of a _listing block_.
+The content inside is displayed as <pre> text.
+----
+| Passes
+
+3+^h| Source block 
+|
+.app.rb
+[source,ruby]
+----
+require 'sinatra'
+
+get '/hi' do
+  "Hello World!"
+end
+----
+|
+.app.rb
+[source,ruby]
+----
+require 'sinatra'
+
+get '/hi' do
+  "Hello World!"
+end
+----
+| Passes
+
+3+^h| Listing block with custom substitutions
+|
+:version: 1.5.6.1
+
+[source,xml,subs="verbatim,attributes"]
+----
+<dependency>
+  <groupId>org.asciidoctor</groupId>
+  <artifactId>asciidoctor-java-integration</artifactId>
+  <version>{version}</version>
+</dependency>
+----
+|
+[source,xml,subs="verbatim,attributes"]
+----
+<dependency>
+  <groupId>org.asciidoctor</groupId>
+  <artifactId>asciidoctor-java-integration</artifactId>
+  <version>{version}</version>
+</dependency>
+----
+| Preserve version
+
+3+^h| Listing block with custom substitutions
+|
+[source%nowrap,java]
+----
+public class ApplicationConfigurationProvider extends HttpConfigurationProvider
+{
+   @Override
+   public Configuration getConfiguration(ServletContext context)
+   {
+      return ConfigurationBuilder.begin()
+               .addRule()
+               .when(Direction.isInbound().and(Path.matches("/{path}")))
+               .perform(Log.message(Level.INFO, "Client requested path: {path}"))
+               .where("path").matches(".*");
+   }
+}
+----
+|
+[source,java]
+----
+public class ApplicationConfigurationProvider extends HttpConfigurationProvider
+{
+   @Override
+   public Configuration getConfiguration(ServletContext context)
+   {
+      return ConfigurationBuilder.begin()
+               .addRule()
+               .when(Direction.isInbound().and(Path.matches("/{path}")))
+               .perform(Log.message(Level.INFO, "Client requested path: {path}"))
+               .where("path").matches(".*");
+   }
+}
+----
+| Passes
+
+3+^h| Verse paragraph
+|
+[verse, Carl Sandburg, two lines from the poem Fog]
+The fog comes
+on little cat feet.
+|
+[verse,citetitle="two lines from the poem Fog",attribution="Carl Sandburg"]
+____
+The fog comes
+on little cat feet.
+____
+| Passes
+
+3+^h| Verse delimited block
+|
+[verse, Carl Sandburg, Fog]
+____
+The fog comes
+on little cat feet.
+
+It sits looking
+over harbor and city
+on silent haunches
+and then moves on.
+____
+|
+[verse,citetitle="Fog",attribution="Carl Sandburg"]
+____
+The fog comes
+on little cat feet.
+
+It sits looking
+over harbor and city
+on silent haunches
+and then moves on.
+____
+
+| Passes
+
+3+^h| Inline pass macro
+|
+The text pass:[<u>underline me</u>] is underlined.
+|
+The text pass:[<u>underline me</u>] is underlined.
+| Passes
+
+3+^h| Ad-hoc quotes substitution
+|
+[subs=+macros] 
+----
+I better not contain *bold* or _italic_ text.
+pass:quotes[But I should contain *bold* text.] 
+----
+|
+[listing,subs="+macros"]
+----
+I better not contain *bold* or _italic_ text.
+pass:quotes[But I should contain *bold* text.]
+----
+| Passes
+
+3+^h| Shorthand substitutions for inline pass macro
+|
+The text pass:q[<u>underline *me*</u>] is underlined and the word "`me`" is bold.
+|
+The text pass:q[<u>underline *me*</u>] is underlined and the word "`me`" is bold.
+| Passes
+
+3+^h| Description unordered list
+|
+Dairy::
+* Milk
+* Eggs
+Bakery::
+* Bread
+Produce::
+* Bananas
+|
+Dairy::
++
+* Milk
+* Eggs
+Bakery::
++
+* Bread
+Produce::
++
+* Bananas
+| Passes
+
+3+^h| Hybrid list
+|
+Operating Systems::
+  Linux:::
+    . Fedora
+      * Desktop
+    . Ubuntu
+      * Desktop
+      * Server
+  BSD:::
+    . FreeBSD
+    . NetBSD
+
+Cloud Providers::
+  PaaS:::
+    . OpenShift
+    . CloudBees
+  IaaS:::
+    . Amazon EC2
+    . Rackspace
+|
+
+| NullPointerException
+
+3+^h| External links
+|
+The homepage for the Asciidoctor Project is https://asciidoctor.org.
+|
+The homepage for the Asciidoctor Project is https://asciidoctor.org.
+| Passes
+
+3+^h| A list with complex content wrapped in an open block
+|
+* The header in AsciiDoc must start with a document title.
++
+--
+Here's an example of a document title:
+
+----
+= Document Title
+----
+
+NOTE: The header is optional.
+--
+|
+* The header in AsciiDoc must start with a document title.
++
+[open]
+--
+Here's an example of a document title:
+[listing]
+----
+= Document Title
+----[NOTE,caption="Note",textlabel="Note",name="note"]
+====
+The header is optional.
+====
+--
+| Needs an issue created
+
+3+^h| Horizontal description lists
+|
+[horizontal]
+CPU:: The brain of the computer.
+Hard drive:: Permanent storage for operating system and/or user files.
+RAM:: Temporarily stores information the CPU uses during operation.
+|
+[horizontal]CPU:: The brain of the computer.
+Hard drive:: Permanent storage for operating system and/or user files.
+RAM:: Temporarily stores information the CPU uses during operation.
+| Needs an issue created 
+
+3+^h| Attach a paragraph to a grandparent list item using two leading blank lines
+|
+* grandparent list item
+** parent list item
+*** child list item
+
+
++
+paragraph attached to grandparent list item
+|
+* grandparent list item
+** parent list item
+*** child list item
++
+paragraph attached to grandparent list item
+| Needs an issue created 
+
+3+^h| Block metadata
+|
+.Gettysburg Address
+[[gettysburg]]
+[quote, Abraham Lincoln, Address delivered at the dedication of the Cemetery at Gettysburg]
+____
+Four score and seven years ago our fathers brought forth
+on this continent a new nation...
+
+Now we are engaged in a great civil war, testing whether
+that nation, or any nation so conceived and so dedicated,
+can long endure. ...
+____
+|
+.Gettysburg Address
+[id="gettysburg_{context}", quote,citetitle="Address delivered at the dedication of the Cemetery at Gettysburg",attribution="Abraham Lincoln"]
+____
+Four score and seven years ago our fathers brought forth
+on this continent a new nation...Now we are engaged in a great civil war, testing whether
+that nation, or any nation so conceived and so dedicated,
+can long endure. ...
+____
+| Needs an issue created 
+
+3+^h| Admonition blocks
+|
+[NOTE]
+====
+This is an example of an admonition block.
+
+Unlike an admonition paragraph, it may contain any AsciiDoc content.
+The style can be any one of the admonition labels:
+
+* NOTE
+* TIP
+* WARNING
+* CAUTION
+* IMPORTANT
+====
+|
+[NOTE,caption="Note",textlabel="Note",name="note"]
+====
+This is an example of an admonition block.Unlike an admonition paragraph, it may contain any AsciiDoc content.
+The style can be any one of the admonition labels:* NOTE
+* TIP
+* WARNING
+* CAUTION
+* IMPORTANT
+====
+| Needs an issue created 
+
+3+^h| Listing source code blocks
+|
+[source,ruby]
+----
+require 'asciidoctor'
+
+puts Asciidoctor.convert_file 'mysample.adoc', to_file: false
+----
+|
+[source,ruby]
+----
+require 'asciidoctor'
+
+puts Asciidoctor.convert_file 'mysample.adoc', to_file: false
+----
+| Passes
+
+3+^h| Listing source code blocks with callouts
+|
+[source,ruby]
+----
+require 'asciidoctor'  # <1>
+
+Asciidoctor.convert_file 'mysample.adoc'  # <2>
+----
+<1> Imports the library
+<2> Reads, parses, and converts the file
+|
+[source,ruby]
+----
+require 'asciidoctor'  # <1>
+
+Asciidoctor.convert_file 'mysample.adoc'  # <2>
+----
+
+[arabic]
+<1> Imports the library
+<2> Reads, parses, and converts the file
+| Passes 
+
+3+^h| Open block as sidebar
+|
+[sidebar]
+.Related information
+--
+This is aside text.
+
+It is used to present information related to the main content.
+--
+|
+.Related information
+[sidebar]
+****
+This is aside text.It is used to present information related to the main content.
+****
+| Needs issue created
+
+3+^h| Passthrough block
+|
+++++
+<script src="https://gist.github.com/piscisaureus/3342247.js"></script>
+++++
+|
+
+| IllegalArgumentException 
+
+3+^h| Single line listings
+|
+[listing]
+sudo dnf install asciidoc
+|
+[listing]
+----
+sudo dnf install asciidoc
+----
+| Passes 
+
+3+^h| Tables
+|
+[cols=2*]
+!===
+!Firefox
+!Web Browser
+
+!Ruby
+!Programming Language
+
+!TorqueBox
+!Application Server
+!===
+
+|
+
+// [table,tablepcwidth="100",rowcount="3",colcount="2",cols="2*"]
+// !===
+// ! Firefox ! Web Browser
+// ! Ruby ! Programming Language
+// ! TorqueBox ! Application Server
+// !===
+
+| Needs an issue created(outputs something not parseable by asciidoctor) 
+
+3+^h| Horizontal rules
+|
+---
+
+- - -
+
+***
+
+* * *
+|
+'''
+
+'''
+
+'''
+
+'''
+
+| Passes 
+
+3+^h| Sidebar
+|
+.AsciiDoc history 
+**** 
+AsciiDoc was first released in Nov 2002 by Stuart Rackham.
+It was designed from the start to be a shorthand syntax
+for producing professional documents like DocBook and LaTeX.
+****
+|
+.AsciiDoc history
+[sidebar]
+****
+AsciiDoc was first released in Nov 2002 by Stuart Rackham.
+It was designed from the start to be a shorthand syntax
+for producing professional documents like DocBook and LaTeX.
+****
+| Passes 
+
+3+^h| Formula: Block stem content
+|
+[stem] 
+++++ 
+sqrt(4) = 2
+++++
+|
+[latexmath]
+++++
+sqrt(4) = 2
+++++
+| Needs an issue created
+
+3+^h| Footnotes
+|
+The hail-and-rainbow protocol can be initiated at five levels:
+double, tertiary, supernumerary, supermassive, and apocalyptic party.footnote:[The double hail-and-rainbow level makes my toes tingle.]   
+A bold statement!footnote:disclaimer[Opinions are my own.] 
+
+Another outrageous statement.footnote:disclaimer[]
+|
+The hail-and-rainbow protocol can be initiated at five levels:
+double, tertiary, supernumerary, supermassive, and apocalyptic party.footnote:[The double hail-and-rainbow level makes my toes tingle.]
+A bold statement!footnote:disclaimer[Opinions are my own.]
+
+Another outrageous statement.footnote:disclaimer[]
+| Passes
+
+3+^h| Include directives
+|
+include::abstract.adoc[]
+|
+link:abstract.adoc[]
+| Needs issue created
+
+|===

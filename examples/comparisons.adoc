@@ -300,7 +300,7 @@ Java is black.
 []
 Ruby is red.
 Java is black.
-| Needs an issue created
+| https://github.com/LightGuard/asciidoc-splitter/issues/33[#33]
 
 3+^h| Implicit Literal text
 |
@@ -612,7 +612,7 @@ Here's an example of a document title:
 The header is optional.
 ====
 --
-| Needs an issue created
+| https://github.com/LightGuard/asciidoc-splitter/issues/35[#35]
 
 3+^h| Horizontal description lists
 |
@@ -641,7 +641,7 @@ paragraph attached to grandparent list item
 *** child list item
 +
 paragraph attached to grandparent list item
-| Needs an issue created 
+| https://github.com/LightGuard/asciidoc-splitter/issues/36[#36] 
 
 3+^h| Block metadata
 |
@@ -665,7 +665,7 @@ on this continent a new nation...Now we are engaged in a great civil war, testin
 that nation, or any nation so conceived and so dedicated,
 can long endure. ...
 ____
-| Needs an issue created 
+| https://github.com/LightGuard/asciidoc-splitter/issues/34[#34] 
 
 3+^h| Admonition blocks
 |
@@ -692,7 +692,7 @@ The style can be any one of the admonition labels:* NOTE
 * CAUTION
 * IMPORTANT
 ====
-| Needs an issue created 
+| https://github.com/LightGuard/asciidoc-splitter/issues/32[#32]
 
 3+^h| Listing source code blocks
 |
@@ -794,7 +794,7 @@ sudo dnf install asciidoc
 // ! TorqueBox ! Application Server
 // !===
 
-| Needs an issue created(outputs something not parseable by asciidoctor) 
+| https://github.com/LightGuard/asciidoc-splitter/issues/31[#31] 
 
 3+^h| Horizontal rules
 |
@@ -867,6 +867,6 @@ Another outrageous statement.footnote:disclaimer[]
 include::abstract.adoc[]
 |
 link:abstract.adoc[]
-| Needs issue created
+| https://github.com/LightGuard/asciidoc-splitter/issues/30[#30]
 
 |===

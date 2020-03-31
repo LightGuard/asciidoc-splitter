@@ -68,12 +68,11 @@ video::rPQoq7ThGAU[opts="autoplay,nofullscreen,loop"]
 
 3+^h| Audio
 |
-.Audio waves
-audio::audio_waves.mp3[options="autoplay,loop"]
+audio::audio.mp3[start=10, end=30, options="autoplay,loop"]
 |
-.Audio waves
-[]
-| No output
+[start="10",end="30"]
+audio::audio.mp3[opts="autoplay,loop"]
+| Passes
 
 3+^h| Unordered lists
 |

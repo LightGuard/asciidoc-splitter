@@ -407,6 +407,21 @@ class SourceExtractorTest extends AsciidocExtractionTest {
     }
 
     @Test
+    public void testAudioBlock() {
+        var adoc = "audio::audio.mp3[start=10,end=30, options=\"autoplay,loop\"]";
+
+        var document = asciidoctor.load(adoc, optionsBuilder.asMap());
+        var blocks = document.getBlocks();
+
+        assertThat(blocks).hasSize(1);
+        var extractor = new SourceExtractor(blocks.get(0));
+        var expected = "[start=\"10\",end=\"30\"]\n"+
+                       "audio::audio.mp3[opts=\"autoplay,loop\"]";
+
+        assertThat(extractor.getSource()).isEqualTo(expected);
+    }
+
+    @Test
     public void testThematicBreak() {
         var adoc = "'''";
 

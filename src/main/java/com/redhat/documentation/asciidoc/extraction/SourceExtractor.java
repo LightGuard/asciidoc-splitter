@@ -119,14 +119,13 @@ public class SourceExtractor {
             source.append("image::").append(node.getAttributes().get("target")).append("[]");
             return;
         }
-
-        // Video blocks
-        if ("video".equals(node.getContext())) {
+        // Video and audio blocks
+        if ("video".equals(node.getContext()) || "audio".equals(node.getContext())){
             var options = block.getAttributes().keySet().stream()
                                 .filter(o -> o.contains("option"))
                                 .map(o -> o.split("-option")[0])
                                 .collect(Collectors.joining(","));
-            source.append("video::").append(node.getAttributes().get("target")).append("[opts=\"").append(options).append("\"]");
+            source.append(node.getContext()+"::").append(node.getAttributes().get("target")).append("[opts=\"").append(options).append("\"]");
             return;
         }
 

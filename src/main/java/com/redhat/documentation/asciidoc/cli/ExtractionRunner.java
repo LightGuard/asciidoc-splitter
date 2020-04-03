@@ -1,28 +1,35 @@
 package com.redhat.documentation.asciidoc.cli;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+
 import com.redhat.documentation.asciidoc.Configuration;
 import com.redhat.documentation.asciidoc.extraction.Assembly;
 import com.redhat.documentation.asciidoc.extraction.ExtractedModule;
+import com.redhat.documentation.asciidoc.extraction.ReaderPreprocessor;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.ast.Document;
-import org.asciidoctor.ast.Section;
 import org.asciidoctor.jruby.AsciiDocDirectoryWalker;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 @Command(name = "extract", mixinStandardHelpOptions = true, version = "1.0",
-         description = "Create a modular documentation layout from a directory of asciidoc files.")
+        description = "Create a modular documentation layout from a directory of asciidoc files.")
 public class ExtractionRunner implements Callable<Integer> {
     private List<Assembly> assemblies;
     private Set<ExtractedModule> modules;
@@ -47,17 +54,21 @@ public class ExtractionRunner implements Callable<Integer> {
     @Override
     public Integer call() {
         var config = new Configuration(this.inputDir, this.outputDir);
+        var preprocessor = new ReaderPreprocessor();
 
         OptionsBuilder optionsBuilder = OptionsBuilder.options();
         Asciidoctor asciidoctor = Asciidoctor.Factory.create();
+        asciidoctor.javaExtensionRegistry().preprocessor(preprocessor);
+
 
         // We need access to the line numbers and source
         optionsBuilder.sourcemap(true);
 
         for (File file : new AsciiDocDirectoryWalker(config.getSourceDirectory().getAbsolutePath())) {
             var doc = asciidoctor.loadFile(file, optionsBuilder.asMap());
+            var lines = preprocessor.getLines();
 
-            findSections(doc);
+            findSections(doc, lines);
 
             writeModules(config);
             writeAssemblies(config);
@@ -70,25 +81,21 @@ public class ExtractionRunner implements Callable<Integer> {
         return 0;
     }
 
-    /** returns true if all went well. false if there was some problem with uniqueness. */
-    private void findSections(Document doc) {
+    /**
+     * returns true if all went well. false if there was some problem with uniqueness.
+     */
+    private void findSections(Document doc, List<String> lines) {
         // TODO: What should we do with preamble?
         // TODO: This should probably be configurable
-        doc.getBlocks().forEach(node -> {
-            if (node instanceof Section && node.getLevel() == 1) {
-                var assembly = new Assembly((Section) node);
-                this.assemblies.add(assembly);
-                for (var module : assembly.getModules()) {
-                    if (!this.modules.add(module)) {
-                        var duplicate = this.modules.stream().filter(m -> {
-                            return m.equals(module);
-                        }).findFirst();
 
-                        addIssue(Issue.error("Module with non-unique id. " + module + " is a duplicate of " + duplicate, node));
-                    }
-                }
+        var assembly = new Assembly(doc, lines);
+        this.assemblies.add(assembly);
+        for (var module : assembly.getModules()) {
+            if (!this.modules.add(module)) {
+                var duplicate = this.modules.stream().filter(m -> m.equals(module)).findFirst();
+                addIssue(Issue.error("Module with non-unique id. " + module + " is a duplicate of " + duplicate, doc));
             }
-        });
+        }
         // We should have all the assemblies, and all of their modules now
     }
 
@@ -103,15 +110,19 @@ public class ExtractionRunner implements Callable<Integer> {
         String templateEnd = getTemplateContents("templates/end.adoc");
 
         this.assemblies.forEach(a -> {
-            var outputFile = Paths.get(config.getOutputDirectory().getAbsolutePath(), a.getFilename());
-            try (Writer output = new FileWriter(outputFile.toFile())) {
-                output.append(templateStart)
-                        .append("\n")
-                        .append(a.getSource())
-                        .append("\n")
-                        .append(templateEnd);
+            try {
+                // Create any directories that need to be created
+                Path assembliesDir = Files.createDirectories(config.getOutputDirectory().toPath().resolve("assemblies"));
+                var outputFile = Paths.get(assembliesDir.toString(), a.getFilename());
+                try (Writer output = new FileWriter(outputFile.toFile())) {
+                    output.append(templateStart)
+                            .append("\n")
+                            .append(a.getSource())
+                            .append("\n")
+                            .append(templateEnd);
+                }
             } catch (IOException e) {
-                // TODO: better catch when we can't open or write
+                // TODO: We blew-up in an unexpected way, handle this
                 throw new RuntimeException(e);
             }
         });
@@ -128,8 +139,8 @@ public class ExtractionRunner implements Callable<Integer> {
                 // Create output file
                 Path moduleOutputFile = Paths.get(modulesDir.toString(), module.getFileName());
 
-                if(moduleOutputFile.toFile().exists()) {
-                    if(visitedPaths.contains(moduleOutputFile)) {
+                if (moduleOutputFile.toFile().exists()) {
+                    if (visitedPaths.contains(moduleOutputFile)) {
                         System.err.println("Already written to this file: " + moduleOutputFile + " for " + module);
                         return;
                     }
@@ -144,24 +155,8 @@ public class ExtractionRunner implements Callable<Integer> {
                             // Adding the id of the module
                             .append("[id=\"").append(module.getId()).append("_{context}\"]\n")
                             // Adding the section title
-                            .append("= ").append(module.getSection().getTitle()).append("\n\n");
-
-                    for (Iterator<String> iterator = module.getSources().iterator(); iterator.hasNext(); ) {
-                        String section = iterator.next();
-                        output.append(section);
-
-                        Pattern coPattern = Pattern.compile("<(!--)?(\\d+|\\.)(--)?>");
-                        var hasCallout = coPattern.matcher(section).find();
-
-                        // Use a single new line for source sections with callouts
-                        // otherwise a blank line between sections is what is needed
-                        if (iterator.hasNext()) { // If it is the last section, we don't need a newline
-                            if (hasCallout)
-                                output.append("\n");
-                            else
-                                output.append("\n\n");
-                        }
-                    }
+                            .append("= ").append(module.getSection().getTitle()).append("\n")
+                            .append(module.getSource());
                 }
             }
         } catch (IOException e) {

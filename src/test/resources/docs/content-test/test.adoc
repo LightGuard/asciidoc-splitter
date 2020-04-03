@@ -4,6 +4,7 @@ Here's some preamble for an assembly.
 
 Then one more paragraph.
 
+[module-type="proc"]
 === Module One
 
 I think I will start things off with a list

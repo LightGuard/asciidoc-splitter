@@ -3,55 +3,122 @@ package com.redhat.documentation.asciidoc.extraction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.Section;
+import org.asciidoctor.ast.StructuralNode;
 
+/**
+ * An Assembly is essentially a full document from an asciidoc perspective.
+ * An Assembly can contain links to modules and also have some additional text, typically before the includes, sort of like a preamble.
+ */
 public class Assembly {
+    public static final String MODULE_TYPE_ATTRIBUTE = "module-type";
+
     private String id;
     private String idWithoutContext;
     private String context;
     private List<ExtractedModule> modules;
     private StringBuilder source;
 
-    public Assembly(Section section) {
-        this.id = section.getId();
+    public Assembly(Document doc, List<String> lines) {
+        this.id = doc.getId() == null ? doc.getDoctitle() : doc.getId();
         // If there isn't an explicit id, it starts with an _
         if (this.id.startsWith("_")) {
             // Don't use the first character (an underscore) and replace underscore with hyphen
             this.id = this.id.substring(1).replaceAll("_", "-");
         }
-        this.idWithoutContext = this.id.split("_")[0];
+
+        if (this.id.contains("{context}")) {
+            this.idWithoutContext = this.id.substring(0, this.id.lastIndexOf("{context}") - 1);
+        } else {
+            this.idWithoutContext = this.id;
+        }
+
         this.context = this.id;
         this.modules = new ArrayList<>();
         this.source = new StringBuilder();
 
-        // TODO Figure out where/how to refactor this to use the SourceExtractor
-
         // Adding the id of the module
         this.source.append("[id=\"").append(this.idWithoutContext).append("_{context}\"]\n")
                     // Adding the section title
-                   .append("= ").append(section.getTitle()).append("\n")
+                   .append("= ").append(doc.getTitle()).append("\n")
                    .append(":context: ").append(this.idWithoutContext).append("\n\n");
 
-        section.getBlocks().forEach(sectionBlock -> {
-            // This is a module
-            if (sectionBlock instanceof Section && sectionBlock.getLevel() == 2) {
-                final var extractedModule = new ExtractedModule((Section) sectionBlock);
-                this.modules.add(extractedModule);
-                this.source.append("include::modules/")
-                           .append(extractedModule.getFileName())
-                           .append("[leveloffset=+1]")
-                           .append("\n\n");
-            } else {
-                // Add it to the actual source
-                this.source.append(new SourceExtractor(sectionBlock).getSource())
-                        .append("\n\n");
+        // Grab the preamble
+        if (doc.findBy(Map.of("context", ":preamble")).size() > 0) {
+            for (int i = lines.indexOf("= " + doc.getTitle()); i < getPreambleEndLineNumber(doc, lines); i++) {
+                this.source.append(lines.get(i)).append("\n");
             }
+            this.source.append("\n");
+        }
+
+        List<SectionWrapper> moduleSources = new ArrayList<>();
+
+        var modules = doc.getBlocks().stream()
+                                        .filter(Section.class::isInstance)
+                                        .filter(node -> node.getAttributes().containsKey(MODULE_TYPE_ATTRIBUTE))
+                                        .map(Section.class::cast)
+                                        .collect(Collectors.toList());
+
+        var modulesItr = modules.listIterator();
+        while (modulesItr.hasNext()) {
+            var section = modulesItr.next();
+
+            if (modulesItr.hasNext()) {
+                var nextSection = modules.get(modulesItr.nextIndex());
+                var sectionEndLineNumber = nextSection.getSourceLocation().getLineNumber() -1;
+
+                var nextSectionLine = lines.get(sectionEndLineNumber);
+                // We have to find the end of this section by looking at the next section and going back looking for
+                // a blank or empty string
+                while (!(nextSectionLine.isEmpty() || nextSectionLine.isBlank())) {
+                    sectionEndLineNumber -= 1;
+                    nextSectionLine = lines.get(sectionEndLineNumber);
+                }
+
+                // Add it to the list
+                moduleSources.add(new SectionWrapper(section, getSectionSource(lines, section, sectionEndLineNumber)));
+
+            } else {
+                // Add it to the list
+                moduleSources.add(new SectionWrapper(section, getSectionSource(lines, section, lines.size())));
+            }
+        }
+
+        moduleSources.forEach(wrapper -> {
+            var extractedModule = new ExtractedModule(wrapper.getSection(), wrapper.getSource());
+            this.modules.add(extractedModule);
+            this.source.append("include::../modules/")
+                    .append(extractedModule.getFileName())
+                    .append("[leveloffset=+1]")
+                    .append("\n\n");
         });
     }
 
-    public void addModule(ExtractedModule module) {
-        this.modules.add(module);
+    private int getPreambleEndLineNumber(StructuralNode doc, List<String> lines) {
+        var nextSection = doc.getBlocks().get(1);
+        var sectionEndLineNumber = nextSection.getSourceLocation().getLineNumber() -1;
+
+        var nextSectionLine = lines.get(sectionEndLineNumber);
+        // We have to find the end of this section by looking at the next section and going back looking for
+        // a blank or empty string
+        while (!(nextSectionLine.isEmpty() || nextSectionLine.isBlank())) {
+            sectionEndLineNumber -= 1;
+            nextSectionLine = lines.get(sectionEndLineNumber);
+        }
+        return sectionEndLineNumber;
+    }
+
+    private String getSectionSource(List<String> lines, StructuralNode section, int nextSectionStart) {
+        var startingLine = section.getSourceLocation().getLineNumber();
+        StringBuilder sectionSource = new StringBuilder();
+        for (int i = startingLine; i < nextSectionStart; i++) {
+            sectionSource.append(lines.get(i)).append("\n");
+        }
+        return sectionSource.toString();
     }
 
     public String getId() {
@@ -71,6 +138,6 @@ public class Assembly {
     }
 
     public String getFilename() {
-        return idWithoutContext + ".adoc";
+        return "assembly-" + idWithoutContext + ".adoc";
     }
 }

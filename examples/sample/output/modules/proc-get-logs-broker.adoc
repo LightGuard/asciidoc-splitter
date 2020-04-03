@@ -3,7 +3,7 @@
 // assembly-monitoring-oc.adoc
 // assembly-monitoring-kube.adoc
 
-[id='get-logs-router-{context}']
+[id='get-logs-broker-{context}']
 = Viewing broker logs
 
 .Procedure

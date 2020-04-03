@@ -1,8 +1,5 @@
 package com.redhat.documentation.asciidoc.extraction;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 import com.redhat.documentation.asciidoc.Util;
@@ -11,19 +8,20 @@ import org.asciidoctor.ast.Section;
 public class ExtractedModule {
     private String id;
     private Section section;
-    private List<String> sources;
+    private String source;
+    private String moduleType;
 
     @Override
     public String toString() {
         return "ExtractedModule{" +
-                "id='" + id + '\'' +
+                "id='" + id + "_{context}'" +
                 //", section=" + section +
                 // ", sources=" + sources +
                 ", parentid=" + Util.getFullId(section.getParent()) +
                 '}';
     }
 
-    public ExtractedModule(Section section) {
+    public ExtractedModule(Section section, String lines) {
         // According to the modular docs, there should only be one underscore used to split the context.
         // We want the first part of that split
         // If there isn't an explicit id, it starts with an _
@@ -34,14 +32,15 @@ public class ExtractedModule {
             this.id = section.getId().split("_")[0];
         }
 
+        // There could already be a "{context}" in the id, we don't need it
+        if (this.id.contains("{context}")) {
+            this.id = this.id.substring(0, this.id.lastIndexOf("{context}") - 1);
+        }
+
+        this.moduleType = section.getAttributes().get(Assembly.MODULE_TYPE_ATTRIBUTE).toString();
+
         this.section = section;
-        this.sources = new ArrayList<>();
-
-        section.getBlocks().forEach(block -> this.addSource(new SourceExtractor(block).getSource()));
-    }
-
-    public void addSource(String source) {
-        this.sources.add(source);
+        this.source = lines;
     }
 
     public String getId() {
@@ -52,12 +51,16 @@ public class ExtractedModule {
         return section;
     }
 
-    public List<String> getSources() {
-        return Collections.unmodifiableList(this.sources);
+    public String getSource() {
+        return this.source;
     }
 
     public String getFileName() {
-        return id + ".adoc";
+        return moduleType + "-" + id + ".adoc";
+    }
+
+    public String getModuleType() {
+        return moduleType;
     }
 
     @Override

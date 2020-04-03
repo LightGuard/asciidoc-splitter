@@ -57,7 +57,7 @@ If you don't want to use the Maven plugin, you can just include the dependency i
 </dependencies>
 --
 
-
+[module-type="proc"]
 === Examine the JAX-RS resource
 
 Open the `src/main/java/org/acme/oauth2/TokenSecuredResource.java` file and see the following content:
@@ -247,6 +247,7 @@ Excellent, we have not provided any OAuth2 token in the request, so we should no
 
 //include::{generated-dir}/config/quarkus-elytron-security-oauth2.adoc[opts=optional, leveloffset=+1]
 
+[module-type="proc"]
 === Setting up application.properties
 
 For part A of step 1, create a `security-oauth2-quickstart/src/main/resources/application.properties` with the following content:
@@ -263,7 +264,7 @@ You need to specify the introspection URL of your authentication server and the 
 
 The extension will then use this information to validate the token and recover the information associate with it.
 
-
+[module-type="proc"]
 === Generating a token
 
 You need to obtain the token from a standard OAuth2 authentication server (https://www.keycloak.org/[Keycloak] for example) using the token endpoint.

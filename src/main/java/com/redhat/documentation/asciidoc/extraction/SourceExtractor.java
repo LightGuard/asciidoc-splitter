@@ -33,6 +33,7 @@ public class SourceExtractor {
         PARAGRAPH(""),
         IMAGE(""),
         VIDEO(""),
+        PREAMBLE(""),
         THEMATIC_BREAK("'''", ""),
         PAGE_BREAK("<<<", ""),
         LISTING("----");

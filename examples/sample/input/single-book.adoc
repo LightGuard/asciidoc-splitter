@@ -4,12 +4,11 @@
 
 :parent-context: {context}
 [id='monitoring-{context}']
-
 = Monitoring {ProductName}
 
 You can monitor {ProductName} by deploying built-in monitoring tools or using your pre-existing monitoring infrastructure by deploying the required service monitors and Prometheus rules.
 
-[id='deploy-monitoring-infrastructure-{context}']
+[id='deploy-monitoring-infrastructure-{context}', module-type="proc"]
 == Installing monitoring infrastructure
 
 If you do not have a pre-existing infrastructure for monitoring, you must install one, which includes Prometheus, Alertmanager, Grafana, and `kube-state-metrics`.
@@ -83,7 +82,7 @@ sed -i s/alertmanager.yaml:*/$(<CONFIG_FILE> | base64 -w0)/g install/alertmanage
 {cmdcli} apply -f install/bundles/monitoring
 ----
 
-[id='deploy-service-monitors-{context}']
+[id='deploy-service-monitors-{context}', module-type="proc"]
 == Deploying service monitors
 
 You must deploy the service monitors to enable Prometheus to monitor {ProductName}.
@@ -108,7 +107,7 @@ You must deploy the service monitors to enable Prometheus to monitor {ProductNam
 {cmdcli} apply -f /install/components/service-monitors
 ----
 
-[id='deploy-prometheus-rules-{context}']
+[id='deploy-prometheus-rules-{context}', module-type="proc"]
 == Deploying Prometheus Rules for alerting
 
 You must deploy Prometheus rules to enable alerting for {ProductName}.
@@ -132,7 +131,7 @@ You must deploy Prometheus rules to enable alerting for {ProductName}.
 {cmdcli} apply -f /install/components/prometheus
 ----
 
-[id='restart-component-{context}']
+[id='restart-component-{context}', module-type="proc"]
 == Restarting a component
 
 .Procedure
@@ -146,7 +145,7 @@ You must deploy Prometheus rules to enable alerting for {ProductName}.
 
 The component will be automatically restarted in a new pod.
 
-[id='get-logs-broker-{context}']
+[id='get-logs-router-{context}', module-type="proc"]
 == Viewing router logs
 
 .Procedure
@@ -165,7 +164,7 @@ The component will be automatically restarted in a new pod.
 {cmdcli} logs _pod_ -c router
 ----
 
-[id='get-logs-router-{context}']
+[id='get-logs-broker-{context}', module-type="proc"]
 == Viewing broker logs
 
 .Procedure

@@ -19,6 +19,12 @@ public class AttributeTreeProcessorTest extends AsciidocExtractionTest {
                    "== New Section with `.jsh`\n" +
                    ":my-attribute: Hola\n" +
                    "\n" +
+                   "ifeval::[\"{cmdcli}\" == \"oc\"]\n" +
+                   "* If using a version of OpenShift earlier than OpenShift 4 the link:https://github.com/coreos/prometheus-operator/tree/master/contrib/kube-prometheus[Prometheus Operator^] and Custom Resource Definitions must be installed.\n" +
+                   "endif::[]\n" +
+                   "ifeval::[\"{cmdcli}\" == \"kubectl\"]\n" +
+                   "* The link:https://github.com/coreos/prometheus-operator/tree/master/contrib/kube-prometheus[Prometheus Operator^] and Custom Resource Definitions must be installed.\n" +
+                   "endif::[]\n\n" +
                    "[my-attribute=\"Good-bye\"]\n" +
                    "{my-attribute} World!\n";
 

@@ -12,12 +12,12 @@ ifdef::context[:parent-context: {context}]
 == Assembly 1
 :context: assembly-1
 
-[id="module-a_{context}"]
+[id="module-a_{context}", module-type="proc"]
 === Module A
 
 This is module A. Its ID is `module-a_assembly-1` in Assembly 1, but `module-a_assembly-2` in Assembly 2.
 
-[id="module-b_{context}"]
+[id="module-b_{context}", module-type="proc"]
 === Module B
 
 This is module B. Its ID is `module-b_assembly-1` in Assembly 1, but `module-b_assembly-2` in Assembly 2.
@@ -26,7 +26,7 @@ ifeval::["{context}" == "assembly-2"]
 This sentence appears only in Assembly 2.
 endif::[]
 
-[id="module-c_{context}"]
+[id="module-c_{context}", module-type="proc"]
 === Module C
 
 This is module C.
@@ -40,12 +40,12 @@ ifdef::context[:parent-context: {context}]
 == Assembly 2
 :context: assembly-2
 
-[id="module-a_{context}"]
+[id="module-a_{context}", module-type="proc"]
 === Module A
 
 This is module A. Its ID is `module-a_assembly-1` in Assembly 1, but `module-a_assembly-2` in Assembly 2.
 
-[id="module-b_{context}"]
+[id="module-b_{context}", module-type="proc"]
 === Module B
 
 This is module B. Its ID is `module-b_assembly-1` in Assembly 1, but `module-b_assembly-2` in Assembly 2.
@@ -54,7 +54,7 @@ ifeval::["{context}" == "assembly-2"]
 This sentence appears only in Assembly 2.
 endif::[]
 
-[id="module-d_{context}"]
+[id="module-d_{context}", module-type="proc"]
 === Module D
 
 This is module D.

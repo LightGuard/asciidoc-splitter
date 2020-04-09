@@ -37,7 +37,11 @@ public class ExtractedModule {
             this.id = this.id.substring(0, this.id.lastIndexOf("{context}") - 1);
         }
 
-        this.moduleType = section.getAttributes().get(Assembly.MODULE_TYPE_ATTRIBUTE).toString();
+        if (section.getAttributes().containsKey(Assembly.MODULE_TYPE_ATTRIBUTE)) {
+            this.moduleType = section.getAttributes().get(Assembly.MODULE_TYPE_ATTRIBUTE).toString();
+        } else {
+            this.moduleType = "unknown";
+        }
 
         this.section = section;
         this.source = lines;

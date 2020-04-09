@@ -59,7 +59,8 @@ public class Assembly {
 
         var modules = doc.getBlocks().stream()
                                         .filter(Section.class::isInstance)
-                                        .filter(node -> node.getAttributes().containsKey(MODULE_TYPE_ATTRIBUTE))
+                                        .filter(node -> node.getAttributes().containsKey(MODULE_TYPE_ATTRIBUTE)
+                                            || (node.getId() != null && node.getId().endsWith("{context}")))
                                         .map(Section.class::cast)
                                         .collect(Collectors.toList());
 

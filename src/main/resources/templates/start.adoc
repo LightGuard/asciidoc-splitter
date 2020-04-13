@@ -1,1 +1,2 @@
 ifdef::context[:parent-context: {context}]
+:assets-dir:{../assets}

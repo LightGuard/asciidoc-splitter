@@ -37,7 +37,7 @@ public class ExtractedModule {
             this.id = this.id.substring(0, this.id.lastIndexOf("{context}") - 1);
         }
 
-        this.moduleType = section.getAttributes().get(Assembly.MODULE_TYPE_ATTRIBUTE).toString();
+        this.moduleType = Util.getModuleType(section);
 
         this.section = section;
         this.source = lines;

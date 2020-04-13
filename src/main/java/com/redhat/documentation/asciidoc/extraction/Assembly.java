@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.redhat.documentation.asciidoc.Util;
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.Section;
 import org.asciidoctor.ast.StructuralNode;
@@ -15,7 +16,6 @@ import org.asciidoctor.ast.StructuralNode;
  * An Assembly can contain links to modules and also have some additional text, typically before the includes, sort of like a preamble.
  */
 public class Assembly {
-    public static final String MODULE_TYPE_ATTRIBUTE = "module-type";
 
     private String id;
     private String idWithoutContext;
@@ -50,7 +50,7 @@ public class Assembly {
         // Grab the preamble
         if (doc.findBy(Map.of("context", ":preamble")).size() > 0) {
             for (int i = lines.indexOf("= " + doc.getTitle()); i < getPreambleEndLineNumber(doc, lines); i++) {
-                this.source.append(lines.get(i)).append("\n");
+                this.source.append(Util.fixAsset(lines.get(i))).append("\n");
             }
             this.source.append("\n");
         }
@@ -59,7 +59,8 @@ public class Assembly {
 
         var modules = doc.getBlocks().stream()
                                         .filter(Section.class::isInstance)
-                                        .filter(node -> node.getAttributes().containsKey(MODULE_TYPE_ATTRIBUTE))
+                                        .filter(node -> node.getAttributes().containsKey(Util.MODULE_TYPE_ATTRIBUTE)
+                                                         || (node.getId() != null && node.getId().endsWith("{context}")))
                                         .map(Section.class::cast)
                                         .collect(Collectors.toList());
 
@@ -116,7 +117,7 @@ public class Assembly {
         var startingLine = section.getSourceLocation().getLineNumber();
         StringBuilder sectionSource = new StringBuilder();
         for (int i = startingLine; i < nextSectionStart; i++) {
-            sectionSource.append(lines.get(i)).append("\n");
+            sectionSource.append(Util.fixAsset(lines.get(i))).append("\n");
         }
         return sectionSource.toString();
     }

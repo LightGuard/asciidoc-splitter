@@ -9,6 +9,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -72,6 +73,7 @@ public class ExtractionRunner implements Callable<Integer> {
 
             writeModules(config);
             writeAssemblies(config);
+            moveNonadoc(config);
         }
 
         long errors = this.issues.stream().filter(Issue::isError).count();
@@ -164,6 +166,29 @@ public class ExtractionRunner implements Callable<Integer> {
             throw new RuntimeException(e);
         }
     }
+
+    private void moveNonadoc(Configuration config) {
+        try{
+        Path assetsDir = Files.createDirectories(config.getOutputDirectory().toPath().resolve("assets"));
+        final String extension = ".asciidoc";
+        final File sourceDir = config.getSourceDirectory();
+        final File destinationDir = assetsDir.toFile();
+        File[] files = sourceDir.listFiles((File pathname) -> !(pathname.getName().endsWith(extension)));
+        for(File f : files ){
+            Path sourcePath      = Paths.get(sourceDir.getAbsolutePath()+"/"+f.getName());
+            Path destinationPath = Paths.get(destinationDir.getAbsolutePath()+"/"+f.getName());
+
+            try {
+                Files.copy(sourcePath, destinationPath,StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                //moving file failed.
+                throw new RuntimeException(e);
+            }
+        }
+    }  catch (IOException e) {
+        throw new RuntimeException(e);
+    } 
+} 
 
     private String getTemplateContents(String templateLocation) {
         final var cl = ExtractionRunner.class.getClassLoader();

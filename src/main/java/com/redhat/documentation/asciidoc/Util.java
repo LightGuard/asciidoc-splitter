@@ -5,7 +5,7 @@ import org.asciidoctor.ast.ContentNode;
 public class Util {
 
     public static final String MODULE_TYPE_ATTRIBUTE = "module-type";
-    public static final String ASSETS_LOCATION = "../_assets";
+    public static final String ASSETS_LOCATION = "_assets";
 
     public static String getFullId(ContentNode node) {
         StringBuilder buf = new StringBuilder(node.getId());
@@ -38,6 +38,7 @@ public class Util {
 
     public static String fixAsset(String line) {
         return line
-                .replaceAll("(video|audio)::(\\w+)\\.(\\w+)\\[(.*)]", "$1::" + ASSETS_LOCATION + "/$2.$3[$4]");
+                .replaceAll("(?<block>video|audio)::(?<path>(\\w|\\/|\\-)+)\\.(?<ext>\\w+)\\[(?<opts>.*)]",
+                         "${block}::../" + ASSETS_LOCATION + "/${path}.${ext}[${opts}]");
     }
 }

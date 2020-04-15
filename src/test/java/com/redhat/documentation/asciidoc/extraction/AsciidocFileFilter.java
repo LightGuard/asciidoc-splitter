@@ -11,7 +11,6 @@ public class AsciidocFileFilter implements FileFilter {
 
         var filename = pathname.getName();
         return filename.endsWith(".adoc") ||
-                filename.endsWith(".asc") || // I hate this one
                 filename.endsWith(".ad") ||
                 filename.endsWith(".asciidoc");
     }

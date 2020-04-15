@@ -33,10 +33,12 @@ public class Issue {
     @Override
     public String toString() {
         String contextinfo = null;
-        if(node.getSourceLocation()==null) {
-            contextinfo = node.getClass().toString();
-        } else {
-            contextinfo = node.getSourceLocation().toString();
+        if (node != null) {
+            if (node.getSourceLocation() == null) {
+                contextinfo = node.getClass().toString();
+            } else {
+                contextinfo = node.getSourceLocation().toString();
+            }
         }
 
         return (error ? "ERROR: " : "WARNING: ") + contextinfo + ": " + text;

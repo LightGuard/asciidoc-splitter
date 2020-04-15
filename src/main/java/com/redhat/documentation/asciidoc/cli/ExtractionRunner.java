@@ -6,18 +6,25 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.redhat.documentation.asciidoc.Configuration;
+import com.redhat.documentation.asciidoc.Util;
 import com.redhat.documentation.asciidoc.extraction.Assembly;
 import com.redhat.documentation.asciidoc.extraction.ExtractedModule;
 import com.redhat.documentation.asciidoc.extraction.ReaderPreprocessor;
@@ -73,8 +80,10 @@ public class ExtractionRunner implements Callable<Integer> {
 
             writeModules(config);
             writeAssemblies(config);
-            moveNonadoc(config);
         }
+
+        // Move all the extra assets
+        moveNonadoc(config);
 
         long errors = this.issues.stream().filter(Issue::isError).count();
 
@@ -87,7 +96,6 @@ public class ExtractionRunner implements Callable<Integer> {
      * returns true if all went well. false if there was some problem with uniqueness.
      */
     private void findSections(Document doc, List<String> lines) {
-        // TODO: What should we do with preamble?
         // TODO: This should probably be configurable
 
         var assembly = new Assembly(doc, lines);
@@ -168,27 +176,44 @@ public class ExtractionRunner implements Callable<Integer> {
     }
 
     private void moveNonadoc(Configuration config) {
-        try{
-        Path assetsDir = Files.createDirectories(config.getOutputDirectory().toPath().resolve("assets"));
-        final String extension = ".asciidoc";
-        final File sourceDir = config.getSourceDirectory();
-        final File destinationDir = assetsDir.toFile();
-        File[] files = sourceDir.listFiles((File pathname) -> !(pathname.getName().endsWith(extension)));
-        for(File f : files ){
-            Path sourcePath      = Paths.get(sourceDir.getAbsolutePath()+"/"+f.getName());
-            Path destinationPath = Paths.get(destinationDir.getAbsolutePath()+"/"+f.getName());
+        try {
+            var assetsDir = Files.createDirectories(config.getOutputDirectory().toPath().resolve(Util.ASSETS_LOCATION));
+            var sourceDir = config.getSourceDirectory().toPath();
+            var destinationDir = assetsDir.toFile().toPath();
+            var adocExtRegex = Pattern.compile("^[^_.].*\\.a((sc(iidoc)?)|d(oc)?)$");
 
-            try {
-                Files.copy(sourcePath, destinationPath,StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                //moving file failed.
-                throw new RuntimeException(e);
-            }
+            Files.walkFileTree(sourceDir, EnumSet.of(FileVisitOption.FOLLOW_LINKS),
+                               Integer.MAX_VALUE, new SimpleFileVisitor<>() {
+                        @Override
+                        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                            var targetDir = destinationDir.resolve(sourceDir.relativize(dir));
+
+                            // Create the directory structure in the new location
+                            try {
+                                Files.copy(dir, targetDir);
+                            } catch (FileAlreadyExistsException e) {
+                                if (!Files.isDirectory(targetDir))
+                                    addIssue(Issue.error("Trying to create a non-directory: " + targetDir, null));
+                            }
+
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        @Override
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                            // We are not an asciidoc file
+                            if (!adocExtRegex.matcher(file.getFileName().toString()).matches()) {
+                                Files.copy(file, destinationDir.resolve(sourceDir.relativize(file)));
+                            }
+
+                            return FileVisitResult.CONTINUE;
+                        }
+                    });
+
+        } catch (IOException e) {
+            addIssue(Issue.error(e.getMessage(), null));
         }
-    }  catch (IOException e) {
-        throw new RuntimeException(e);
-    } 
-} 
+    }
 
     private String getTemplateContents(String templateLocation) {
         final var cl = ExtractionRunner.class.getClassLoader();

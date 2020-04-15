@@ -40,4 +40,9 @@ public class Util {
         return line
                 .replaceAll("(video|audio)::(\\w+)\\.(\\w+)\\[(.*)]", "$1::" + ASSETS_LOCATION + "/$2.$3[$4]");
     }
+
+    public static String fixinsideAsset(String line) {
+        return line
+                .replaceAll("(video|audio)::(\\w+)\\/(\\w+)\\.(\\w+)\\[(.*)]", "$1::" + ASSETS_LOCATION + "/$2/$3.$4[$5]");
+    }
 }

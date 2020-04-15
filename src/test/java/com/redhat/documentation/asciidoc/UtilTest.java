@@ -30,4 +30,20 @@ class UtilTest {
 
         assertThat(Util.fixAsset(adoc)).isEqualTo(expected);
     }
+
+    @Test
+    public void fixinsideAudioAsset() {
+        var adoc = "Listen to the audio::debugging/ocean_waves.mp3[options=\"autoplay,loop\"]";
+        var expected = "Listen to the audio::../_assets/debugging/ocean_waves.mp3[options=\"autoplay,loop\"]";
+
+        assertThat(Util.fixinsideAsset(adoc)).isEqualTo(expected);
+    }
+
+    @Test
+    public void fixinsideVideoAsset() {
+        var adoc = "Hello video::debugging/world.mp4[width=640, start=60, end=140, options=autoplay]";
+        var expected = "Hello video::../_assets/debugging/world.mp4[width=640, start=60, end=140, options=autoplay]";
+
+        assertThat(Util.fixinsideAsset(adoc)).isEqualTo(expected);
+    }
 }

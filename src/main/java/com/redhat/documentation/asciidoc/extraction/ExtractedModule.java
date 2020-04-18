@@ -4,12 +4,34 @@ import java.util.Objects;
 
 import com.redhat.documentation.asciidoc.Util;
 import org.asciidoctor.ast.Section;
+import org.asciidoctor.ast.StructuralNode;
 
 public class ExtractedModule {
     private String id;
     private Section section;
     private String source;
     private String moduleType;
+    private int leveloffset = 0;
+
+    static boolean isNodeAModule(StructuralNode node) {
+        if (node.getAttributes().containsKey(Util.MODULE_TYPE_ATTRIBUTE))
+            return true;
+
+        var nodeId = node.getId();
+
+        if (nodeId != null) {
+            if (nodeId.endsWith("{context}"))
+                return true;
+
+            if (nodeId.startsWith("proc-") || nodeId.startsWith("con-") || nodeId.startsWith("ref-"))
+                return true;
+
+            if (nodeId.endsWith("-proc") || nodeId.endsWith("-con") || nodeId.endsWith("-ref"))
+                return true;
+        }
+
+        return false;
+    }
 
     @Override
     public String toString() {
@@ -41,6 +63,7 @@ public class ExtractedModule {
 
         this.section = section;
         this.source = lines;
+        this.leveloffset = section.getLevel();
     }
 
     public String getId() {
@@ -56,11 +79,18 @@ public class ExtractedModule {
     }
 
     public String getFileName() {
-        return moduleType + "-" + id + ".adoc";
+        if (id.contains(moduleType))
+            return id + ".adoc".toLowerCase();
+
+        return moduleType + "-" + id + ".adoc".toLowerCase();
     }
 
     public String getModuleType() {
         return moduleType;
+    }
+
+    public int getLeveloffset() {
+        return leveloffset;
     }
 
     @Override

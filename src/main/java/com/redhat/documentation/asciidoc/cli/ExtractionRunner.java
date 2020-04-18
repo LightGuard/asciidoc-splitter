@@ -68,7 +68,6 @@ public class ExtractionRunner implements Callable<Integer> {
         Asciidoctor asciidoctor = Asciidoctor.Factory.create();
         asciidoctor.javaExtensionRegistry().preprocessor(preprocessor);
 
-
         // We need access to the line numbers and source
         optionsBuilder.sourcemap(true);
 

@@ -24,7 +24,7 @@ public class Assembly {
     private StringBuilder source;
 
     public Assembly(Document doc, List<String> lines) {
-        this.id = doc.getId() == null ? doc.getDoctitle() : doc.getId();
+        this.id = doc.getId() == null ? doc.getBlocks().get(0).getId() : doc.getId();
         // If there isn't an explicit id, it starts with an _
         if (this.id.startsWith("_")) {
             // Don't use the first character (an underscore) and replace underscore with hyphen
@@ -57,10 +57,9 @@ public class Assembly {
 
         List<SectionWrapper> moduleSources = new ArrayList<>();
 
-        var modules = doc.getBlocks().stream()
-                                        .filter(Section.class::isInstance)
-                                        .filter(node -> node.getAttributes().containsKey(Util.MODULE_TYPE_ATTRIBUTE)
-                                                         || (node.getId() != null && node.getId().endsWith("{context}")))
+        var modules = doc.findBy(Map.of("context", ":section")).stream()
+                                        .filter(ExtractedModule::isNodeAModule)
+//                                        .filter(Section.class::isInstance)
                                         .map(Section.class::cast)
                                         .collect(Collectors.toList());
 
@@ -94,7 +93,7 @@ public class Assembly {
             this.modules.add(extractedModule);
             this.source.append("include::../modules/")
                     .append(extractedModule.getFileName())
-                    .append("[leveloffset=+1]")
+                    .append("[leveloffset=+" + extractedModule.getLeveloffset() + "]")
                     .append("\n\n");
         });
     }
@@ -139,6 +138,6 @@ public class Assembly {
     }
 
     public String getFilename() {
-        return "assembly-" + idWithoutContext + ".adoc";
+        return "assembly-" + idWithoutContext + ".adoc".toLowerCase();
     }
 }

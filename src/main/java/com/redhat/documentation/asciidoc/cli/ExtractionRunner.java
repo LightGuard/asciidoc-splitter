@@ -52,13 +52,13 @@ public class ExtractionRunner implements Callable<Integer> {
     @Option(names = {"-sr", "--sourceRepo"}, description = "Git URL to the source repository.")
     String sourceRepo;
 
-    @Option(names = {"-sb", "--sourceBranch"}, description = "Branch in source repository.")
+    @Option(names = {"-sb", "--sourceBranch"}, defaultValue = "master", description = "Branch in source repository.")
     String sourceBranch;
 
     @Option(names = {"-or", "--outputRepo"}, description = "Git URL to the output repository.")
     String outputRepo;
 
-    @Option(names = {"-ob", "--outputBranch"}, description = "Branch in output repository.")
+    @Option(names = {"-ob", "--outputBranch"}, defaultValue = "master", description = "Branch in output repository.")
     String outputBranch;
 
     public ExtractionRunner() {

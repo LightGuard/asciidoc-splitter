@@ -43,11 +43,23 @@ public class ExtractionRunner implements Callable<Integer> {
     private Set<ExtractedModule> modules;
     private List<Issue> issues = new ArrayList<>();
 
-    @Option(names = {"-s", "--sourceDir"}, description = "Directory containing the input asciidoc files.", required = true)
+    @Option(names = {"-s", "--sourceDir"}, description = "Directory containing the input asciidoc files.")
     File inputDir;
 
-    @Option(names = {"-o", "--outputDir"}, description = "Directory to place generated modules and assemblies.", required = true)
+    @Option(names = {"-o", "--outputDir"}, description = "Directory to place generated modules and assemblies.")
     File outputDir;
+
+    @Option(names = {"-sr", "--sourceRepo"}, description = "Git URL to the source repository.")
+    String sourceRepo;
+
+    @Option(names = {"-sb", "--sourceBranch"}, description = "Branch in source repository.")
+    String sourceBranch;
+
+    @Option(names = {"-or", "--outputRepo"}, description = "Git URL to the output repository.")
+    String outputRepo;
+
+    @Option(names = {"-ob", "--outputBranch"}, description = "Branch in output repository.")
+    String outputBranch;
 
     public ExtractionRunner() {
         this.assemblies = new ArrayList<>();

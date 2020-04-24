@@ -7,6 +7,10 @@ import java.nio.file.Path;
 public class Configuration {
     private File sourceDirectory;
     private File outputDirectory;
+    private String sourceRepo;
+    private String sourceBranch;
+    private String outputRepo;
+    private String outputBranch;
 
     public Configuration(File sourceDirectory, File outputDirectory) {
         assert sourceDirectory.isDirectory();
@@ -32,11 +36,34 @@ public class Configuration {
         this.outputDirectory = new File(outputDirectory);
     }
 
+    public Configuration(String sourceRepo, String sourceBranch, String outputRepo, String outputBranch) {
+        this.sourceRepo = sourceRepo;
+        this.sourceBranch = sourceBranch;
+        this.outputRepo = outputRepo;
+        this.outputBranch = outputBranch;
+    }
+
     public File getSourceDirectory() {
         return sourceDirectory;
     }
 
     public File getOutputDirectory() {
         return outputDirectory;
+    }
+
+    public String getSourceRepo() {
+        return sourceRepo;
+    }
+
+    public String getSourceBranch() {
+        return sourceBranch;
+    }
+
+    public String getOutputRepo() {
+        return outputRepo;
+    }
+
+    public String getOutputBranch() {
+        return outputBranch;
     }
 }

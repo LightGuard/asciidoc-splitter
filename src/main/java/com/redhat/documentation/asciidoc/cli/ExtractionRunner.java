@@ -33,33 +33,53 @@ import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.jruby.AsciiDocDirectoryWalker;
 import picocli.CommandLine;
+import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "extract", mixinStandardHelpOptions = true, version = "1.0",
-        description = "Create a modular documentation layout from a directory of asciidoc files.")
+@Command(name = "extract", mixinStandardHelpOptions = true, version = "1.0", description = "Create a modular documentation layout from a directory of asciidoc files.")
 public class ExtractionRunner implements Callable<Integer> {
     private List<Assembly> assemblies;
     private Set<ExtractedModule> modules;
     private List<Issue> issues = new ArrayList<>();
+    @ArgGroup(heading = "Input", exclusive = true, multiplicity = "1")
+    InputOptions inputOptions;
+    @ArgGroup(heading = "Output", exclusive = true, multiplicity = "1")
+    OutputOptions outputOptions;
 
-    @Option(names = {"-s", "--sourceDir"}, description = "Directory containing the input asciidoc files.")
-    File inputDir;
+    static class InputOptions {
+        @Option(names = { "-s", "--sourceDir" }, description = "Directory containing the input asciidoc files.")
+        File inputDir;
 
-    @Option(names = {"-o", "--outputDir"}, description = "Directory to place generated modules and assemblies.")
-    File outputDir;
+        @ArgGroup(exclusive = false)
+        GitInputOptions gitInputOptions;
+    }
 
-    @Option(names = {"-sr", "--sourceRepo"}, description = "Git URL to the source repository.")
-    String sourceRepo;
+    static class OutputOptions {
+        @Option(names = { "-o", "--outputDir" }, description = "Directory to place generated modules and assemblies.")
+        File outputDir;
 
-    @Option(names = {"-sb", "--sourceBranch"}, defaultValue = "master", description = "Branch in source repository.")
-    String sourceBranch;
+        @ArgGroup(exclusive = false)
+        GitOutputOptions gitOutputOptions;
+    }
 
-    @Option(names = {"-or", "--outputRepo"}, description = "Git URL to the output repository.")
-    String outputRepo;
+    static class GitInputOptions {
+        @Option(names = { "-sr", "--sourceRepo" }, description = "Git URL to the source repository.", required = true)
+        String sourceRepo;
 
-    @Option(names = {"-ob", "--outputBranch"}, defaultValue = "master", description = "Branch in output repository.")
-    String outputBranch;
+        @Option(names = { "-sb",
+                "--sourceBranch" }, defaultValue = "master", description = "Branch in source repository.")
+        String sourceBranch;
+    }
+
+    static class GitOutputOptions {
+        @Option(names = { "-or", "--outputRepo" }, description = "Git URL to the output repository.", required = true)
+        String outputRepo;
+
+        @Option(names = { "-ob",
+                "--outputBranch" }, defaultValue = "master", description = "Branch in output repository.")
+        String outputBranch;
+    }
 
     public ExtractionRunner() {
         this.assemblies = new ArrayList<>();
@@ -73,7 +93,7 @@ public class ExtractionRunner implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        var config = new Configuration(this.inputDir, this.outputDir);
+        var config = new Configuration(this.inputOptions.inputDir, this.outputOptions.outputDir);
         var preprocessor = new ReaderPreprocessor();
 
         OptionsBuilder optionsBuilder = OptionsBuilder.options();
@@ -104,7 +124,8 @@ public class ExtractionRunner implements Callable<Integer> {
     }
 
     /**
-     * returns true if all went well. false if there was some problem with uniqueness.
+     * returns true if all went well. false if there was some problem with
+     * uniqueness.
      */
     private void findSections(Document doc, List<String> lines) {
         // TODO: This should probably be configurable
@@ -133,14 +154,11 @@ public class ExtractionRunner implements Callable<Integer> {
         this.assemblies.forEach(a -> {
             try {
                 // Create any directories that need to be created
-                Path assembliesDir = Files.createDirectories(config.getOutputDirectory().toPath().resolve("assemblies"));
+                Path assembliesDir = Files
+                        .createDirectories(config.getOutputDirectory().toPath().resolve("assemblies"));
                 var outputFile = Paths.get(assembliesDir.toString(), a.getFilename());
                 try (Writer output = new FileWriter(outputFile.toFile())) {
-                    output.append(templateStart)
-                            .append("\n")
-                            .append(a.getSource())
-                            .append("\n")
-                            .append(templateEnd);
+                    output.append(templateStart).append("\n").append(a.getSource()).append("\n").append(templateEnd);
                 }
             } catch (IOException e) {
                 // TODO: We blew-up in an unexpected way, handle this
@@ -193,10 +211,11 @@ public class ExtractionRunner implements Callable<Integer> {
             var destinationDir = assetsDir.toFile().toPath();
             var adocExtRegex = Pattern.compile("^[^_.].*\\.a((sc(iidoc)?)|d(oc)?)$");
 
-            Files.walkFileTree(sourceDir, EnumSet.of(FileVisitOption.FOLLOW_LINKS),
-                               Integer.MAX_VALUE, new SimpleFileVisitor<>() {
+            Files.walkFileTree(sourceDir, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
+                    new SimpleFileVisitor<>() {
                         @Override
-                        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+                                throws IOException {
                             var targetDir = destinationDir.resolve(sourceDir.relativize(dir));
 
                             // Create the directory structure in the new location

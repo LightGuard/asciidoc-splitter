@@ -2,7 +2,6 @@ package com.redhat.documentation.asciidoc;
 
 import java.io.File;
 import java.net.URI;
-import java.nio.file.Path;
 
 public class Configuration {
     private File sourceDirectory;
@@ -18,6 +17,14 @@ public class Configuration {
 
         this.sourceDirectory = sourceDirectory;
         this.outputDirectory = outputDirectory;
+    }
+
+    public Configuration(File sourceDirectory, String outputRepo, String outputBranch) {
+        assert sourceDirectory.isDirectory();
+
+        this.sourceDirectory = sourceDirectory;
+        this.outputRepo = outputRepo;
+        this.outputBranch = outputBranch;
     }
 
     public Configuration(String sourcePathName, String outputPathName) {

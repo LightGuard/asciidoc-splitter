@@ -98,7 +98,7 @@
     <repository>
       <id>github</id>
       <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/octocat/hello-world</url>
+      <url>https://maven.pkg.github.com/LightGuard/asciidoc-splitter</url>
     </repository>
   </distributionManagement>
 </project>

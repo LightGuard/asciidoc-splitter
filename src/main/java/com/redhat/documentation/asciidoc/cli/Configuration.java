@@ -1,4 +1,4 @@
-package com.redhat.documentation.asciidoc;
+package com.redhat.documentation.asciidoc.cli;
 
 import java.io.File;
 import java.net.URI;

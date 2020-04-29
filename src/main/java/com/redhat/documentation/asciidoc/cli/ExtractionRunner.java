@@ -1,7 +1,7 @@
 package com.redhat.documentation.asciidoc.cli;
 
-import com.redhat.documentation.asciidoc.Configuration;
 import com.redhat.documentation.asciidoc.extraction.Extractor;
+import com.redhat.documentation.asciidoc.extraction.model.*;
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
@@ -59,8 +59,11 @@ public class ExtractionRunner implements Runnable {
 
     @Override
     public void run() {
-        var config = new Configuration(this.inputOptions.inputDir, this.outputOptions.outputDir);
-        var extractor = new Extractor(config);
+        Source source = new LocalDirectorySource(this.inputOptions.inputDir);
+        Target target = new LocalDirectoryTarget(this.outputOptions.outputDir);
+
+        var task = new Task(source, target);
+        var extractor = new Extractor(task);
         extractor.process();
     }
 

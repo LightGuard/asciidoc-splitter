@@ -1,9 +1,9 @@
 package com.redhat.documentation.asciidoc.extraction;
 
-import com.redhat.documentation.asciidoc.Configuration;
 import com.redhat.documentation.asciidoc.Util;
 import com.redhat.documentation.asciidoc.cli.ExtractionRunner;
 import com.redhat.documentation.asciidoc.cli.Issue;
+import com.redhat.documentation.asciidoc.extraction.model.Task;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.ast.Document;
@@ -17,13 +17,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Extractor {
-    private final Configuration configuration;
     private final List<Assembly> assemblies;
     private final Set<ExtractedModule> modules;
     private final List<Issue> issues = new ArrayList<>();
+    private final Task task;
 
-    public Extractor(Configuration configuration) {
-        this.configuration = configuration;
+    public Extractor(Task task) {
+        this.task = task;
         assemblies = new ArrayList<>();
         modules = new HashSet<>();
     }
@@ -38,18 +38,18 @@ public class Extractor {
         // We need access to the line numbers and source
         optionsBuilder.sourcemap(true);
 
-        for (File file : new AsciiDocDirectoryWalker(this.configuration.getSourceDirectory().getAbsolutePath())) {
+        for (File file : new AsciiDocDirectoryWalker(this.task.getSource().getDirectoryPath().toString())) {
             var doc = asciidoctor.loadFile(file, optionsBuilder.asMap());
             var lines = preprocessor.getLines();
 
             findSections(doc, lines);
 
-            writeModules(this.configuration);
-            writeAssemblies(this.configuration);
+            writeModules(this.task.getTarget().getDirectoryPath());
+            writeAssemblies(this.task.getTarget().getDirectoryPath());
         }
 
         // Move all the extra assets
-        moveNonadoc(this.configuration);
+        moveNonadoc(this.task.getSource().getDirectoryPath(), this.task.getTarget().getDirectoryPath());
 
         long errors = this.issues.stream().filter(Issue::isError).count();
 
@@ -79,7 +79,7 @@ public class Extractor {
         this.issues.add(error);
     }
 
-    private void writeAssemblies(Configuration config) {
+    private void writeAssemblies(Path outputDirectory) {
         // Setup templates for modules
         String templateStart = getTemplateContents("templates/start.adoc");
         String templateEnd = getTemplateContents("templates/end.adoc");
@@ -88,7 +88,7 @@ public class Extractor {
             try {
                 // Create any directories that need to be created
                 Path assembliesDir = Files
-                        .createDirectories(config.getOutputDirectory().toPath().resolve("assemblies"));
+                        .createDirectories(outputDirectory.resolve("assemblies"));
                 var outputFile = Paths.get(assembliesDir.toString(), a.getFilename());
                 try (Writer output = new FileWriter(outputFile.toFile())) {
                     output.append(templateStart).append("\n").append(a.getSource()).append("\n").append(templateEnd);
@@ -100,11 +100,11 @@ public class Extractor {
         });
     }
 
-    private void writeModules(Configuration config) {
+    private void writeModules(Path  targetDirectory) {
         // Create the modules directory and write the files
         try {
             // Create the output directories
-            Path modulesDir = Files.createDirectories(config.getOutputDirectory().toPath().resolve("modules"));
+            Path modulesDir = Files.createDirectories(targetDirectory.resolve("modules"));
             Set<Path> visitedPaths = new HashSet<>();
 
             for (ExtractedModule module : this.modules) {
@@ -137,10 +137,9 @@ public class Extractor {
         }
     }
 
-    private void moveNonadoc(Configuration config) {
+    private void moveNonadoc(Path sourceDir, Path targetDir) {
         try {
-            var assetsDir = Files.createDirectories(config.getOutputDirectory().toPath().resolve(Util.ASSETS_LOCATION));
-            var sourceDir = config.getSourceDirectory().toPath();
+            var assetsDir = Files.createDirectories(targetDir.resolve(Util.ASSETS_LOCATION));
             var destinationDir = assetsDir.toFile().toPath();
             var adocExtRegex = Pattern.compile("^[^_.].*\\.a((sc(iidoc)?)|d(oc)?)$");
 

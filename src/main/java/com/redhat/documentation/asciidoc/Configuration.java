@@ -27,6 +27,14 @@ public class Configuration {
         this.outputBranch = outputBranch;
     }
 
+    public Configuration(String sourceRepo, String sourceBranch, File outputDirectory) {
+        assert outputDirectory.isDirectory();
+
+        this.sourceRepo = sourceRepo;
+        this.sourceBranch = sourceBranch;
+        this.outputDirectory = outputDirectory;
+    }
+
     public Configuration(String sourcePathName, String outputPathName) {
         assert new File(sourcePathName).isDirectory();
         assert new File(outputPathName).isDirectory();

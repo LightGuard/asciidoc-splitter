@@ -50,6 +50,7 @@ public class Extractor {
 
         // Move all the extra assets
         moveNonadoc(this.task.getSource().getDirectoryPath(), this.task.getTarget().getDirectoryPath());
+        this.task.getTarget().push();
 
         long errors = this.issues.stream().filter(Issue::isError).count();
 

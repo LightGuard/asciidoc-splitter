@@ -1,22 +1,26 @@
 package com.redhat.documentation.asciidoc.cli;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import com.redhat.documentation.asciidoc.extraction.AsciidocFileFilter;
 import com.redhat.documentation.asciidoc.extraction.DeletionFileVisitor;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ExtractionRunnerTest {
+    public static final String TEST_GIT_REPO = "https://github.com/manaswinidas/Docs-symlink.git";
     private File outputDirectory;
 
     @BeforeEach
@@ -34,7 +38,30 @@ class ExtractionRunnerTest {
         Files.walkFileTree(outputDirectory.toPath(), new DeletionFileVisitor());
     }
 
-//    @Test
+    @Test
+    void testShouldPrepareDocsWhenSourceIsLocalDirAndTargetIsGitRepo() throws URISyntaxException, IOException, GitAPIException {
+        final var sourceDirectory = new File(Objects.requireNonNull(ExtractionRunner.class
+                .getClassLoader().getResource("docs/content-test")).toURI());
+
+        String[] options = {"-s", sourceDirectory.getAbsolutePath(), "-or", TEST_GIT_REPO, "-ob", "test"};
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
+
+        var tmp = Files.createTempDirectory("extraction-runner-tests");
+        Git.cloneRepository()
+                .setURI(TEST_GIT_REPO)
+                .setBranch("test")
+                .setDirectory(tmp.toFile())
+                .call();
+
+        assertThat(Files.isDirectory(tmp.resolve("modules"))).isTrue();
+        assertThat(Files.isRegularFile(tmp.resolve("modules/con-module-two.adoc"))).isTrue();
+        assertThat(Files.isRegularFile(tmp.resolve("modules/proc-module-one.adoc"))).isTrue();
+        assertThat(Files.isDirectory(tmp.resolve("assemblies"))).isTrue();
+        assertThat(Files.isRegularFile(tmp.resolve("assemblies/assembly-assembly-one.adoc"))).isTrue();
+    }
+
+    //    @Test
 //    @Disabled("bad assumptions in source document")
 //    void testRun() throws Exception {
 //        final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/basic").toURI());
@@ -80,7 +107,7 @@ class ExtractionRunnerTest {
 //    @Disabled("bad assumptions in source document")
     void testFileContentsSourceBlock() throws Exception {
         final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/content-test").toURI());
-        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
@@ -103,7 +130,7 @@ class ExtractionRunnerTest {
     @Test
     public void testDocTeamExample() throws Exception {
         final var sourceDirectory = new File("./examples/sample/input");
-        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
@@ -121,7 +148,7 @@ class ExtractionRunnerTest {
     @Test
     public void testKogitoCreatingExample() throws Exception {
         final var sourceDirectory = new File("./examples/kogito/input");
-        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);

@@ -1,9 +1,11 @@
 package com.redhat.documentation.asciidoc.extraction.model;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.lib.TextProgressMonitor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,12 +58,13 @@ public class GitRepositorySource implements Source {
     public Path getDirectoryPath() {
         try {
             var tmp = Files.createTempDirectory("asciidoc-splitter");
-            return Git.cloneRepository()
+            TextProgressMonitor consoleProgressMonitor = new TextProgressMonitor(new PrintWriter(System.out));
+            return Git.cloneRepository().setProgressMonitor(consoleProgressMonitor)
                     .setURI(this.repositoryUrl)
                     .setBranchesToClone(List.of("refs/heads/" + this.branch))
                     .setBranch("refs/heads/" + this.branch)
                     .setDirectory(tmp.toFile())
-                    .call().getRepository().getDirectory().toPath().getParent().resolve("doc-content/src/main/asciidoc");
+                    .call().getRepository().getDirectory().toPath().getParent().resolve("doc-content/kogito-docs/src/main/asciidoc/");
 
         } catch (IOException e) {
             throw new UncheckedIOException(e);

@@ -1,18 +1,18 @@
 package com.redhat.documentation.asciidoc.cli;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import com.redhat.documentation.asciidoc.extraction.AsciidocFileFilter;
 import com.redhat.documentation.asciidoc.extraction.DeletionFileVisitor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -2,21 +2,32 @@ package com.redhat.documentation.asciidoc.extraction.model;
 
 import java.util.Objects;
 
+/**
+ * Task class to handle multiple location and pushable location types
+ */
 public class Task {
-    private final Source source;
-    private final Target target;
+    private final Location location;
+    private final PushableLocation pushableLocation;
 
-    public Task(Source source, Target target) {
-        this.source = source;
-        this.target = target;
+    public Task(Location location, PushableLocation pushableLocation) {
+        this.location = location;
+        this.pushableLocation = pushableLocation;
     }
 
-    public Source getSource() {
-        return source;
+    /**
+     * Gets location
+     * @return location
+     */
+    public Location getLocation() {
+        return location;
     }
 
-    public Target getTarget() {
-        return target;
+    /**
+     * Gets pushable location
+     * @return pushable location
+     */
+    public PushableLocation getPushableLocation() {
+        return pushableLocation;
     }
 
     @Override
@@ -28,20 +39,20 @@ public class Task {
             return false;
         }
         Task task = (Task) o;
-        return Objects.equals(source, task.source) &&
-                Objects.equals(target, task.target);
+        return Objects.equals(location, task.location) &&
+                Objects.equals(pushableLocation, task.pushableLocation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(source, target);
+        return Objects.hash(location, pushableLocation);
     }
 
     @Override
     public String toString() {
         return "Task{" +
-                "source=" + source +
-                ", target=" + target +
+                "location=" + location +
+                ", pushableLocation=" + pushableLocation +
                 '}';
     }
 }

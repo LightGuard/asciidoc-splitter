@@ -4,20 +4,23 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Objects;
 
-public class LocalDirectoryTarget implements Target {
+/**
+ * Handles git repository target locations
+ */
+public class LocalDirectoryPushableLocation implements PushableLocation {
     private final File directory;
 
-    public LocalDirectoryTarget(File directory) {
+    public LocalDirectoryPushableLocation(File directory) {
         this.directory = directory;
     }
 
+    /**
+     * Gets the directory path of pushable location
+     * @return pushable location directory path
+     */
     @Override
     public Path getDirectoryPath() {
         return directory.toPath();
-    }
-
-    public File getDirectory() {
-        return directory;
     }
 
     @Override
@@ -28,7 +31,7 @@ public class LocalDirectoryTarget implements Target {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        LocalDirectoryTarget that = (LocalDirectoryTarget) o;
+        LocalDirectoryPushableLocation that = (LocalDirectoryPushableLocation) o;
         return Objects.equals(directory, that.directory);
     }
 
@@ -39,7 +42,7 @@ public class LocalDirectoryTarget implements Target {
 
     @Override
     public String toString() {
-        return "LocalDirectoryTarget{" +
+        return "LocalDirectoryPushableLocation{" +
                 "directory=" + directory +
                 '}';
     }

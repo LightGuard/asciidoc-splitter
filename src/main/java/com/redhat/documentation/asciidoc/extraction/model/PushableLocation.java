@@ -2,7 +2,10 @@ package com.redhat.documentation.asciidoc.extraction.model;
 
 import java.nio.file.Path;
 
-public interface Target {
+/**
+ * Handles pushable locations
+ */
+public interface PushableLocation extends Location{
     Path getDirectoryPath();
 
     default void push(){

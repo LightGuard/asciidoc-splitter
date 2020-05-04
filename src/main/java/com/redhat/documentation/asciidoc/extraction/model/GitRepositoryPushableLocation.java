@@ -2,8 +2,8 @@ package com.redhat.documentation.asciidoc.extraction.model;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -11,21 +11,32 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
-public class GitRepositoryTarget implements Target {
+/**
+ * Handles git repository target locations
+ */
+public class GitRepositoryPushableLocation implements PushableLocation {
     private final String url;
     private final String branch;
     private Path dirPath;
 
-    public GitRepositoryTarget(String url, String branch) {
+    public GitRepositoryPushableLocation(String url, String branch) {
 
         this.url = url;
         this.branch = branch;
     }
 
+    /**
+     * Gets pushable location repository URL
+     * @return pushable location repository URL
+     */
     public String getUrl() {
         return url;
     }
 
+    /**
+     * Gets pushable location branch
+     * @return pushable location branch
+     */
     public String getBranch() {
         return branch;
     }
@@ -38,7 +49,7 @@ public class GitRepositoryTarget implements Target {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        GitRepositoryTarget that = (GitRepositoryTarget) o;
+        GitRepositoryPushableLocation that = (GitRepositoryPushableLocation) o;
         return Objects.equals(url, that.url) &&
                 Objects.equals(branch, that.branch);
     }
@@ -50,7 +61,7 @@ public class GitRepositoryTarget implements Target {
 
     @Override
     public String toString() {
-        return "GitRepositoryTarget{" +
+        return "GitRepositoryPushableLocation{" +
                 "outputRepo='" + url + '\'' +
                 ", outputBranch='" + branch + '\'' +
                 '}';
@@ -61,11 +72,12 @@ public class GitRepositoryTarget implements Target {
         if (dirPath == null) {
             cloneRepository();
         }
-
         return dirPath;
-
     }
 
+    /**
+     * Gets path to the cloned pushable location
+     */
     private void cloneRepository() {
         try {
             var tmp = Files.createTempDirectory("asciidoc-splitter");
@@ -75,7 +87,7 @@ public class GitRepositoryTarget implements Target {
                     .setBranchesToClone(List.of("refs/heads/" + this.branch))
                     .setBranch("refs/heads/" + this.branch)
                     .setDirectory(tmp.toFile())
-                    .call().getRepository().getDirectory().toPath();
+                    .call().getRepository().getDirectory().toPath().getParent();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         } catch (GitAPIException e) {
@@ -83,7 +95,20 @@ public class GitRepositoryTarget implements Target {
         }
     }
 
+    /**
+     * Adds, commits and pushes to the pushable location
+     */
+    @Override
     public void push() {
+        try (Git git = Git.open(dirPath.toFile())) {
+            git.add().addFilepattern(".").call();
 
+            git.commit().setMessage("commit message").call();
+            git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(System.getenv("GIT_USERNAME"), System.getenv("GIT_PASSWORD"))).call();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        } catch (GitAPIException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

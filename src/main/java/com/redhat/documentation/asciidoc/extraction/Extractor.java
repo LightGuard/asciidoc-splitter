@@ -38,19 +38,19 @@ public class Extractor {
         // We need access to the line numbers and source
         optionsBuilder.sourcemap(true);
 
-        for (File file : new AsciiDocDirectoryWalker(this.task.getSource().getDirectoryPath().toString())) {
+        for (File file : new AsciiDocDirectoryWalker(this.task.getLocation().getDirectoryPath().toString())) {
             var doc = asciidoctor.loadFile(file, optionsBuilder.asMap());
             var lines = preprocessor.getLines();
 
             findSections(doc, lines);
 
-            writeModules(this.task.getTarget().getDirectoryPath());
-            writeAssemblies(this.task.getTarget().getDirectoryPath());
+            writeModules(this.task.getPushableLocation().getDirectoryPath());
+            writeAssemblies(this.task.getPushableLocation().getDirectoryPath());
         }
 
         // Move all the extra assets
-        moveNonadoc(this.task.getSource().getDirectoryPath(), this.task.getTarget().getDirectoryPath());
-        this.task.getTarget().push();
+        moveNonadoc(this.task.getLocation().getDirectoryPath(), this.task.getPushableLocation().getDirectoryPath());
+        this.task.getPushableLocation().push();
 
         long errors = this.issues.stream().filter(Issue::isError).count();
 

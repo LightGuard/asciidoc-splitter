@@ -38,29 +38,6 @@ class ExtractionRunnerTest {
         Files.walkFileTree(outputDirectory.toPath(), new DeletionFileVisitor());
     }
 
-    @Test
-    void testShouldPrepareDocsWhenSourceIsLocalDirAndTargetIsGitRepo() throws URISyntaxException, IOException, GitAPIException {
-        final var sourceDirectory = new File(Objects.requireNonNull(ExtractionRunner.class
-                .getClassLoader().getResource("docs/content-test")).toURI());
-
-        String[] options = {"-s", sourceDirectory.getAbsolutePath(), "-or", TEST_GIT_REPO, "-ob", "test"};
-        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-        assertThat(exitCode).isEqualTo(0);
-
-        var tmp = Files.createTempDirectory("extraction-runner-tests");
-        Git.cloneRepository()
-                .setURI(TEST_GIT_REPO)
-                .setBranch("test")
-                .setDirectory(tmp.toFile())
-                .call();
-
-        assertThat(Files.isDirectory(tmp.resolve("modules"))).isTrue();
-        assertThat(Files.isRegularFile(tmp.resolve("modules/con-module-two.adoc"))).isTrue();
-        assertThat(Files.isRegularFile(tmp.resolve("modules/proc-module-one.adoc"))).isTrue();
-        assertThat(Files.isDirectory(tmp.resolve("assemblies"))).isTrue();
-        assertThat(Files.isRegularFile(tmp.resolve("assemblies/assembly-assembly-one.adoc"))).isTrue();
-    }
-
     //    @Test
 //    @Disabled("bad assumptions in source document")
 //    void testRun() throws Exception {

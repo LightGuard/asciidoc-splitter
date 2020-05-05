@@ -14,12 +14,16 @@ import java.util.Objects;
 public class GitRepositoryTarget implements Target {
     private final String url;
     private final String branch;
+    private final String username;
+    private final char[] password;
     private Path dirPath;
 
-    public GitRepositoryTarget(String url, String branch) {
+    public GitRepositoryTarget(String url, String branch, String username, char[] password) {
 
         this.url = url;
         this.branch = branch;
+        this.username=username;
+        this.password=password;
     }
 
     public String getUrl() {
@@ -89,7 +93,7 @@ public class GitRepositoryTarget implements Target {
             git.add().addFilepattern(".").call();
 
             git.commit().setMessage("commit message").call();
-            git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(System.getenv("GIT_USERNAME"), System.getenv("GIT_PASSWORD"))).call();
+            git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         } catch (GitAPIException e) {

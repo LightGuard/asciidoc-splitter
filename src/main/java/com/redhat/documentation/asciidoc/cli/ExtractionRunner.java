@@ -50,6 +50,12 @@ public class ExtractionRunner implements Runnable {
         @Option(names = { "-ob",
                 "--outputBranch" }, defaultValue = "master", description = "Branch in output repository.")
         String outputBranch;
+
+        @Option(names = { "-u", "--username" }, description = "Git Username", required = true)
+        String userName;
+
+        @Option(names = { "-p", "--password" }, description = "Git Password", required = true, interactive = true)
+        char[] password;
     }
 
     public static void main(String... args) {
@@ -64,7 +70,7 @@ public class ExtractionRunner implements Runnable {
                 : new GitRepositorySource(inputOptions.gitInputOptions.sourceRepo, inputOptions.gitInputOptions.sourceBranch);
         Target target = outputOptions.outputDir != null
                 ? new LocalDirectoryTarget(this.outputOptions.outputDir)
-                : new GitRepositoryTarget(outputOptions.gitOutputOptions.outputRepo, outputOptions.gitOutputOptions.outputBranch);
+                : new GitRepositoryTarget(outputOptions.gitOutputOptions.outputRepo, outputOptions.gitOutputOptions.outputBranch, outputOptions.gitOutputOptions.userName, outputOptions.gitOutputOptions.password);
 
         var task = new Task(source, target);
         var extractor = new Extractor(task);

@@ -4,16 +4,19 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Objects;
 
-public class LocalDirectorySource implements Source {
+/**
+ * Handles local directory source locations
+ */
+public class LocalDirectoryLocation implements Location {
     private final File directory;
 
-    public LocalDirectorySource(File directory) {
+    public LocalDirectoryLocation(File directory) {
         this.directory = directory;
     }
 
     @Override
     public String toString() {
-        return "LocalDirectorySource{" +
+        return "LocalDirectoryLocation{" +
                 "directory='" + directory + '\'' +
                 '}';
     }
@@ -26,7 +29,7 @@ public class LocalDirectorySource implements Source {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        LocalDirectorySource that = (LocalDirectorySource) o;
+        LocalDirectoryLocation that = (LocalDirectoryLocation) o;
         return Objects.equals(directory, that.directory);
     }
 
@@ -35,7 +38,10 @@ public class LocalDirectorySource implements Source {
         return Objects.hash(directory);
     }
 
-
+    /**
+     * Gets the directory path of location
+     * @return location directory path
+     */
     @Override
     public Path getDirectoryPath() {
         return this.directory.toPath();

@@ -1,9 +1,11 @@
 package com.redhat.documentation.asciidoc.extraction;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Disabled("No longer using these, but I want to keep them for now.")
 class SourceExtractorTest extends AsciidocExtractionTest {
 
     @Test

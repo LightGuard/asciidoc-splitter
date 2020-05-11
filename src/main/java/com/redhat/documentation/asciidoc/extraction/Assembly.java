@@ -24,7 +24,7 @@ public class Assembly {
     private StringBuilder source;
 
     public Assembly(Document doc, List<String> lines) {
-        this.id = doc.getId() == null ? doc.getBlocks().get(0).getId() : doc.getId();
+        this.id = (doc.getId() == null ? doc.getBlocks().get(0).getId() : doc.getId());
         // If there isn't an explicit id, it starts with an _
         if (this.id.startsWith("_")) {
             // Don't use the first character (an underscore) and replace underscore with hyphen

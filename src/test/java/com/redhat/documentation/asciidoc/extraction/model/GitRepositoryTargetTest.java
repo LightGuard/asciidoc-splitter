@@ -1,5 +1,9 @@
 package com.redhat.documentation.asciidoc.extraction.model;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
@@ -9,19 +13,14 @@ import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.util.FS;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GitRepositoryTargetTest {
     public static final String BRANCH = "test";
     private static final String REPO_URL = "https://github.com/manaswinidas/Docs-symlink.git";
     private static final String username = "qwerty";
-    private static final char[] password = "qwerty".toCharArray();
-    private final GitRepositoryTarget target = new GitRepositoryTarget(REPO_URL, BRANCH, username, password);
+    private static final String password = "qwerty";
+    private final GitRepository target = new GitRepository(REPO_URL, BRANCH, username, password);
 
     @Test
     void getDirectoryPathShouldReturnDirectoryOfClonedRepo() throws IOException {

@@ -3,7 +3,7 @@ package com.redhat.documentation.asciidoc.extraction.model;
 import java.nio.file.Path;
 
 /**
- * Handles source locations
+ * A Location of files.
  */
 public interface Location {
     Path getDirectoryPath();

@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 /**
- * Handles local directory source locations
+ * A system local directory, backed by a {@link File}.
  */
 public class LocalDirectoryLocation implements Location {
     private final File directory;

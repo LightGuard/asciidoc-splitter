@@ -3,7 +3,7 @@ package com.redhat.documentation.asciidoc.extraction.model;
 import java.util.Objects;
 
 /**
- * Task class to handle multiple location and pushable location types
+ * Task to handle multiple location and pushable location types.
  */
 public class Task {
     private final Location location;

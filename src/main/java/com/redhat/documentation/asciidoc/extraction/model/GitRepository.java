@@ -1,9 +1,5 @@
 package com.redhat.documentation.asciidoc.extraction.model;
 
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -11,20 +7,29 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+
 /**
- * Handles git repository target locations
+ * A Git Repo location.
  */
-public class GitRepositoryPushableLocation implements PushableLocation {
+public class GitRepository implements PushableLocation {
     private final String url;
     private final String branch;
     private final String username;
-    private final char[] password;
+    private final String password;
     private Path dirPath;
 
-    public GitRepositoryPushableLocation(String url, String branch, String username, char[] password) {
+    public GitRepository(String url, String branch) {
+        this(url, branch, "", "");
+    }
 
+    public GitRepository(String url, String branch, String username, String password) {
         this.url = url;
         this.branch = branch;
+        this.username = username;
+        this.password = password;
     }
 
     /**
@@ -51,7 +56,7 @@ public class GitRepositoryPushableLocation implements PushableLocation {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        GitRepositoryPushableLocation that = (GitRepositoryPushableLocation) o;
+        GitRepository that = (GitRepository) o;
         return Objects.equals(url, that.url) &&
                 Objects.equals(branch, that.branch);
     }
@@ -63,7 +68,7 @@ public class GitRepositoryPushableLocation implements PushableLocation {
 
     @Override
     public String toString() {
-        return "GitRepositoryPushableLocation{" +
+        return "GitRepository{" +
                 "outputRepo='" + url + '\'' +
                 ", outputBranch='" + branch + '\'' +
                 '}';
@@ -106,7 +111,9 @@ public class GitRepositoryPushableLocation implements PushableLocation {
             git.add().addFilepattern(".").call();
 
             git.commit().setMessage("commit message").call();
-            git.push().setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password)).call();
+            git.push()
+                .setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
+                .call();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         } catch (GitAPIException e) {

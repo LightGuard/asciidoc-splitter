@@ -3,6 +3,10 @@ package com.redhat.documentation.asciidoc.cli;
 import java.io.File;
 import java.net.URI;
 
+/**
+ * POJO for configuration pulled from the CLI.
+ * Immutable.
+ */
 public class Configuration {
     private File sourceDirectory;
     private File outputDirectory;

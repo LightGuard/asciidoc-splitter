@@ -1,5 +1,27 @@
 package com.redhat.documentation.asciidoc.extraction;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Writer;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import com.redhat.documentation.asciidoc.Util;
 import com.redhat.documentation.asciidoc.cli.ExtractionRunner;
 import com.redhat.documentation.asciidoc.cli.Issue;
@@ -8,13 +30,6 @@ import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.jruby.AsciiDocDirectoryWalker;
-
-import java.io.*;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class Extractor {
     private final List<Assembly> assemblies;
@@ -50,6 +65,8 @@ public class Extractor {
 
         // Move all the extra assets
         moveNonadoc(this.task.getLocation().getDirectoryPath(), this.task.getPushableLocation().getDirectoryPath());
+
+        // Push/Save the output
         this.task.getPushableLocation().push();
 
         long errors = this.issues.stream().filter(Issue::isError).count();

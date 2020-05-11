@@ -13,7 +13,8 @@ import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "extract", mixinStandardHelpOptions = true, version = "1.0", description = "Create a modular documentation layout from a directory of asciidoc files.")
+@Command(name = "extract", mixinStandardHelpOptions = true, version = "1.0",
+        description = "Create a modular documentation layout from a directory of asciidoc files.")
 public class ExtractionRunner implements Runnable {
 
     @ArgGroup(heading = "Input", exclusive = true, multiplicity = "1")
@@ -96,11 +97,13 @@ public class ExtractionRunner implements Runnable {
     public void run() {
         Location location = inputOptions.inputDir != null
                 ? new LocalDirectoryLocation(this.inputOptions.inputDir)
-                : new GitRepository(inputOptions.gitInputOptions.sourceRepo, inputOptions.gitInputOptions.sourceBranch);
+                : new GitRepository(inputOptions.gitInputOptions.sourceRepo, inputOptions.gitInputOptions.sourceBranch,
+                                    inputOptions.gitInputOptions.userName, inputOptions.gitInputOptions.password);
 
         PushableLocation pushableLocation = outputOptions.outputDir != null
                 ? PushableLocation.locationWrapper(new LocalDirectoryLocation(this.outputOptions.outputDir), () -> {})
-                : new GitRepository(outputOptions.gitOutputOptions.outputRepo, outputOptions.gitOutputOptions.outputBranch);
+                : new GitRepository(outputOptions.gitOutputOptions.outputRepo, outputOptions.gitOutputOptions.outputBranch,
+                                    outputOptions.gitOutputOptions.userName, outputOptions.gitOutputOptions.password);
 
         var task = new Task(location, pushableLocation);
         var extractor = new Extractor(task);

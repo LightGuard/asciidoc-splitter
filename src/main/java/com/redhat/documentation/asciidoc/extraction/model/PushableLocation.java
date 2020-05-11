@@ -1,6 +1,7 @@
 package com.redhat.documentation.asciidoc.extraction.model;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 /**
  * A specialized {@link Location} that allows for files to be "pushed", like a source repo.
@@ -13,6 +14,14 @@ public interface PushableLocation extends Location {
     void push();
 
     static PushableLocation locationWrapper(Location loc, Runnable pushAction) {
+        if (Objects.isNull(loc)) {
+            throw new IllegalArgumentException("loc must be non-null");
+        }
+
+        if (Objects.isNull(pushAction)) {
+            throw new IllegalArgumentException("pushAction must be non-null");
+        }
+
         return new PushableLocation() {
             @Override
             public void push() {

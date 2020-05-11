@@ -1,4 +1,4 @@
-package com.redhat.documentation.asciidoc;
+package com.redhat.documentation.asciidoc.cli;
 
 import java.io.File;
 import java.net.URI;
@@ -25,6 +25,14 @@ public class Configuration {
         this.sourceDirectory = sourceDirectory;
         this.outputRepo = outputRepo;
         this.outputBranch = outputBranch;
+    }
+
+    public Configuration(String sourceRepo, String sourceBranch, File outputDirectory) {
+        assert outputDirectory.isDirectory();
+
+        this.sourceRepo = sourceRepo;
+        this.sourceBranch = sourceBranch;
+        this.outputDirectory = outputDirectory;
     }
 
     public Configuration(String sourcePathName, String outputPathName) {

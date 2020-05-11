@@ -11,7 +11,7 @@ public class Issue {
     private final boolean error;
     private final String text;
 
-    static Issue error(String text, StructuralNode node) {
+    public static Issue error(String text, StructuralNode node) {
         return new Issue(true, text, node);
     }
 
@@ -26,7 +26,7 @@ public class Issue {
     }
 
 
-    boolean isError() {
+    public boolean isError() {
         return error;
     }
 

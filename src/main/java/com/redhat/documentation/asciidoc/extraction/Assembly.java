@@ -43,9 +43,9 @@ public class Assembly {
 
         // Adding the id of the module
         this.source.append("[id=\"").append(this.idWithoutContext).append("_{context}\"]\n")
-                    // Adding the section title
-                   .append("= ").append(doc.getTitle()).append("\n")
-                   .append(":context: ").append(this.idWithoutContext).append("\n\n");
+                // Adding the section title
+                .append("= ").append(doc.getTitle()).append("\n")
+                .append(":context: ").append(this.idWithoutContext).append("\n\n");
 
         // Grab the preamble
         if (doc.findBy(Map.of("context", ":preamble")).size() > 0) {
@@ -58,10 +58,10 @@ public class Assembly {
         List<SectionWrapper> moduleSources = new ArrayList<>();
 
         var modules = doc.findBy(Map.of("context", ":section")).stream()
-                                        .filter(ExtractedModule::isNodeAModule)
+                .filter(ExtractedModule::isNodeAModule)
 //                                        .filter(Section.class::isInstance)
-                                        .map(Section.class::cast)
-                                        .collect(Collectors.toList());
+                .map(Section.class::cast)
+                .collect(Collectors.toList());
 
         var modulesItr = modules.listIterator();
         while (modulesItr.hasNext()) {

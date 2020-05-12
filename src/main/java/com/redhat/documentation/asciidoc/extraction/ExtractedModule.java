@@ -3,6 +3,7 @@ package com.redhat.documentation.asciidoc.extraction;
 import java.util.Objects;
 
 import com.redhat.documentation.asciidoc.Util;
+import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.Section;
 import org.asciidoctor.ast.StructuralNode;
 
@@ -31,6 +32,12 @@ public class ExtractedModule {
         }
 
         return false;
+    }
+
+    static String getFolder(Document doc) {
+        var foldernames=doc.getSourceLocation().getDir().split("/");
+        String foldername=foldernames[foldernames.length-1];
+        return foldername;
     }
 
     @Override
@@ -65,7 +72,6 @@ public class ExtractedModule {
         this.source = lines;
         this.leveloffset = section.getLevel();
     }
-
     public String getId() {
         return id;
     }

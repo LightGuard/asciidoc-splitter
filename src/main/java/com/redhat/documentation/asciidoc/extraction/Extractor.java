@@ -80,7 +80,6 @@ public class Extractor {
      */
     private void findSections(Document doc, List<String> lines) {
         // TODO: This should probably be configurable
-
         var assembly = new Assembly(doc, lines);
         this.assemblies.add(assembly);
         for (var module : assembly.getModules()) {
@@ -127,7 +126,8 @@ public class Extractor {
 
             for (ExtractedModule module : this.modules) {
                 // Create output file
-                Path moduleOutputFile = Paths.get(modulesDir.toString(), module.getFileName());
+                Path modules= Files.createDirectories(modulesDir.resolve(module.getFolder(module.getSection().getDocument())));
+                Path moduleOutputFile = Paths.get(modules.toString(), module.getFileName());
 
                 if (moduleOutputFile.toFile().exists()) {
                     if (visitedPaths.contains(moduleOutputFile)) {
@@ -203,4 +203,3 @@ public class Extractor {
         return new BufferedReader(new InputStreamReader(resource)).lines().collect(Collectors.joining("\n"));
     }
 }
-

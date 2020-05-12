@@ -88,8 +88,11 @@ class ExtractionRunnerTest {
         // Modules
         var modulesDir = new File(this.outputDirectory, "modules");
         assertThat(modulesDir.exists()).isTrue();
-        assertThat(modulesDir.listFiles()).hasSize(2);
-        var moduleFileNames = Objects.requireNonNull(modulesDir.listFiles(new AsciidocFileFilter()));
+        var topicDir = new File(modulesDir, "content-test");
+        assertThat(modulesDir.listFiles()).hasSize(1);
+        assertThat(topicDir.exists()).isTrue();
+        assertThat(topicDir.listFiles()).hasSize(2);
+        var moduleFileNames = Objects.requireNonNull(topicDir.listFiles(new AsciidocFileFilter()));
         assertThat(Arrays.stream(moduleFileNames).map(File::getName).collect(Collectors.toList()))
                 .containsExactlyInAnyOrder("proc-module-one.adoc", "con-module-two.adoc");
 
@@ -111,8 +114,10 @@ class ExtractionRunnerTest {
         // Modules
         var modulesDir = new File(this.outputDirectory, "modules");
         assertThat(modulesDir.exists()).isTrue();
-        assertThat(modulesDir.listFiles()).hasSize(6);
-
+        assertThat(modulesDir.listFiles()).hasSize(1);
+        var topicDir = new File(modulesDir, "input");
+        assertThat(topicDir.exists()).isTrue();
+        assertThat(topicDir.listFiles()).hasSize(6);
         // Assemblies
         var assembliesDir = new File(this.outputDirectory, "assemblies");
         assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(1);
@@ -129,7 +134,10 @@ class ExtractionRunnerTest {
         // Modules
         var modulesDir = new File(this.outputDirectory, "modules");
         assertThat(modulesDir.exists()).isTrue();
-        assertThat(modulesDir.listFiles()).hasSize(10);
+        assertThat(modulesDir.listFiles()).hasSize(1);
+        var topicDir = new File(modulesDir, "input");
+        assertThat(topicDir.exists()).isTrue();
+        assertThat(topicDir.listFiles()).hasSize(10);
 
         // Assemblies
         var assembliesDir = new File(this.outputDirectory, "assemblies");

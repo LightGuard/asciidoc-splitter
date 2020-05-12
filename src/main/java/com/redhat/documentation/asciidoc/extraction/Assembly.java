@@ -92,6 +92,7 @@ public class Assembly {
             var extractedModule = new ExtractedModule(wrapper.getSection(), wrapper.getSource());
             this.modules.add(extractedModule);
             this.source.append("include::../modules/")
+                    .append(extractedModule.getTopicFolder()+"/")
                     .append(extractedModule.getFileName())
                     .append("[leveloffset=+" + extractedModule.getLeveloffset() + "]")
                     .append("\n\n");

@@ -1,5 +1,6 @@
 package com.redhat.documentation.asciidoc.extraction;
 
+import java.io.File;
 import java.util.Objects;
 
 import com.redhat.documentation.asciidoc.Util;
@@ -31,6 +32,12 @@ public class ExtractedModule {
         }
 
         return false;
+    }
+
+    public String getTopicFolder() {
+        var foldernames=(section.getDocument().getSourceLocation().getDir()).split(File.separator);
+        String foldername=foldernames[foldernames.length-1];
+        return foldername;
     }
 
     @Override
@@ -65,7 +72,6 @@ public class ExtractedModule {
         this.source = lines;
         this.leveloffset = section.getLevel();
     }
-
     public String getId() {
         return id;
     }

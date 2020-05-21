@@ -1,5 +1,6 @@
 package com.redhat.documentation.asciidoc.extraction;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -92,6 +93,8 @@ public class Assembly {
             var extractedModule = new ExtractedModule(wrapper.getSection(), wrapper.getSource());
             this.modules.add(extractedModule);
             this.source.append("include::../modules/")
+                    .append(extractedModule.getFolder())
+                    .append(File.separator)
                     .append(extractedModule.getFileName())
                     .append("[leveloffset=+" + extractedModule.getLeveloffset() + "]")
                     .append("\n\n");

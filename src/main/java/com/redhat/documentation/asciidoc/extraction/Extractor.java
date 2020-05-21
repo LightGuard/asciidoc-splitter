@@ -80,6 +80,7 @@ public class Extractor {
      */
     private void findSections(Document doc, List<String> lines) {
         // TODO: This should probably be configurable
+
         var assembly = new Assembly(doc, lines);
         this.assemblies.add(assembly);
         for (var module : assembly.getModules()) {
@@ -126,27 +127,29 @@ public class Extractor {
 
             for (ExtractedModule module : this.modules) {
                 // Create output file
-                Path modules= Files.createDirectories(modulesDir.resolve(module.getFolder(module.getSection().getDocument())));
-                Path moduleOutputFile = Paths.get(modules.toString(), module.getFileName());
+                if (!module.getFolder().isEmpty()) {
+                    Path topicFolder = Files.createDirectories(modulesDir.resolve(module.getFolder()));
+                    Path moduleOutputFile = Paths.get(topicFolder.toString(), module.getFileName());
 
-                if (moduleOutputFile.toFile().exists()) {
-                    if (visitedPaths.contains(moduleOutputFile)) {
-                        System.err.println("Already written to this file: " + moduleOutputFile + " for " + module);
-                        return;
+                    if (moduleOutputFile.toFile().exists()) {
+                        if (visitedPaths.contains(moduleOutputFile)) {
+                            System.err.println("Already written to this file: " + moduleOutputFile + " for " + module);
+                            return;
+                        }
+                    } else {
+                        moduleOutputFile = Files.createFile(moduleOutputFile);
                     }
-                } else {
-                    moduleOutputFile = Files.createFile(moduleOutputFile);
-                }
-                visitedPaths.add(moduleOutputFile);
+                    visitedPaths.add(moduleOutputFile);
 
-                // Output the module
-                try (Writer output = new FileWriter(moduleOutputFile.toFile())) {
-                    output
-                            // Adding the id of the module
-                            .append("[id=\"").append(module.getId()).append("_{context}\"]\n")
-                            // Adding the section title
-                            .append("= ").append(module.getSection().getTitle()).append("\n")
-                            .append(module.getSource());
+                    // Output the module
+                    try (Writer output = new FileWriter(moduleOutputFile.toFile())) {
+                        output
+                                // Adding the id of the module
+                                .append("[id=\"").append(module.getId()).append("_{context}\"]\n")
+                                // Adding the section title
+                                .append("= ").append(module.getSection().getTitle()).append("\n")
+                                .append(module.getSource());
+                    }
                 }
             }
         } catch (IOException e) {

@@ -6,13 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.FileVisitOption;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -21,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.redhat.documentation.asciidoc.Util;
 import com.redhat.documentation.asciidoc.cli.ExtractionRunner;
@@ -65,7 +60,7 @@ public class Extractor {
 
         // Move all the extra assets
         moveNonadoc(this.task.getLocation().getDirectoryPath(), this.task.getPushableLocation().getDirectoryPath());
-
+        moveTitles(this.task.getLocation().getDirectoryPath(), this.task.getPushableLocation().getDirectoryPath());
         // Push/Save the output
         this.task.getPushableLocation().push();
 
@@ -196,6 +191,46 @@ public class Extractor {
         } catch (IOException e) {
             addIssue(Issue.error(e.getMessage(), null));
         }
+    }
+
+    private void moveTitles(Path sourceDir, Path targetDir) {
+        try{
+            var dirs=sourceDir.getName(0).toFile();
+            Path sourceD=Paths.get(dirs.toString(), "titles-enterprise");
+            Path titlesDir=Files.createDirectories(targetDir.resolve(sourceD.getFileName().toString()));
+            Path assemblies=Paths.get(targetDir.toString(), "assemblies").toAbsolutePath();
+            Files.walk(sourceD)
+                    .forEach(source -> {
+                        try {
+                            Files.copy(source, titlesDir.resolve(sourceD.relativize(source)),
+                                    StandardCopyOption.REPLACE_EXISTING);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+            for(File file:titlesDir.toFile().listFiles()){
+                if(file.isDirectory()){
+                    for(File f:file.listFiles()) {
+                        if(f.isDirectory() && !Files.isSymbolicLink(f.toPath())) {
+                            f.delete();
+                        }
+                        Path titles_assemblies=Paths.get(f.getParent(), "assemblies");
+                        if(Files.exists(titles_assemblies)){
+                            Files.delete(titles_assemblies);
+                        }Files.createSymbolicLink(titles_assemblies, assemblies);
+                        if(f.toString().endsWith(".adoc")){
+                            Stream<String> lines = Files.lines(f.toPath());
+                            List <String> replaced = lines.map(line -> line.replaceAll("::(.*\\/)",
+                                    "::"+assemblies.toFile().getName()+File.separator+"assembly-")).collect(Collectors.toList());
+                            Files.write(f.toPath(), replaced);
+                            lines.close();
+                        }
+                    }
+                }
+            }
+
+        }catch (IOException e) {
+            addIssue(Issue.error(e.getMessage(), null));}
     }
 
     private String getTemplateContents(String templateLocation) {

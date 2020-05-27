@@ -48,19 +48,23 @@ public class Extractor {
         // We need access to the line numbers and source
         optionsBuilder.sourcemap(true);
 
-        for (File file : new AsciiDocDirectoryWalker(this.task.getLocation().getDirectoryPath().toString())) {
+        final Path sourceDirPath = this.task.getLocation().getDirectoryPath();
+        final Path targetDirPath = this.task.getPushableLocation().getDirectoryPath();
+
+        for (File file : new AsciiDocDirectoryWalker(sourceDirPath.toString())) {
             var doc = asciidoctor.loadFile(file, optionsBuilder.asMap());
             var lines = preprocessor.getLines();
 
             findSections(doc, lines);
 
-            writeModules(this.task.getPushableLocation().getDirectoryPath());
-            writeAssemblies(this.task.getPushableLocation().getDirectoryPath());
+            writeModules(targetDirPath);
+            writeAssemblies(targetDirPath);
         }
 
         // Move all the extra assets
-        moveNonadoc(this.task.getLocation().getDirectoryPath(), this.task.getPushableLocation().getDirectoryPath());
-        moveTitles(this.task.getLocation().getDirectoryPath(), this.task.getPushableLocation().getDirectoryPath());
+        moveNonadoc(sourceDirPath, targetDirPath);
+        moveTitles(sourceDirPath, targetDirPath);
+
         // Push/Save the output
         this.task.getPushableLocation().push();
 
@@ -113,7 +117,7 @@ public class Extractor {
         });
     }
 
-    private void writeModules(Path  targetDirectory) {
+    private void writeModules(Path targetDirectory) {
         // Create the modules directory and write the files
         try {
             // Create the output directories
@@ -194,11 +198,11 @@ public class Extractor {
     }
 
     private void moveTitles(Path sourceDir, Path targetDir) {
-        try{
-            var dirs=sourceDir.getName(0).toFile();
-            Path sourceD=Paths.get(dirs.toString(), "titles-enterprise");
-            Path titlesDir=Files.createDirectories(targetDir.resolve(sourceD.getFileName().toString()));
-            Path assemblies=Paths.get(targetDir.toString(), "assemblies").toAbsolutePath();
+        try {
+            var dirs = sourceDir.getName(0).toFile();
+            Path sourceD = Paths.get(dirs.toString(), "titles-enterprise");
+            Path titlesDir = Files.createDirectories(targetDir.resolve(sourceD.getFileName().toString()));
+            Path assemblies = Paths.get(targetDir.toString(), "assemblies").toAbsolutePath();
             Files.walk(sourceD)
                     .forEach(source -> {
                         try {
@@ -208,20 +212,21 @@ public class Extractor {
                             e.printStackTrace();
                         }
                     });
-            for(File file:titlesDir.toFile().listFiles()){
-                if(file.isDirectory()){
-                    for(File f:file.listFiles()) {
-                        if(f.isDirectory() && !Files.isSymbolicLink(f.toPath())) {
+            for (File file : titlesDir.toFile().listFiles()) {
+                if (file.isDirectory()) {
+                    for (File f : file.listFiles()) {
+                        if (f.isDirectory() && !Files.isSymbolicLink(f.toPath())) {
                             f.delete();
                         }
-                        Path titles_assemblies=Paths.get(f.getParent(), "assemblies");
-                        if(Files.exists(titles_assemblies)){
+                        Path titles_assemblies = Paths.get(f.getParent(), "assemblies");
+                        if (Files.exists(titles_assemblies)) {
                             Files.delete(titles_assemblies);
-                        }Files.createSymbolicLink(titles_assemblies, assemblies);
-                        if(f.toString().endsWith(".adoc")){
+                        }
+                        Files.createSymbolicLink(titles_assemblies, assemblies);
+                        if (f.toString().endsWith(".adoc")) {
                             Stream<String> lines = Files.lines(f.toPath());
-                            List <String> replaced = lines.map(line -> line.replaceAll("::(.*\\/)",
-                                    "::"+assemblies.toFile().getName()+"/assembly-")).collect(Collectors.toList());
+                            List<String> replaced = lines.map(line -> line.replaceAll("::(.*\\/)",
+                                    "::" + assemblies.toFile().getName() + "/assembly-")).collect(Collectors.toList());
                             Files.write(f.toPath(), replaced);
                             lines.close();
                         }
@@ -229,8 +234,9 @@ public class Extractor {
                 }
             }
 
-        }catch (IOException e) {
-            addIssue(Issue.error(e.getMessage(), null));}
+        } catch (IOException e) {
+            addIssue(Issue.error(e.getMessage(), null));
+        }
     }
 
     private String getTemplateContents(String templateLocation) {

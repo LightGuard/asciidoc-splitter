@@ -1,18 +1,18 @@
 package com.redhat.documentation.asciidoc.cli;
 
-import com.redhat.documentation.asciidoc.extraction.AsciidocFileFilter;
-import com.redhat.documentation.asciidoc.extraction.DeletionFileVisitor;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import picocli.CommandLine;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import com.redhat.documentation.asciidoc.extraction.AsciidocFileFilter;
+import com.redhat.documentation.asciidoc.extraction.DeletionFileVisitor;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import picocli.CommandLine;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -142,6 +142,16 @@ class ExtractionRunnerTest {
         // Assemblies
         var assembliesDir = new File(this.outputDirectory, "assemblies");
         assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(1);
+    }
+
+    @Test
+    public void testTitleDirectoryCreation() throws Exception {
+        final var sourceDirectory = new File("./examples/kogito/input");
+        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
+        assertThat(new File(this.outputDirectory, "titles-enterprise")).exists();
     }
 }
 

@@ -6,7 +6,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
-import java.nio.file.*;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -27,6 +33,7 @@ import org.asciidoctor.ast.Document;
 import org.asciidoctor.jruby.AsciiDocDirectoryWalker;
 
 public class Extractor {
+    public static final String TITLES_ENTERPRISE = "titles-enterprise";
     private final List<Assembly> assemblies;
     private final Set<ExtractedModule> modules;
     private final List<Issue> issues = new ArrayList<>();
@@ -63,7 +70,10 @@ public class Extractor {
 
         // Move all the extra assets
         moveNonadoc(sourceDirPath, targetDirPath);
-        moveTitles(sourceDirPath, targetDirPath);
+
+        // Create and setup titles-enterprise folder
+        createTitlesDirectory(targetDirPath);
+        moveTitles(Paths.get(sourceDirPath.toString(), TITLES_ENTERPRISE), targetDirPath);
 
         // Push/Save the output
         this.task.getPushableLocation().push();
@@ -197,21 +207,25 @@ public class Extractor {
         }
     }
 
+    private void createTitlesDirectory(Path parentDirectory) {
+        try {
+            Files.createDirectory(Paths.get(parentDirectory.toString(), "titles-enterprise"));
+        } catch (IOException e) {
+            addIssue(Issue.error("Error creating directory 'titles-enterprise' in output folder: " + e.getMessage(),
+                    null));
+        }
+    }
+
     private void moveTitles(Path sourceDir, Path targetDir) {
         try {
             var dirs = sourceDir.getName(0).toFile();
             Path sourceD = Paths.get(dirs.toString(), "titles-enterprise");
             Path titlesDir = Files.createDirectories(targetDir.resolve(sourceD.getFileName().toString()));
             Path assemblies = Paths.get(targetDir.toString(), "assemblies").toAbsolutePath();
-            Files.walk(sourceD)
-                    .forEach(source -> {
-                        try {
-                            Files.copy(source, titlesDir.resolve(sourceD.relativize(source)),
-                                    StandardCopyOption.REPLACE_EXISTING);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
+
+            Files.walkFileTree(sourceDir, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
+                    new TitleCopyTreeFileVisitor(targetDir, sourceDir));
+
             for (File file : titlesDir.toFile().listFiles()) {
                 if (file.isDirectory()) {
                     for (File f : file.listFiles()) {

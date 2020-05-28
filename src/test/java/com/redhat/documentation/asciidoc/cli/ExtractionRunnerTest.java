@@ -153,5 +153,16 @@ class ExtractionRunnerTest {
         assertThat(exitCode).isEqualTo(0);
         assertThat(new File(this.outputDirectory, "titles-enterprise")).exists();
     }
+
+    @Test
+    public void testTitleDirectoryContents() throws Exception {
+        final var sourceDirectory = new File("./examples/kogito/input");
+        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
+        final File titleDirectory = new File(this.outputDirectory, "titles-enterprise");
+        assertThat(titleDirectory.list()).containsOnly("assemblies-test", "master-docinfo.xml");
+    }
 }
 

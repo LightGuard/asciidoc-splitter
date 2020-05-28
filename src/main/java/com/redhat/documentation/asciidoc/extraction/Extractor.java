@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.redhat.documentation.asciidoc.Util;
 import com.redhat.documentation.asciidoc.cli.ExtractionRunner;
@@ -219,34 +218,34 @@ public class Extractor {
     private void moveTitles(Path sourceDir, Path targetDir) {
         try {
             var dirs = sourceDir.getName(0).toFile();
-            Path sourceD = Paths.get(dirs.toString(), "titles-enterprise");
-            Path titlesDir = Files.createDirectories(targetDir.resolve(sourceD.getFileName().toString()));
-            Path assemblies = Paths.get(targetDir.toString(), "assemblies").toAbsolutePath();
 
             Files.walkFileTree(sourceDir, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
                     new TitleCopyTreeFileVisitor(targetDir, sourceDir));
 
-            for (File file : titlesDir.toFile().listFiles()) {
-                if (file.isDirectory()) {
-                    for (File f : file.listFiles()) {
-                        if (f.isDirectory() && !Files.isSymbolicLink(f.toPath())) {
-                            f.delete();
-                        }
-                        Path titles_assemblies = Paths.get(f.getParent(), "assemblies");
-                        if (Files.exists(titles_assemblies)) {
-                            Files.delete(titles_assemblies);
-                        }
-                        Files.createSymbolicLink(titles_assemblies, assemblies);
-                        if (f.toString().endsWith(".adoc")) {
-                            Stream<String> lines = Files.lines(f.toPath());
-                            List<String> replaced = lines.map(line -> line.replaceAll("::(.*\\/)",
-                                    "::" + assemblies.toFile().getName() + "/assembly-")).collect(Collectors.toList());
-                            Files.write(f.toPath(), replaced);
-                            lines.close();
-                        }
-                    }
-                }
-            }
+//            Path sourceD = Paths.get(dirs.toString(), "titles-enterprise");
+//            Path titlesDir = Files.createDirectories(targetDir.resolve(sourceD.getFileName().toString())); // DONE
+//            Path assemblies = Paths.get(targetDir.toString(), "assemblies").toAbsolutePath();
+//            for (File file : titlesDir.toFile().listFiles()) {
+//                if (file.isDirectory()) {
+//                    for (File f : file.listFiles()) {
+//                        if (f.isDirectory() && !Files.isSymbolicLink(f.toPath())) {
+//                            f.delete();
+//                        }
+//                        Path titles_assemblies = Paths.get(f.getParent(), "assemblies");
+//                        if (Files.exists(titles_assemblies)) {
+//                            Files.delete(titles_assemblies);
+//                        }
+//                        Files.createSymbolicLink(titles_assemblies, assemblies);
+//                        if (f.toString().endsWith(".adoc")) {
+//                            Stream<String> lines = Files.lines(f.toPath());
+//                            List<String> replaced = lines.map(line -> line.replaceAll("::(.*\\/)",
+//                                    "::" + assemblies.toFile().getName() + "/assembly-")).collect(Collectors.toList());
+//                            Files.write(f.toPath(), replaced);
+//                            lines.close();
+//                        }
+//                    }
+//                }
+//            }
 
         } catch (IOException e) {
             addIssue(Issue.error(e.getMessage(), null));

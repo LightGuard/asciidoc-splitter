@@ -17,8 +17,6 @@ public class CopyTreeFileVisitor extends SimpleFileVisitor<Path> {
     private final Path targetPath;
     private final Path sourcePath;
 
-    // TODO: This should be a title-enterprise one so we only work on that directory
-
     public CopyTreeFileVisitor(Path targetPath, Path sourcePath) {
         super();
         this.targetPath = targetPath;

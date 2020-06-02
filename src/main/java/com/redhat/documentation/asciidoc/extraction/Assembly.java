@@ -92,7 +92,7 @@ public class Assembly {
         moduleSources.forEach(wrapper -> {
             var extractedModule = new ExtractedModule(wrapper.getSection(), wrapper.getSource());
             this.modules.add(extractedModule);
-            this.source.append("include::../modules/")
+            this.source.append("include::modules/")
                     .append(extractedModule.getFolder())
                     .append(File.separator)
                     .append(extractedModule.getFileName())

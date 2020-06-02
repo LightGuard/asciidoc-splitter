@@ -72,7 +72,7 @@ public class Extractor {
 
         // Create and setup titles-enterprise folder
         createTitlesDirectory(targetDirPath);
-        moveTitles(Paths.get(sourceDirPath.toString(), TITLES_ENTERPRISE), targetDirPath);
+        moveTitles(Paths.get(sourceDirPath.toString(), "../" + TITLES_ENTERPRISE), targetDirPath);
 
         // Push/Save the output
         this.task.getPushableLocation().push();
@@ -110,11 +110,26 @@ public class Extractor {
         String templateStart = getTemplateContents("templates/start.adoc");
         String templateEnd = getTemplateContents("templates/end.adoc");
 
+        // TODO create modules, _artifacts, _images symlinks in this folder
+
         this.assemblies.forEach(a -> {
             try {
                 // Create any directories that need to be created
                 Path assembliesDir = Files
                         .createDirectories(outputDirectory.resolve("assemblies"));
+
+                // Create symlinks for modules, _artifacts, and _images
+                Files.createSymbolicLink(Paths.get(assembliesDir.toString(), "modules"),
+                        Paths.get(assembliesDir.toString(), "..", "modules"));
+
+                if (Files.exists(Paths.get(assembliesDir.toString(), "..", "_artifacts")))
+                    Files.createSymbolicLink(Paths.get(assembliesDir.toString(), "_artifacts"),
+                            Paths.get(assembliesDir.toString(), "..", "_artifacts"));
+
+                if (Files.exists(Paths.get(assembliesDir.toString(), "..", "_images")))
+                    Files.createSymbolicLink(Paths.get(assembliesDir.toString(), "_images"),
+                            Paths.get(assembliesDir.toString(), "..", "_images"));
+
                 var outputFile = Paths.get(assembliesDir.toString(), a.getFilename());
                 try (Writer output = new FileWriter(outputFile.toFile())) {
                     output.append(templateStart).append("\n").append(a.getSource()).append("\n").append(templateEnd);
@@ -172,6 +187,8 @@ public class Extractor {
             var destinationDir = assetsDir.toFile().toPath();
             var adocExtRegex = Pattern.compile("^[^_.].*\\.a((sc(iidoc)?)|d(oc)?)$");
 
+
+            // TODO: This should be another (specialized?) instance of the CopyTreeFileVisitor
             Files.walkFileTree(sourceDir, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
                     new SimpleFileVisitor<>() {
                         @Override
@@ -206,6 +223,11 @@ public class Extractor {
         }
     }
 
+    /**
+     * Creates the titles-enterprise directory for the output
+     *
+     * @param parentDirectory
+     */
     private void createTitlesDirectory(Path parentDirectory) {
         try {
             Files.createDirectory(Paths.get(parentDirectory.toString(), "titles-enterprise"));
@@ -215,6 +237,12 @@ public class Extractor {
         }
     }
 
+    /**
+     * Moves all the files and folders under the titles-enterprise directory to the output
+     *
+     * @param sourceDir
+     * @param targetDir
+     */
     private void moveTitles(Path sourceDir, Path targetDir) {
         try {
             var dirs = sourceDir.getName(0).toFile();

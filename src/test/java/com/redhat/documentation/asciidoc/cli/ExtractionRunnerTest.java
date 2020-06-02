@@ -3,6 +3,7 @@ package com.redhat.documentation.asciidoc.cli;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -17,6 +18,7 @@ import picocli.CommandLine;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ExtractionRunnerTest {
+    public static final String KOGITO_ASCIIDOC_FOLDER = "./examples/kogito/input/doc-content/src/main/asciidoc";
     private File outputDirectory;
 
     @BeforeEach
@@ -34,48 +36,6 @@ class ExtractionRunnerTest {
         Files.walkFileTree(outputDirectory.toPath(), new DeletionFileVisitor());
     }
 
-//    @Test
-//    @Disabled("bad assumptions in source document")
-//    void testRun() throws Exception {
-//        final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/basic").toURI());
-//        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
-//
-//        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-//        assertThat(exitCode).isEqualTo(0);
-//
-//        // Modules
-//        var modulesDir = new File(this.outputDirectory, "modules");
-//        assertThat(modulesDir.exists()).isTrue();
-//        assertThat(modulesDir.listFiles()).hasSize(4);
-//
-//        // Assemblies
-//        var assembliesDir = new File(this.outputDirectory, "assemblies");
-//        assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(2);
-//        assertThat(Arrays.stream(Objects.requireNonNull(assembliesDir.listFiles(new AsciidocFileFilter())))
-//                            .map(File::getName)
-//                            .collect(Collectors.toList()))
-//                .containsExactlyInAnyOrder("assembly-1.adoc", "assembly-2.adoc");
-//    }
-//
-//    @Test
-//    @Disabled("bad assumptions in source document")
-//    void testRunRealWorld() throws Exception {
-//        final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/real-world").toURI());
-//        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
-//
-//        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-//        assertThat(exitCode).isEqualTo(0);
-//
-//        // Modules
-//        var modulesDir = new File(this.outputDirectory, "modules");
-//        assertThat(modulesDir.exists()).isTrue();
-//        assertThat(modulesDir.listFiles()).hasSize(3);
-//
-//        // Assemblies
-//        var assembliesDir = new File(this.outputDirectory, "assemblies");
-//        assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(7);
-//    }
-//
     @Test
 //    @Disabled("bad assumptions in source document")
     void testFileContentsSourceBlock() throws Exception {
@@ -125,7 +85,7 @@ class ExtractionRunnerTest {
 
     @Test
     public void testKogitoCreatingExample() throws Exception {
-        final var sourceDirectory = new File("./examples/kogito/input");
+        final var sourceDirectory = new File(KOGITO_ASCIIDOC_FOLDER);
         var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
@@ -146,7 +106,7 @@ class ExtractionRunnerTest {
 
     @Test
     public void testTitleDirectoryCreation() throws Exception {
-        final var sourceDirectory = new File("./examples/kogito/input");
+        final var sourceDirectory = new File(KOGITO_ASCIIDOC_FOLDER);
         var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
@@ -155,8 +115,19 @@ class ExtractionRunnerTest {
     }
 
     @Test
+    public void testSymlinkCreationUnderAssemblies() throws Exception {
+        final var sourceDirectory = new File(KOGITO_ASCIIDOC_FOLDER);
+        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
+        assertThat(Files.exists(Paths.get(this.outputDirectory.getAbsolutePath(), "assemblies", "modules"))).isTrue();
+        assertThat(Files.isSymbolicLink(Paths.get(this.outputDirectory.getAbsolutePath(), "assemblies", "modules"))).isTrue();
+    }
+
+    @Test
     public void testTitleDirectoryContents() throws Exception {
-        final var sourceDirectory = new File("./examples/kogito/input");
+        final var sourceDirectory = new File("./examples/kogito/input/doc-content");
         var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);

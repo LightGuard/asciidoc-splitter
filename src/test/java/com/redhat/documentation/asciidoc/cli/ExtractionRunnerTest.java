@@ -121,8 +121,8 @@ class ExtractionRunnerTest {
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
-        assertThat(Files.exists(Paths.get(this.outputDirectory.getAbsolutePath(), "assemblies", "modules"))).isTrue();
-        assertThat(Files.isSymbolicLink(Paths.get(this.outputDirectory.getAbsolutePath(), "assemblies", "modules"))).isTrue();
+        assertThat(Files.exists(Paths.get(this.outputDirectory.toString(), "assemblies", "modules"))).isTrue();
+        assertThat(Files.isSymbolicLink(Paths.get(this.outputDirectory.toString(), "assemblies", "modules"))).isTrue();
     }
 
     @Test

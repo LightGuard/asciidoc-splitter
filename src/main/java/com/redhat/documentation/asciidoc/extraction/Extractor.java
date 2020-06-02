@@ -74,12 +74,40 @@ public class Extractor {
         createTitlesDirectory(targetDirPath);
         moveTitles(Paths.get(sourceDirPath.toString(), "../" + TITLES_ENTERPRISE), targetDirPath);
 
+        // create symlinks in assemblies
+        createAssemblySymlinks(targetDirPath);
+
         // Push/Save the output
         this.task.getPushableLocation().push();
 
         long errors = this.issues.stream().filter(Issue::isError).count();
 
         System.out.println("Found " + this.issues.size() + " issues. " + errors + " Errors.");
+    }
+
+    /**
+     * Create symlinks in assemblies directory for ccutils to run correctly
+     * @param targetDirPath
+     */
+    private void createAssemblySymlinks(Path targetDirPath) {
+        var assembliesDir = Path.of(targetDirPath.toString(), "assemblies").toString();
+
+        try {
+            // Create symlinks for modules, _artifacts, and _images
+            if (Files.notExists(Paths.get(assembliesDir, "modules"))) // We only need this once
+                Files.createSymbolicLink(Paths.get(assembliesDir, "modules"),
+                        Path.of(targetDirPath.toString(), "modules"));
+
+            if (Files.exists(Paths.get(assembliesDir, "..", "_artifacts")))
+                Files.createSymbolicLink(Paths.get(assembliesDir, "_artifacts"),
+                        Paths.get(assembliesDir,"..", "modules"));
+
+            if (Files.exists(Paths.get(assembliesDir, "..", "_images")))
+                Files.createSymbolicLink(Paths.get(assembliesDir, "_images"),
+                        Paths.get(assembliesDir,"..", "modules"));
+        } catch (IOException e) {
+            System.err.println("Failed creating symlinks: " + e.getMessage());
+        }
     }
 
     /**
@@ -117,18 +145,6 @@ public class Extractor {
                 // Create any directories that need to be created
                 Path assembliesDir = Files
                         .createDirectories(outputDirectory.resolve("assemblies"));
-
-                // Create symlinks for modules, _artifacts, and _images
-                Files.createSymbolicLink(Paths.get(assembliesDir.toString(), "modules"),
-                        Paths.get(assembliesDir.toString(), "..", "modules"));
-
-                if (Files.exists(Paths.get(assembliesDir.toString(), "..", "_artifacts")))
-                    Files.createSymbolicLink(Paths.get(assembliesDir.toString(), "_artifacts"),
-                            Paths.get(assembliesDir.toString(), "..", "_artifacts"));
-
-                if (Files.exists(Paths.get(assembliesDir.toString(), "..", "_images")))
-                    Files.createSymbolicLink(Paths.get(assembliesDir.toString(), "_images"),
-                            Paths.get(assembliesDir.toString(), "..", "_images"));
 
                 var outputFile = Paths.get(assembliesDir.toString(), a.getFilename());
                 try (Writer output = new FileWriter(outputFile.toFile())) {

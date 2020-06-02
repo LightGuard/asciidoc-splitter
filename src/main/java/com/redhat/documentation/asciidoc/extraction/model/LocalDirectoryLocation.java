@@ -11,7 +11,7 @@ public class LocalDirectoryLocation implements Location {
     private final File directory;
 
     public LocalDirectoryLocation(File directory) {
-        this.directory = directory;
+        this.directory = directory.getAbsoluteFile();
     }
 
     @Override

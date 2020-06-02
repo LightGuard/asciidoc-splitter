@@ -43,8 +43,7 @@ public class Assembly {
         this.modules = new ArrayList<>();
         this.source = new StringBuilder();
 
-        this.createAssembly = Boolean.getBoolean(doc.getBlocks().get(0).getAttributes()
-                .getOrDefault("assembly", true).toString());
+        this.createAssembly = Boolean.parseBoolean(doc.getAttribute("assembly", "true").toString());
 
         // Adding the id of the module
         this.source.append("[id=\"").append(this.idWithoutContext).append("_{context}\"]\n")

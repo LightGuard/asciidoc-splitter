@@ -1,6 +1,7 @@
-[id='chap-kogito-using-drl-rules', assembly=false]
+[id='chap-kogito-using-drl-rules']
 = Using DRL rules in {PRODUCT} services
 :context: drl-rules
+:assembly: false
 
 As a developer of business decisions, you can define business rules using Drools Rule Language (DRL) directly in free-form `.drl` text files. A DRL file can contain one or more rules that define at a minimum the rule conditions (`when`) and actions (`then`).
 

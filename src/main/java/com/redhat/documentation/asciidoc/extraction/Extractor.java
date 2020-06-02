@@ -146,9 +146,11 @@ public class Extractor {
                 Path assembliesDir = Files
                         .createDirectories(outputDirectory.resolve("assemblies"));
 
-                var outputFile = Paths.get(assembliesDir.toString(), a.getFilename());
-                try (Writer output = new FileWriter(outputFile.toFile())) {
-                    output.append(templateStart).append("\n").append(a.getSource()).append("\n").append(templateEnd);
+                if (a.shouldCreateAssembly()) {
+                    var outputFile = Paths.get(assembliesDir.toString(), a.getFilename());
+                    try (Writer output = new FileWriter(outputFile.toFile())) {
+                        output.append(templateStart).append("\n").append(a.getSource()).append("\n").append(templateEnd);
+                    }
                 }
             } catch (IOException e) {
                 // TODO: We blew-up in an unexpected way, handle this

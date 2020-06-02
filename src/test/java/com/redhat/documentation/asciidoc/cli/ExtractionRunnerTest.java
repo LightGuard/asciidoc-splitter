@@ -135,5 +135,20 @@ class ExtractionRunnerTest {
         final File titleDirectory = new File(this.outputDirectory, "titles-enterprise");
         assertThat(titleDirectory.list()).containsOnly("assemblies-test", "master-docinfo.xml");
     }
+
+    @Test
+    public void testAssemblyFalseOutput() throws Exception {
+        final var sourceDirectory = new File("./src/test/resources/docs/no-assembly");
+        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
+        final File assembliesDir = new File(this.outputDirectory, "assemblies");
+        assertThat(assembliesDir.list()).containsOnly("modules");
+
+        // Modules
+        final File modulesDir = new File(this.outputDirectory, "modules");
+        assertThat(modulesDir.list()).isNotEmpty();
+    }
 }
 

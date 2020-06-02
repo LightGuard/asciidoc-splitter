@@ -23,6 +23,7 @@ public class Assembly {
     private String context;
     private List<ExtractedModule> modules;
     private StringBuilder source;
+    private boolean createAssembly;
 
     public Assembly(Document doc, List<String> lines) {
         this.id = (doc.getId() == null ? doc.getBlocks().get(0).getId() : doc.getId());
@@ -41,6 +42,9 @@ public class Assembly {
         this.context = this.id;
         this.modules = new ArrayList<>();
         this.source = new StringBuilder();
+
+        this.createAssembly = Boolean.getBoolean(doc.getBlocks().get(0).getAttributes()
+                .getOrDefault("assembly", true).toString());
 
         // Adding the id of the module
         this.source.append("[id=\"").append(this.idWithoutContext).append("_{context}\"]\n")
@@ -143,4 +147,9 @@ public class Assembly {
     public String getFilename() {
         return "assembly-" + idWithoutContext + ".adoc".toLowerCase();
     }
+
+    public boolean shouldCreateAssembly() {
+        return this.createAssembly;
+    }
 }
+

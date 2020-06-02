@@ -95,7 +95,7 @@ class ExtractionRunnerTest {
         var modulesDir = new File(this.outputDirectory, "modules");
         assertThat(modulesDir.exists()).isTrue();
         assertThat(modulesDir.listFiles()).hasSize(1);
-        var topicDir = new File(modulesDir, "input");
+        var topicDir = new File(modulesDir, "creating-running");
         assertThat(topicDir.exists()).isTrue();
         assertThat(topicDir.listFiles()).hasSize(10);
 

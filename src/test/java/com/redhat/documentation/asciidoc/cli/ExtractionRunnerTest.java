@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import com.redhat.documentation.asciidoc.extraction.AsciidocFileFilter;
 import com.redhat.documentation.asciidoc.extraction.DeletionFileVisitor;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
@@ -20,6 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ExtractionRunnerTest {
     public static final String KOGITO_ASCIIDOC_FOLDER = "./examples/kogito/input/doc-content/src/main/asciidoc";
     private File outputDirectory;
+
+    @BeforeAll
+    static void allSetUp() {
+        System.setProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager");
+    }
 
     @BeforeEach
     void setUp() throws Exception {
@@ -133,7 +139,7 @@ class ExtractionRunnerTest {
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
         final File titleDirectory = new File(this.outputDirectory, "titles-enterprise");
-        assertThat(titleDirectory.list()).containsOnly("assemblies-test", "master-docinfo.xml");
+        assertThat(titleDirectory.list()).containsOnly("assemblies-test", "master-docinfo.xml", "index.adoc");
     }
 
     @Test

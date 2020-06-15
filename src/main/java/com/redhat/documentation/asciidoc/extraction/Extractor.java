@@ -19,6 +19,8 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -37,14 +39,17 @@ public class Extractor {
     private final Set<ExtractedModule> modules;
     private final List<Issue> issues = new ArrayList<>();
     private final Task task;
+    private final Logger logger;
 
     public Extractor(Task task) {
         this.task = task;
-        assemblies = new ArrayList<>();
-        modules = new HashSet<>();
+        this.assemblies = new ArrayList<>();
+        this.modules = new HashSet<>();
+        this.logger = LogManager.getLogManager().getLogger("");
     }
 
     public void process() {
+        logger.fine("Starting up Asciidoctor");
         var preprocessor = new ReaderPreprocessor();
 
         OptionsBuilder optionsBuilder = OptionsBuilder.options();
@@ -58,6 +63,12 @@ public class Extractor {
         final Path targetDirPath = this.task.getPushableLocation().getDirectoryPath();
 
         for (File file : new AsciiDocDirectoryWalker(sourceDirPath.toString())) {
+            // Skip adoc files in the title enterprise directory
+            if (file.getParent() != null && file.getParent().contains(TITLES_ENTERPRISE)) {
+                continue;
+            }
+
+            logger.fine("Loading file '" + file.getAbsolutePath() + "' into asciidoctor");
             var doc = asciidoctor.loadFile(file, optionsBuilder.asMap());
             var lines = preprocessor.getLines();
 
@@ -78,11 +89,12 @@ public class Extractor {
         createAssemblySymlinks(targetDirPath);
 
         // Push/Save the output
+        this.logger.info("Pushing content (if applicable)");
         this.task.getPushableLocation().push();
 
         long errors = this.issues.stream().filter(Issue::isError).count();
 
-        System.out.println("Found " + this.issues.size() + " issues. " + errors + " Errors.");
+        this.logger.warning("Found " + this.issues.size() + " issues. " + errors + " Errors.");
     }
 
     /**
@@ -91,6 +103,8 @@ public class Extractor {
      */
     private void createAssemblySymlinks(Path targetDirPath) {
         var assembliesDir = Path.of(targetDirPath.toString(), "assemblies").toString();
+
+        this.logger.fine("Creating symlinks in assembly directory");
 
         try {
             // Create symlinks for modules, _artifacts, and _images
@@ -106,7 +120,7 @@ public class Extractor {
                 Files.createSymbolicLink(Paths.get(assembliesDir, "_images"),
                         Paths.get(assembliesDir,"..", "modules"));
         } catch (IOException e) {
-            System.err.println("Failed creating symlinks: " + e.getMessage());
+            this.logger.severe("Failed creating symlinks: " + e.getMessage());
         }
     }
 
@@ -115,9 +129,9 @@ public class Extractor {
      * uniqueness.
      */
     private void findSections(Document doc, List<String> lines) {
-        // TODO: This should probably be configurable
-
         var assembly = new Assembly(doc, lines);
+        logger.fine("Found assembly: " + assembly.toString());
+
         this.assemblies.add(assembly);
         for (var module : assembly.getModules()) {
             if (!this.modules.add(module)) {
@@ -129,7 +143,7 @@ public class Extractor {
     }
 
     private void addIssue(Issue error) {
-        System.out.println(error);
+        this.logger.severe(error.toString());
         this.issues.add(error);
     }
 
@@ -148,6 +162,7 @@ public class Extractor {
 
                 if (a.shouldCreateAssembly()) {
                     var outputFile = Paths.get(assembliesDir.toString(), a.getFilename());
+                    logger.fine("Writting assembly file: " + outputFile);
                     try (Writer output = new FileWriter(outputFile.toFile())) {
                         output.append(templateStart).append("\n").append(a.getSource()).append("\n").append(templateEnd);
                     }
@@ -174,13 +189,15 @@ public class Extractor {
 
                     if (moduleOutputFile.toFile().exists()) {
                         if (visitedPaths.contains(moduleOutputFile)) {
-                            System.err.println("Already written to this file: " + moduleOutputFile + " for " + module);
+                            this.logger.severe("Already written to this file: " + moduleOutputFile + " for " + module);
                             return;
                         }
                     } else {
                         moduleOutputFile = Files.createFile(moduleOutputFile);
                     }
                     visitedPaths.add(moduleOutputFile);
+
+                    logger.fine("Writing module file: " + moduleOutputFile);
 
                     // Output the module
                     try (Writer output = new FileWriter(moduleOutputFile.toFile())) {
@@ -214,6 +231,8 @@ public class Extractor {
                                 throws IOException {
                             var targetDir = destinationDir.resolve(sourceDir.relativize(dir));
 
+                            logger.fine("Building directory for non-adoc file: " + targetDir);
+
                             // Create the directory structure in the new location
                             try {
                                 Files.copy(dir, targetDir);
@@ -229,6 +248,7 @@ public class Extractor {
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                             // We are not an asciidoc file
                             if (!adocExtRegex.matcher(file.getFileName().toString()).matches()) {
+                                logger.fine("Copying non-adoc file: " + file);
                                 Files.copy(file, destinationDir.resolve(sourceDir.relativize(file)));
                             }
 
@@ -248,6 +268,7 @@ public class Extractor {
      */
     private void createTitlesDirectory(Path parentDirectory) {
         try {
+            logger.fine("Creating 'titles-enterprise' directory");
             Files.createDirectory(Paths.get(parentDirectory.toString(), "titles-enterprise"));
         } catch (IOException e) {
             addIssue(Issue.error("Error creating directory 'titles-enterprise' in output folder: " + e.getMessage(),

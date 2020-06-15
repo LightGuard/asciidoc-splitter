@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Objects;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -16,11 +18,13 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class CopyTreeFileVisitor extends SimpleFileVisitor<Path> {
     private final Path targetPath;
     private final Path sourcePath;
+    private final Logger logger;
 
     public CopyTreeFileVisitor(Path targetPath, Path sourcePath) {
         super();
         this.targetPath = targetPath;
         this.sourcePath = sourcePath;
+        this.logger = LogManager.getLogManager().getLogger("");
     }
 
     @Override
@@ -33,6 +37,7 @@ public class CopyTreeFileVisitor extends SimpleFileVisitor<Path> {
         var newDirectory = targetPath.resolve(sourcePath.relativize(dir));
 
         try {
+            this.logger.fine("Creating directory: " + newDirectory);
             Files.copy(dir, newDirectory, options);
         } catch (FileAlreadyExistsException e) {
             // Ignore, doesn't matter
@@ -50,6 +55,7 @@ public class CopyTreeFileVisitor extends SimpleFileVisitor<Path> {
         CopyOption[] options = new CopyOption[] { COPY_ATTRIBUTES, REPLACE_EXISTING };
 
         try {
+            this.logger.fine("Copying file: '" + file + "' to new directory: '" + targetPath + "'");
             Files.copy(file, targetPath.resolve(sourcePath.relativize(file)), options);
         } catch (IOException x) {
             System.err.format("Unable to copy: %s: %s%n", file, x);

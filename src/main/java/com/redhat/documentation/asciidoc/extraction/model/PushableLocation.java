@@ -32,6 +32,13 @@ public interface PushableLocation extends Location {
             public Path getDirectoryPath() {
                 return loc.getDirectoryPath();
             }
+
+            @Override
+            public String toString() {
+                return "PushableLocationWrapper{" +
+                       "directory='" + loc.getDirectoryPath() + '\'' +
+                       '}';
+            }
         };
     }
 }

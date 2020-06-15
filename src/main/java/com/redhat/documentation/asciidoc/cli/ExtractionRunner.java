@@ -1,6 +1,9 @@
 package com.redhat.documentation.asciidoc.cli;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 
 import com.redhat.documentation.asciidoc.extraction.Extractor;
 import com.redhat.documentation.asciidoc.extraction.model.GitRepository;
@@ -17,11 +20,19 @@ import picocli.CommandLine.Option;
         description = "Create a modular documentation layout from a directory of asciidoc files.")
 public class ExtractionRunner implements Runnable {
 
+    // Use the JBoss LogManager
+    static {
+        System.setProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager");
+    }
+
     @ArgGroup(heading = "Input", exclusive = true, multiplicity = "1")
     InputOptions inputOptions;
 
     @ArgGroup(heading = "Output", exclusive = true, multiplicity = "1")
     OutputOptions outputOptions;
+
+    @Option(names = {"-v", "--verbose"}, description = "Verbose logging", defaultValue = "false")
+    boolean verbose;
 
     /**
      * Options for the source location of the files.
@@ -95,6 +106,15 @@ public class ExtractionRunner implements Runnable {
      */
     @Override
     public void run() {
+        // Setup verbose logging if needed
+        if (verbose) {
+            var rootLogger = LogManager.getLogManager().getLogger("");
+            rootLogger.setLevel(Level.FINE);
+            Arrays.stream(rootLogger.getHandlers()).forEach(handler -> handler.setLevel(Level.FINE));
+        }
+
+        var logger = LogManager.getLogManager().getLogger(ExtractionRunner.class.getName());
+
         Location location = inputOptions.inputDir != null
                 ? new LocalDirectoryLocation(this.inputOptions.inputDir)
                 : new GitRepository(inputOptions.gitInputOptions.sourceRepo, inputOptions.gitInputOptions.sourceBranch,
@@ -106,6 +126,7 @@ public class ExtractionRunner implements Runnable {
                                     outputOptions.gitOutputOptions.userName, outputOptions.gitOutputOptions.password);
 
         var task = new Task(location, pushableLocation);
+
         var extractor = new Extractor(task);
         extractor.process();
     }

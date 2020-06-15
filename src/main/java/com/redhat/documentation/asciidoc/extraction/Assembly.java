@@ -150,5 +150,14 @@ public class Assembly {
     public boolean shouldCreateAssembly() {
         return this.createAssembly;
     }
+
+    @Override
+    public String toString() {
+        return "Assembly{" +
+               "id='" + id + '\'' +
+               ", module size=" + modules.size() +
+               ", createAssembly=" + createAssembly +
+               '}';
+    }
 }
 

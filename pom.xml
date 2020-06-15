@@ -30,6 +30,12 @@
       <version>5.7.0.202003110725-r</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.logmanager</groupId>
+      <artifactId>jboss-logmanager</artifactId>
+      <version>2.1.14.Final</version>
+      <scope>compile</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>

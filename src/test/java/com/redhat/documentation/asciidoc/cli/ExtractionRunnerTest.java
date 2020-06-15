@@ -133,7 +133,7 @@ class ExtractionRunnerTest {
 
     @Test
     public void testTitleDirectoryContents() throws Exception {
-        final var sourceDirectory = new File("./examples/kogito/input/doc-content");
+        final var sourceDirectory = new File("./examples/kogito/input");
         var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);

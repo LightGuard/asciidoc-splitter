@@ -83,7 +83,7 @@ public class Extractor {
 
         // Create and setup titles-enterprise folder
         createTitlesDirectory(targetDirPath);
-        moveTitles(Paths.get(sourceDirPath.toString(), "../" + TITLES_ENTERPRISE), targetDirPath);
+        moveTitles(Paths.get(sourceDirPath.toString(), TITLES_ENTERPRISE).normalize(), targetDirPath);
 
         // create symlinks in assemblies
         createAssemblySymlinks(targetDirPath);
@@ -257,7 +257,7 @@ public class Extractor {
                     });
 
         } catch (IOException e) {
-            addIssue(Issue.error(e.getMessage(), null));
+            addIssue(Issue.error(e.toString(), null));
         }
     }
 
@@ -269,9 +269,10 @@ public class Extractor {
     private void createTitlesDirectory(Path parentDirectory) {
         try {
             logger.fine("Creating 'titles-enterprise' directory");
-            Files.createDirectory(Paths.get(parentDirectory.toString(), "titles-enterprise"));
+            Files.createDirectory(new File(parentDirectory.toFile(), TITLES_ENTERPRISE).toPath());
         } catch (IOException e) {
-            addIssue(Issue.error("Error creating directory 'titles-enterprise' in output folder: " + e.getMessage(),
+            logger.severe(e.toString());
+            addIssue(Issue.error("Error creating directory 'titles-enterprise' in output folder: " + e.toString(),
                     null));
         }
     }
@@ -286,6 +287,7 @@ public class Extractor {
         try {
             var dirs = sourceDir.getName(0).toFile();
 
+            logger.fine("Moving files from the titles-enterprise directory");
             Files.walkFileTree(sourceDir, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
                     new TitleCopyTreeFileVisitor(targetDir, sourceDir));
 
@@ -315,7 +317,7 @@ public class Extractor {
 //            }
 
         } catch (IOException e) {
-            addIssue(Issue.error(e.getMessage(), null));
+            addIssue(Issue.error(e.toString(), null));
         }
     }
 

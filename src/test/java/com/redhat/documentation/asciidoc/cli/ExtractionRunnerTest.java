@@ -111,24 +111,36 @@ class ExtractionRunnerTest {
     }
 
     @Test
-    public void testTitleDirectoryCreation() throws Exception {
-        final var sourceDirectory = new File(KOGITO_ASCIIDOC_FOLDER);
+    public void testArtifactsAndImages() throws Exception {
+        final var sourceDirectory = new File("./examples/kogito/input");
+
         var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
-        assertThat(new File(this.outputDirectory, "titles-enterprise")).exists();
+
+        var artifactsDir = new File(outputDirectory, "_artifacts");
+        var imagesDir = new File(outputDirectory, "_images");
+
+        assertThat(artifactsDir.exists()).isTrue();
+        assertThat(imagesDir.exists()).isTrue();
     }
 
     @Test
     public void testSymlinkCreationUnderAssemblies() throws Exception {
-        final var sourceDirectory = new File(KOGITO_ASCIIDOC_FOLDER);
+        final var sourceDirectory = new File("./examples/kogito/input");
         var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
         assertThat(Files.exists(Paths.get(this.outputDirectory.toString(), "assemblies", "modules"))).isTrue();
         assertThat(Files.isSymbolicLink(Paths.get(this.outputDirectory.toString(), "assemblies", "modules"))).isTrue();
+
+        assertThat(Files.exists(Paths.get(this.outputDirectory.toString(), "assemblies", "_images"))).isTrue();
+        assertThat(Files.isSymbolicLink(Paths.get(this.outputDirectory.toString(), "assemblies", "_images"))).isTrue();
+
+        assertThat(Files.exists(Paths.get(this.outputDirectory.toString(), "assemblies", "_artifacts"))).isTrue();
+        assertThat(Files.isSymbolicLink(Paths.get(this.outputDirectory.toString(), "assemblies", "_artifacts"))).isTrue();
     }
 
     @Test
@@ -139,7 +151,8 @@ class ExtractionRunnerTest {
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
         final File titleDirectory = new File(this.outputDirectory, "titles-enterprise");
-        assertThat(titleDirectory.list()).containsOnly("assemblies-test", "master-docinfo.xml", "index.adoc");
+        assertThat(titleDirectory.isDirectory()).isTrue();
+        assertThat(titleDirectory.list()).containsOnly("kogito-configuring", "assemblies-test", "master-docinfo.xml", "index.adoc");
     }
 
     @Test

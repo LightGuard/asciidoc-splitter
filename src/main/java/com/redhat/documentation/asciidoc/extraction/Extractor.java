@@ -6,14 +6,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileVisitOption;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -21,10 +17,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.redhat.documentation.asciidoc.Util;
 import com.redhat.documentation.asciidoc.cli.ExtractionRunner;
 import com.redhat.documentation.asciidoc.cli.Issue;
 import com.redhat.documentation.asciidoc.extraction.model.Task;
@@ -59,8 +53,8 @@ public class Extractor {
         // We need access to the line numbers and source
         optionsBuilder.sourcemap(true);
 
-        final Path sourceDirPath = this.task.getLocation().getDirectoryPath();
-        final Path targetDirPath = this.task.getPushableLocation().getDirectoryPath();
+        final Path sourceDirPath = this.task.getLocation().getDirectoryPath().normalize();
+        final Path targetDirPath = this.task.getPushableLocation().getDirectoryPath().normalize();
 
         for (File file : new AsciiDocDirectoryWalker(sourceDirPath.toString())) {
             // Skip adoc files in the title enterprise directory
@@ -78,15 +72,15 @@ public class Extractor {
             writeAssemblies(targetDirPath);
         }
 
-        // Move all the extra assets
-        moveNonadoc(sourceDirPath, targetDirPath);
+        // Create the _images and _artifacts directories
+        createAndCopyDir(sourceDirPath.resolve("_artifacts"), targetDirPath);
+        createAndCopyDir(sourceDirPath.resolve("_images"), targetDirPath);
 
-        // Create and setup titles-enterprise folder
-        createTitlesDirectory(targetDirPath);
-        moveTitles(Paths.get(sourceDirPath.toString(), TITLES_ENTERPRISE).normalize(), targetDirPath);
+        // Create and setup titles-enterprise folder, if necessary
+        moveTitles(sourceDirPath.resolve(TITLES_ENTERPRISE), targetDirPath);
 
         // create symlinks in assemblies
-        createAssemblySymlinks(targetDirPath);
+        createAssemblySymlinks(sourceDirPath, targetDirPath);
 
         // Push/Save the output
         this.logger.info("Pushing content (if applicable)");
@@ -99,26 +93,24 @@ public class Extractor {
 
     /**
      * Create symlinks in assemblies directory for ccutils to run correctly
+     *
      * @param targetDirPath
      */
-    private void createAssemblySymlinks(Path targetDirPath) {
-        var assembliesDir = Path.of(targetDirPath.toString(), "assemblies").toString();
+    private void createAssemblySymlinks(Path sourceDirPath, Path targetDirPath) {
+        var assembliesDir = targetDirPath.resolve("assemblies");
 
         this.logger.fine("Creating symlinks in assembly directory");
 
         try {
             // Create symlinks for modules, _artifacts, and _images
-            if (Files.notExists(Paths.get(assembliesDir, "modules"))) // We only need this once
-                Files.createSymbolicLink(Paths.get(assembliesDir, "modules"),
-                        Path.of(targetDirPath.toString(), "modules"));
+            if (Files.notExists(assembliesDir.resolve("modules"))) // We only need this once
+                Files.createSymbolicLink(assembliesDir.resolve("modules"), targetDirPath.resolve("modules"));
 
-            if (Files.exists(Paths.get(assembliesDir, "..", "_artifacts")))
-                Files.createSymbolicLink(Paths.get(assembliesDir, "_artifacts"),
-                        Paths.get(assembliesDir,"..", "modules"));
+            if (Files.exists(sourceDirPath.resolve( "_artifacts")))
+                Files.createSymbolicLink(assembliesDir.resolve("_artifacts"), sourceDirPath.resolve("_artifacts"));
 
-            if (Files.exists(Paths.get(assembliesDir, "..", "_images")))
-                Files.createSymbolicLink(Paths.get(assembliesDir, "_images"),
-                        Paths.get(assembliesDir,"..", "modules"));
+            if (Files.exists(sourceDirPath.resolve("_images")))
+                Files.createSymbolicLink(assembliesDir.resolve("_images"), sourceDirPath.resolve("_images"));
         } catch (IOException e) {
             this.logger.severe("Failed creating symlinks: " + e.getMessage());
         }
@@ -168,7 +160,7 @@ public class Extractor {
                     }
                 }
             } catch (IOException e) {
-                // TODO: We blew-up in an unexpected way, handle this
+                logger.severe("Error writting assembly (" + a + "): " + e.getMessage());
                 throw new RuntimeException(e);
             }
         });
@@ -216,64 +208,14 @@ public class Extractor {
         }
     }
 
-    private void moveNonadoc(Path sourceDir, Path targetDir) {
+    private void createAndCopyDir(Path sourceDir, Path targetDir) {
         try {
-            var assetsDir = Files.createDirectories(targetDir.resolve(Util.ASSETS_LOCATION));
-            var destinationDir = assetsDir.toFile().toPath();
-            var adocExtRegex = Pattern.compile("^[^_.].*\\.a((sc(iidoc)?)|d(oc)?)$");
-
-
-            // TODO: This should be another (specialized?) instance of the CopyTreeFileVisitor
-            Files.walkFileTree(sourceDir, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
-                    new SimpleFileVisitor<>() {
-                        @Override
-                        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-                                throws IOException {
-                            var targetDir = destinationDir.resolve(sourceDir.relativize(dir));
-
-                            logger.fine("Building directory for non-adoc file: " + targetDir);
-
-                            // Create the directory structure in the new location
-                            try {
-                                Files.copy(dir, targetDir);
-                            } catch (FileAlreadyExistsException e) {
-                                if (!Files.isDirectory(targetDir))
-                                    addIssue(Issue.error("Trying to create a non-directory: " + targetDir, null));
-                            }
-
-                            return FileVisitResult.CONTINUE;
-                        }
-
-                        @Override
-                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                            // We are not an asciidoc file
-                            if (!adocExtRegex.matcher(file.getFileName().toString()).matches()) {
-                                logger.fine("Copying non-adoc file: " + file);
-                                Files.copy(file, destinationDir.resolve(sourceDir.relativize(file)));
-                            }
-
-                            return FileVisitResult.CONTINUE;
-                        }
-                    });
-
+            if (sourceDir.toFile().exists()) {
+                Files.walkFileTree(sourceDir, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
+                        new CopyTreeFileVisitor(sourceDir, targetDir));
+            }
         } catch (IOException e) {
             addIssue(Issue.error(e.toString(), null));
-        }
-    }
-
-    /**
-     * Creates the titles-enterprise directory for the output
-     *
-     * @param parentDirectory
-     */
-    private void createTitlesDirectory(Path parentDirectory) {
-        try {
-            logger.fine("Creating 'titles-enterprise' directory");
-            Files.createDirectory(new File(parentDirectory.toFile(), TITLES_ENTERPRISE).toPath());
-        } catch (IOException e) {
-            logger.severe(e.toString());
-            addIssue(Issue.error("Error creating directory 'titles-enterprise' in output folder: " + e.toString(),
-                    null));
         }
     }
 
@@ -285,37 +227,9 @@ public class Extractor {
      */
     private void moveTitles(Path sourceDir, Path targetDir) {
         try {
-            var dirs = sourceDir.getName(0).toFile();
-
             logger.fine("Moving files from the titles-enterprise directory");
             Files.walkFileTree(sourceDir, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
                     new TitleCopyTreeFileVisitor(targetDir, sourceDir));
-
-//            Path sourceD = Paths.get(dirs.toString(), "titles-enterprise");
-//            Path titlesDir = Files.createDirectories(targetDir.resolve(sourceD.getFileName().toString())); // DONE
-//            Path assemblies = Paths.get(targetDir.toString(), "assemblies").toAbsolutePath();
-//            for (File file : titlesDir.toFile().listFiles()) {
-//                if (file.isDirectory()) {
-//                    for (File f : file.listFiles()) {
-//                        if (f.isDirectory() && !Files.isSymbolicLink(f.toPath())) {
-//                            f.delete();
-//                        }
-//                        Path titles_assemblies = Paths.get(f.getParent(), "assemblies");
-//                        if (Files.exists(titles_assemblies)) {
-//                            Files.delete(titles_assemblies);
-//                        }
-//                        Files.createSymbolicLink(titles_assemblies, assemblies);
-//                        if (f.toString().endsWith(".adoc")) {
-//                            Stream<String> lines = Files.lines(f.toPath());
-//                            List<String> replaced = lines.map(line -> line.replaceAll("::(.*\\/)",
-//                                    "::" + assemblies.toFile().getName() + "/assembly-")).collect(Collectors.toList());
-//                            Files.write(f.toPath(), replaced);
-//                            lines.close();
-//                        }
-//                    }
-//                }
-//            }
-
         } catch (IOException e) {
             addIssue(Issue.error(e.toString(), null));
         }

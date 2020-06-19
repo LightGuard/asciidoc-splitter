@@ -35,7 +35,6 @@ public class ExtractionRunner implements Runnable {
     @Option(names = {"-v", "--verbose"}, description = "Verbose logging", defaultValue = "false")
     boolean verbose;
 
-    // TODO: Add asciidoc attributes option
     @Option(names = {"-a", "--attributes"}, description = "Attributes to pass to asciidoctor")
     Map<String, Object> attributes;
 

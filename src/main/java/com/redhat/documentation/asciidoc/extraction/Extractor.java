@@ -19,6 +19,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.redhat.documentation.asciidoc.Util;
 import com.redhat.documentation.asciidoc.cli.ExtractionRunner;
 import com.redhat.documentation.asciidoc.cli.Issue;
 import com.redhat.documentation.asciidoc.extraction.model.Task;
@@ -156,7 +157,11 @@ public class Extractor {
                     var outputFile = assembliesDir.resolve(a.getFilename());
                     logger.fine("Writting assembly file: " + outputFile);
                     try (Writer output = new FileWriter(outputFile.toFile())) {
-                        output.append(templateStart).append("\n").append(a.getSource()).append("\n").append(templateEnd);
+                        output.append(templateStart)
+                              .append("\n")
+                              .append(Util.fixIncludes(a.getSource()))
+                              .append("\n")
+                              .append(templateEnd);
                     }
                 }
             } catch (IOException e) {
@@ -198,13 +203,12 @@ public class Extractor {
                                 .append("[id=\"").append(module.getId()).append("_{context}\"]\n")
                                 // Adding the section title
                                 .append("= ").append(module.getSection().getTitle()).append("\n")
-                                .append(module.getSource());
+                                .append(Util.fixIncludes(module.getSource()));
                     }
                 }
             }
         } catch (IOException e) {
-            // TODO: We blew-up in an unexpected way, handle this
-            throw new RuntimeException(e);
+            logger.severe("Error writing a module: " + e.getMessage());
         }
     }
 

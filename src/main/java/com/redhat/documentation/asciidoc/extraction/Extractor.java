@@ -23,6 +23,7 @@ import com.redhat.documentation.asciidoc.cli.ExtractionRunner;
 import com.redhat.documentation.asciidoc.cli.Issue;
 import com.redhat.documentation.asciidoc.extraction.model.Task;
 import org.asciidoctor.Asciidoctor;
+import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.jruby.AsciiDocDirectoryWalker;
@@ -52,6 +53,7 @@ public class Extractor {
 
         // We need access to the line numbers and source
         optionsBuilder.sourcemap(true);
+        optionsBuilder.attributes(AttributesBuilder.attributes().attributes(task.getAttributes()));
 
         final Path sourceDirPath = this.task.getLocation().getDirectoryPath().normalize();
         final Path targetDirPath = this.task.getPushableLocation().getDirectoryPath().normalize();
@@ -144,8 +146,6 @@ public class Extractor {
         String templateStart = getTemplateContents("templates/start.adoc");
         String templateEnd = getTemplateContents("templates/end.adoc");
 
-        // TODO create modules, _artifacts, _images symlinks in this folder
-
         this.assemblies.forEach(a -> {
             try {
                 // Create any directories that need to be created
@@ -153,7 +153,7 @@ public class Extractor {
                         .createDirectories(outputDirectory.resolve("assemblies"));
 
                 if (a.shouldCreateAssembly()) {
-                    var outputFile = Paths.get(assembliesDir.toString(), a.getFilename());
+                    var outputFile = assembliesDir.resolve(a.getFilename());
                     logger.fine("Writting assembly file: " + outputFile);
                     try (Writer output = new FileWriter(outputFile.toFile())) {
                         output.append(templateStart).append("\n").append(a.getSource()).append("\n").append(templateEnd);

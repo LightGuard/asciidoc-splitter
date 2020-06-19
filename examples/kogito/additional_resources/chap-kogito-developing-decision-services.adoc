@@ -1,0 +1,83 @@
+[id='chap-kogito-developing-decision-services']
+
+ifdef::KOGITO-ENT[]
+include::_artifacts/document-attributes.adoc[]
+endif::[]
+
+= Developing decision services with {PRODUCT}
+:context: kogito-developing-decision-services
+ifdef::KOGITO-ENT[]
+:doctype: book
+:imagesdir: _images
+include::_artifacts/author-group.adoc[]
+endif::[]
+
+// Purpose statement for the assembly
+As a developer of business decisions, you can use {PRODUCT} business automation to develop decision services using Decision Model and Notation (DMN) models, Drools Rule Language (DRL) rules, XLS or XLSX spreadsheet decision tables, or a combination of all three methods.
+
+// Modules - concepts, procedures, refs, etc.
+
+[id='ref-decision-authoring-assets_{context}']
+== Decision-authoring assets in {PRODUCT}
+
+{PRODUCT} supports several assets that you can use to define business decisions for your decision service. Each decision-authoring asset has different advantages, and you might prefer to use one or a combination of multiple assets depending on your goals and needs.
+
+The following table highlights the main decision-authoring assets supported in {PRODUCT} projects to help you decide or confirm the best method for defining decisions in your decision service.
+
+.Decision-authoring assets supported in {PRODUCT}
+[cols="20%,40%,20%,20%", options="header"]
+|===
+|Asset
+|Highlights
+|Authoring tools
+|Documentation
+
+|Decision Model and Notation (DMN) models
+a|
+* Are decision models based on a notation standard defined by the Object Management Group (OMG)
+* Use graphical decision requirements diagrams (DRDs) with one or more decision requirements graphs (DRGs) to trace business decision flows
+* Use an XML schema that allows the DMN models to be shared between DMN-compliant platforms
+* Support Friendly Enough Expression Language (FEEL) to define decision logic in DMN decision tables and other DMN boxed expressions
+* Can be integrated efficiently with Business Process Model and Notation (BPMN) process models
+* Are optimal for creating comprehensive, illustrative, and stable decision flows
+|{PRODUCT} DMN modeler in VSCode or other DMN-compliant editor
+|xref:con-dmn_dmn-models[]
+
+|DRL rules
+a|
+* Are individual rules that you define directly in `.drl` text files
+* Provide the most flexibility for defining rules and other technicalities of rule behavior
+* Are optimal for creating rules that require advanced DRL options, such as rule units
+* Have strict syntax requirements for rules to be compiled properly
+|Any integrated development environment (IDE)
+|xref:con-drl_drl-rules[]
+
+|Spreadsheet decision tables
+a|
+* Are tabular sets of rules that you define in `.xls` or `.xlsx` spreadsheet files
+* Support template keys and values for creating rule templates
+* Are optimal for business environments that already rely on decision tables for rules
+* Have strict syntax requirements for rules to be compiled properly when used in {PRODUCT}
+|Spreadsheet editor
+|xref:con-decision-tables_decision-tables[]
+|===
+
+//@Jason: The following `{asciidoc-dir}` functions as a symlink for both enterprise (document attribute) and community (pom.xml attribute) so that we can house chaps in subject-matter dirs and still cross-ref like this to other chaps in other folders. The docs are already doing this sort of thing for artifacts and images, so just following suite.
+include::{asciidoc-dir}/creating-running/chap-kogito-creating-running.adoc[tags=ref-kogito-app-examples]
+
+//@Jason: The following are assemblies within this mother assembly.
+include::chap-kogito-using-dmn-models.adoc[]
+include::chap-kogito-using-drl-rules.adoc[]
+include::chap-kogito-using-spreadsheet-decision-tables.adoc[]
+include::{asciidoc-dir}/decision-engine/chap-kogito-decision-engine.adoc[]
+
+ifdef::KOGITO-ENT[]
+== Additional resources
+* {URL_CREATING_RUNNING}[_{CREATING_RUNNING}_]
+* {URL_DEPLOYING_ON_OPENSHIFT}[_{DEPLOYING_ON_OPENSHIFT}_]
+* {URL_PROCESS_SERVICES}[_{PROCESS_SERVICES}_]
+* {URL_CONFIGURING_KOGITO}[_{CONFIGURING_KOGITO}_]
+
+// Versioning info
+include::_artifacts/versioning-information.adoc[]
+endif::[]

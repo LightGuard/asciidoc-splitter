@@ -169,5 +169,22 @@ class ExtractionRunnerTest {
         final File modulesDir = new File(this.outputDirectory, "modules");
         assertThat(modulesDir.list()).isNotEmpty();
     }
+
+    // Test for Issue #60
+    @Test
+    public void testAdditionalResources() throws Exception {
+        final var sourceDirectory = new File("./examples/kogito/additional_resources");
+        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(),
+                                    "-o", this.outputDirectory.getAbsolutePath(),
+                                    "-a", "KOGITO-ENT=true"
+        };
+
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
+        var chap = outputDirectory.toPath().resolve("assemblies")
+                                           .resolve("assembly-chap-kogito-developing-decision-services.adoc");
+
+        assertThat(Files.readString(chap)).contains("== Additional resources");
+    }
 }
 

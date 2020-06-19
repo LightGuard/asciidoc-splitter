@@ -156,7 +156,9 @@ public class Extractor {
                     var outputFile = Paths.get(assembliesDir.toString(), a.getFilename());
                     logger.fine("Writting assembly file: " + outputFile);
                     try (Writer output = new FileWriter(outputFile.toFile())) {
-                        output.append(templateStart).append("\n").append(a.getSource()).append("\n").append(templateEnd);
+                        if(!a.getSource().contains("ifdef::context[:parent-context: {context}]")) {
+                            output.append(templateStart).append("\n").append(a.getSource()).append("\n").append(templateEnd);
+                        }
                     }
                 }
             } catch (IOException e) {

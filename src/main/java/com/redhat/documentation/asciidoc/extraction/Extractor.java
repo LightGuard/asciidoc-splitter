@@ -19,10 +19,12 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.redhat.documentation.asciidoc.Util;
 import com.redhat.documentation.asciidoc.cli.ExtractionRunner;
 import com.redhat.documentation.asciidoc.cli.Issue;
 import com.redhat.documentation.asciidoc.extraction.model.Task;
 import org.asciidoctor.Asciidoctor;
+import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.jruby.AsciiDocDirectoryWalker;
@@ -52,6 +54,7 @@ public class Extractor {
 
         // We need access to the line numbers and source
         optionsBuilder.sourcemap(true);
+        optionsBuilder.attributes(AttributesBuilder.attributes().attributes(task.getAttributes()));
 
         final Path sourceDirPath = this.task.getLocation().getDirectoryPath().normalize();
         final Path targetDirPath = this.task.getPushableLocation().getDirectoryPath().normalize();
@@ -144,8 +147,6 @@ public class Extractor {
         String templateStart = getTemplateContents("templates/start.adoc");
         String templateEnd = getTemplateContents("templates/end.adoc");
 
-        // TODO create modules, _artifacts, _images symlinks in this folder
-
         this.assemblies.forEach(a -> {
             try {
                 // Create any directories that need to be created
@@ -153,12 +154,17 @@ public class Extractor {
                         .createDirectories(outputDirectory.resolve("assemblies"));
 
                 if (a.shouldCreateAssembly()) {
-                    var outputFile = Paths.get(assembliesDir.toString(), a.getFilename());
+                    var outputFile = assembliesDir.resolve(a.getFilename());
                     logger.fine("Writting assembly file: " + outputFile);
                     try (Writer output = new FileWriter(outputFile.toFile())) {
                         if(!a.getSource().contains("ifdef::context[:parent-context: {context}]")) {
                             output.append(templateStart).append("\n").append(a.getSource()).append("\n").append(templateEnd);
                         }
+                        output.append(templateStart)
+                              .append("\n")
+                              .append(Util.fixIncludes(a.getSource()))
+                              .append("\n")
+                              .append(templateEnd);
                     }
                 }
             } catch (IOException e) {
@@ -200,13 +206,12 @@ public class Extractor {
                                 .append("[id=\"").append(module.getId()).append("_{context}\"]\n")
                                 // Adding the section title
                                 .append("= ").append(module.getSection().getTitle()).append("\n")
-                                .append(module.getSource());
+                                .append(Util.fixIncludes(module.getSource()));
                     }
                 }
             }
         } catch (IOException e) {
-            // TODO: We blew-up in an unexpected way, handle this
-            throw new RuntimeException(e);
+            logger.severe("Error writing a module: " + e.getMessage());
         }
     }
 

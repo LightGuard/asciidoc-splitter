@@ -5,7 +5,6 @@ import org.asciidoctor.ast.ContentNode;
 public class Util {
 
     public static final String MODULE_TYPE_ATTRIBUTE = "module-type";
-    public static final String ASSETS_LOCATION = "_assets";
 
     public static String getFullId(ContentNode node) {
         StringBuilder buf = new StringBuilder(node.getId());
@@ -36,9 +35,11 @@ public class Util {
         return "unknown"; // punt, we don't know
     }
 
-    public static String fixAsset(String line) {
-        return line
-                .replaceAll("(?<block>video|audio)::(?<path>(\\w|\\/|\\-)+)\\.(?<ext>\\w+)\\[(?<opts>.*)]",
-                         "${block}::../" + ASSETS_LOCATION + "/${path}.${ext}[${opts}]");
+    public static String fixIncludes(String source) {
+        return source.replaceAll("(?<include>include::)(?<path>(\\w|\\/|-)*)chap-(?<filename>.+)\\.(?<extension>.+)\\[]",
+                                        "${include}assemblies/assembly-${filename}.${extension}[]")
+                     .replaceAll("(?<include>include::)\\{asciidoc-dir}\\/(?<path>(\\w|\\/|-)*)\\/(?<filename>.*)\\[tags=(?<module>.+)]",
+                             "${include}modules/${path}/${module}.adoc[leveloffset=+1]");
     }
+
 }

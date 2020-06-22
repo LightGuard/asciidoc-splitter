@@ -54,7 +54,7 @@ public class Assembly {
         // Grab the preamble
         if (doc.findBy(Map.of("context", ":preamble")).size() > 0) {
             for (int i = lines.indexOf("= " + doc.getTitle()); i < getPreambleEndLineNumber(doc, lines); i++) {
-                this.source.append(Util.fixAsset(lines.get(i))).append("\n");
+                this.source.append(Util.fixIncludes(lines.get(i))).append("\n");
             }
             this.source.append("\n");
         }
@@ -63,7 +63,6 @@ public class Assembly {
 
         var modules = doc.findBy(Map.of("context", ":section")).stream()
                 .filter(ExtractedModule::isNodeAModule)
-//                                        .filter(Section.class::isInstance)
                 .map(Section.class::cast)
                 .collect(Collectors.toList());
 
@@ -94,6 +93,17 @@ public class Assembly {
 
         moduleSources.forEach(wrapper -> {
             var extractedModule = new ExtractedModule(wrapper.getSection(), wrapper.getSource());
+
+            // Additional resources special case
+            if (extractedModule.isAdditonalResources()) {
+                this.source.append("=".repeat(extractedModule.getLeveloffset() + 1))
+                        .append(" ")
+                        .append(extractedModule.getSection().getTitle())
+                        .append("\n\n")
+                        .append(extractedModule.getSource());
+                return;
+            }
+
             this.modules.add(extractedModule);
             this.source.append("include::modules/")
                     .append(extractedModule.getFolder())
@@ -122,7 +132,7 @@ public class Assembly {
         var startingLine = section.getSourceLocation().getLineNumber();
         StringBuilder sectionSource = new StringBuilder();
         for (int i = startingLine; i < nextSectionStart; i++) {
-            sectionSource.append(Util.fixAsset(lines.get(i))).append("\n");
+            sectionSource.append(Util.fixIncludes(lines.get(i))).append("\n");
         }
         return sectionSource.toString();
     }

@@ -49,7 +49,7 @@ class ExtractionRunnerTest {
 //    @Disabled("bad assumptions in source document")
     void testFileContentsSourceBlock() throws Exception {
         final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/content-test").toURI());
-        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
@@ -75,7 +75,7 @@ class ExtractionRunnerTest {
     @Test
     public void testDocTeamExample() throws Exception {
         final var sourceDirectory = new File("./examples/sample/input");
-        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
@@ -95,7 +95,7 @@ class ExtractionRunnerTest {
     @Test
     public void testKogitoCreatingExample() throws Exception {
         final var sourceDirectory = new File(KOGITO_ASCIIDOC_FOLDER);
-        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
@@ -117,7 +117,7 @@ class ExtractionRunnerTest {
     public void testArtifactsAndImages() throws Exception {
         final var sourceDirectory = new File("./examples/kogito/input");
 
-        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
@@ -132,7 +132,7 @@ class ExtractionRunnerTest {
     @Test
     public void testSymlinkCreationUnderAssemblies() throws Exception {
         final var sourceDirectory = new File("./examples/kogito/input");
-        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
@@ -149,7 +149,7 @@ class ExtractionRunnerTest {
     @Test
     public void testTitleDirectoryContents() throws Exception {
         final var sourceDirectory = new File("./examples/kogito/input");
-        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
@@ -161,7 +161,7 @@ class ExtractionRunnerTest {
     @Test
     public void testAssemblyFalseOutput() throws Exception {
         final var sourceDirectory = new File("./src/test/resources/docs/no-assembly");
-        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
@@ -173,10 +173,27 @@ class ExtractionRunnerTest {
         assertThat(modulesDir.list()).isNotEmpty();
     }
 
+    // Test for Issue #60
+    @Test
+    public void testAdditionalResources() throws Exception {
+        final var sourceDirectory = new File("./examples/kogito/additional_resources");
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(),
+                "-o", this.outputDirectory.getAbsolutePath(),
+                "-a", "KOGITO-ENT=true"
+        };
+
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
+        var chap = outputDirectory.toPath().resolve("assemblies")
+                .resolve("assembly-chap-kogito-developing-decision-services.adoc");
+
+        assertThat(Files.readString(chap)).contains("== Additional resources");
+    }
+
     @Test
     public void testParentContext() throws Exception {
         final var sourceDirectory = new File(KOGITO_ASCIIDOC_FOLDER);
-        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
@@ -184,15 +201,12 @@ class ExtractionRunnerTest {
         // Assemblies
         var assembliesDir = new File(this.outputDirectory, "assemblies");
         assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(1);
-        var assemblyChapfile=new File(assembliesDir, "assembly-chap-kogito-creating-running.adoc");
+        var assemblyChapfile = new File(assembliesDir, "assembly-chap-kogito-creating-running.adoc");
         assertThat(assemblyChapfile.exists()).isTrue();
-        try (Writer output = new FileWriter(assemblyChapfile)){
-            if(!output.toString().contains("ifdef::context[:parent-context: {context}]")){
+        try (Writer output = new FileWriter(assemblyChapfile)) {
+            if (!output.toString().contains("ifdef::context[:parent-context: {context}]")) {
                 output.append("\n").append("ifdef::context[:parent-context: {context}]");
             }
-        }catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }
-

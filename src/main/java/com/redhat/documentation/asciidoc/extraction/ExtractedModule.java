@@ -13,6 +13,7 @@ public class ExtractedModule {
     private String source;
     private String moduleType;
     private int leveloffset = 0;
+    private boolean additonalResources = false;
 
     static boolean isNodeAModule(StructuralNode node) {
         if (node.getAttributes().containsKey(Util.MODULE_TYPE_ATTRIBUTE))
@@ -29,6 +30,11 @@ public class ExtractedModule {
 
             if (nodeId.endsWith("-proc") || nodeId.endsWith("-con") || nodeId.endsWith("-ref"))
                 return true;
+        }
+
+        // Special case Additional Resources
+        if ("Additional resources".equalsIgnoreCase(node.getTitle())) {
+            return true;
         }
 
         return false;
@@ -69,6 +75,7 @@ public class ExtractedModule {
         this.section = section;
         this.source = lines;
         this.leveloffset = section.getLevel();
+        this.additonalResources = "Additional resources".equalsIgnoreCase(section.getTitle());
     }
 
     public String getId() {
@@ -96,6 +103,10 @@ public class ExtractedModule {
 
     public int getLeveloffset() {
         return leveloffset;
+    }
+
+    public boolean isAdditonalResources() {
+        return additonalResources;
     }
 
     @Override

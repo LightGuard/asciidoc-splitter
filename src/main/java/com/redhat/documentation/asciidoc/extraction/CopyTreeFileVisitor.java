@@ -78,7 +78,6 @@ public class CopyTreeFileVisitor extends SimpleFileVisitor<Path> {
         } catch (FileAlreadyExistsException e) {
             // Ignore, doesn't matter
         } catch (IOException e) {
-            // TODO We need to do this better
             logger.severe("Error copying directory '" + newDirectory + "' : " + e.getMessage());
             return FileVisitResult.TERMINATE;
         }

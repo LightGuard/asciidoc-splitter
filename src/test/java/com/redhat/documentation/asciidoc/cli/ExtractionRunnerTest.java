@@ -1,14 +1,11 @@
 package com.redhat.documentation.asciidoc.cli;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import com.redhat.documentation.asciidoc.extraction.AsciidocFileFilter;
@@ -191,7 +188,7 @@ class ExtractionRunnerTest {
     }
 
     @Test
-    public void testParentContext() throws Exception {
+    public void testNoParentContext() throws Exception {
         final var sourceDirectory = new File(KOGITO_ASCIIDOC_FOLDER);
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
@@ -204,10 +201,21 @@ class ExtractionRunnerTest {
         assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(1);
         var chapFile= new File(assembliesDir, "assembly-chap-kogito-creating-running.adoc");
         assertThat(chapFile.exists()).isTrue();
-        if(Files.readString(sourceFile.toPath()).contains("ifdef::context[:parent-context: {context}]")) {
-            assertThat(Files.readString(chapFile.toPath())).contains("ifdef::context[:parent-context: {context}]");
-        }else{
-            assertThat(!(Files.readString(chapFile.toPath())).contains("ifdef::context[:parent-context: {context}]"));
-        }
+        assertThat(!(Files.readString(sourceFile.toPath())).contains("ifdef::context[:parent-context: {context}]"));
+        assertThat(!(Files.readString(chapFile.toPath())).contains("ifdef::context[:parent-context: {context}]"));
+    }
+
+    @Test
+    public void testParentContext() throws Exception {
+        final var sourceDirectory = new File("./examples/kogito/parent-context");
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
+
+        var chap = outputDirectory.toPath().resolve("assemblies")
+                .resolve("assembly-chap-kogito-configuring.adoc");
+
+        assertThat(Files.readString(chap)).contains("ifdef::context[:parent-context: {context}]");
     }
 }

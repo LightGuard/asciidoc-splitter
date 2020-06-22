@@ -1,11 +1,14 @@
 package com.redhat.documentation.asciidoc.cli;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import com.redhat.documentation.asciidoc.extraction.AsciidocFileFilter;
@@ -168,6 +171,28 @@ class ExtractionRunnerTest {
         // Modules
         final File modulesDir = new File(this.outputDirectory, "modules");
         assertThat(modulesDir.list()).isNotEmpty();
+    }
+
+    @Test
+    public void testParentContext() throws Exception {
+        final var sourceDirectory = new File(KOGITO_ASCIIDOC_FOLDER);
+        var options = new String[] {"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
+
+        // Assemblies
+        var assembliesDir = new File(this.outputDirectory, "assemblies");
+        assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(1);
+        var assemblyChapfile=new File(assembliesDir, "assembly-chap-kogito-creating-running.adoc");
+        assertThat(assemblyChapfile.exists()).isTrue();
+        try (Writer output = new FileWriter(assemblyChapfile)){
+            if(!output.toString().contains("ifdef::context[:parent-context: {context}]")){
+                output.append("\n").append("ifdef::context[:parent-context: {context}]");
+            }
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

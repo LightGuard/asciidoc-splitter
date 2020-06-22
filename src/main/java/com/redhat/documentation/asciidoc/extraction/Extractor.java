@@ -157,11 +157,11 @@ public class Extractor {
                     var outputFile = assembliesDir.resolve(a.getFilename());
                     logger.fine("Writting assembly file: " + outputFile);
                     try (Writer output = new FileWriter(outputFile.toFile())) {
-                        output.append(templateStart)
-                              .append("\n")
-                              .append(Util.fixIncludes(a.getSource()))
-                              .append("\n")
-                              .append(templateEnd);
+                            output.append(templateStart)
+                                    .append("\n")
+                                    .append(Util.fixIncludes(a.getSource()))
+                                    .append("\n")
+                                    .append(templateEnd);
                     }
                 }
             } catch (IOException e) {

@@ -201,12 +201,8 @@ class ExtractionRunnerTest {
         // Assemblies
         var assembliesDir = new File(this.outputDirectory, "assemblies");
         assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(1);
-        var assemblyChapfile = new File(assembliesDir, "assembly-chap-kogito-creating-running.adoc");
-        assertThat(assemblyChapfile.exists()).isTrue();
-        try (Writer output = new FileWriter(assemblyChapfile)) {
-            if (!output.toString().contains("ifdef::context[:parent-context: {context}]")) {
-                output.append("\n").append("ifdef::context[:parent-context: {context}]");
-            }
-        }
+        var chapFile= new File(assembliesDir, "assembly-chap-kogito-creating-running.adoc");
+        assertThat(chapFile.exists()).isTrue();
+        assertThat(Files.readString(chapFile.toPath())).contains("ifdef::context[:parent-context: {context}]");
     }
 }

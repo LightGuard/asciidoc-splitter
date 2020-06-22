@@ -198,11 +198,16 @@ class ExtractionRunnerTest {
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
 
-        // Assemblies
+        var source= new File(sourceDirectory, "creating-running");
+        var sourceFile = new File(source, "chap-kogito-creating-running.adoc");
         var assembliesDir = new File(this.outputDirectory, "assemblies");
         assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(1);
         var chapFile= new File(assembliesDir, "assembly-chap-kogito-creating-running.adoc");
         assertThat(chapFile.exists()).isTrue();
-        assertThat(Files.readString(chapFile.toPath())).contains("ifdef::context[:parent-context: {context}]");
+        if(Files.readString(sourceFile.toPath()).contains("ifdef::context[:parent-context: {context}]")) {
+            assertThat(Files.readString(chapFile.toPath())).contains("ifdef::context[:parent-context: {context}]");
+        }else{
+            assertThat(!(Files.readString(chapFile.toPath())).contains("ifdef::context[:parent-context: {context}]"));
+        }
     }
 }

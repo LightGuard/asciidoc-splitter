@@ -158,13 +158,12 @@ public class Extractor {
                     logger.fine("Writting assembly file: " + outputFile);
                     try (Writer output = new FileWriter(outputFile.toFile())) {
                         if(!a.getSource().contains("ifdef::context[:parent-context: {context}]")) {
-                            output.append(templateStart).append("\n").append(a.getSource()).append("\n").append(templateEnd);
+                            output.append(templateStart)
+                                    .append("\n")
+                                    .append(Util.fixIncludes(a.getSource()))
+                                    .append("\n")
+                                    .append(templateEnd);
                         }
-                        output.append(templateStart)
-                              .append("\n")
-                              .append(Util.fixIncludes(a.getSource()))
-                              .append("\n")
-                              .append(templateEnd);
                     }
                 }
             } catch (IOException e) {

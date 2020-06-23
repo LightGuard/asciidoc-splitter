@@ -46,10 +46,7 @@ public class Assembly {
         this.createAssembly = Boolean.parseBoolean(doc.getAttribute("assembly", "true").toString());
 
         // Adding the id of the module
-        this.source.append("[id=\"").append(this.idWithoutContext).append("_{context}\"]\n")
-                // Adding the section title
-                .append("= ").append(doc.getTitle()).append("\n")
-                .append(":context: ").append(this.idWithoutContext).append("\n\n");
+        this.source.append("[id=\"").append(this.idWithoutContext).append("_{context}\"]\n");
 
         // Grab the preamble
         if (doc.findBy(Map.of("context", ":preamble")).size() > 0) {

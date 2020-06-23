@@ -60,6 +60,11 @@ public class Extractor {
         final Path targetDirPath = this.task.getPushableLocation().getDirectoryPath().normalize();
 
         for (File file : new AsciiDocDirectoryWalker(sourceDirPath.toString())) {
+            // Skip ignore files
+            if (file.getParent() != null && file.getName().equals(task.getIgnoreFile())) {
+                continue;
+            }
+
             // Skip adoc files in the title enterprise directory
             if (file.getParent() != null && file.getParent().contains(TITLES_ENTERPRISE)) {
                 continue;

@@ -11,15 +11,17 @@ public class Task {
     private final Location location;
     private final PushableLocation pushableLocation;
     private final Map<String, Object> attributes;
+    private final String ignoreFile;
 
     public Task(Location location, PushableLocation pushableLocation) {
-        this(location, pushableLocation, Collections.emptyMap());
+        this(location, pushableLocation, Collections.emptyMap(), null);
     }
 
-    public Task(Location location, PushableLocation pushableLocation, Map<String, Object> attributes) {
+    public Task(Location location, PushableLocation pushableLocation, Map<String, Object> attributes, String ignoreFile) {
         this.location = location;
         this.pushableLocation = pushableLocation;
         this.attributes = Objects.isNull(attributes) ? Collections.emptyMap() : attributes;
+        this.ignoreFile = Objects.isNull(ignoreFile) ? null : ignoreFile;
     }
 
     /**
@@ -43,6 +45,10 @@ public class Task {
         return Map.copyOf(attributes);
     }
 
+    public String getIgnoreFile() {
+        return ignoreFile;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -54,12 +60,12 @@ public class Task {
         Task task = (Task) o;
         return Objects.equals(location, task.location) &&
                Objects.equals(pushableLocation, task.pushableLocation) &&
-               Objects.equals(attributes, task.attributes);
+               Objects.equals(attributes, task.attributes) && Objects.equals(ignoreFile, task.ignoreFile);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, pushableLocation, attributes);
+        return Objects.hash(location, pushableLocation, attributes, ignoreFile);
     }
 
     @Override
@@ -68,6 +74,7 @@ public class Task {
                 "location=" + location +
                 ", pushableLocation=" + pushableLocation +
                 ", attributes=" + attributes +
+                ", ignoreFiles=" + ignoreFile +
                 '}';
     }
 }

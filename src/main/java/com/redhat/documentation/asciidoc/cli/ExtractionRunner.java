@@ -38,6 +38,9 @@ public class ExtractionRunner implements Runnable {
     @Option(names = {"-a", "--attributes"}, description = "Attributes to pass to asciidoctor")
     Map<String, Object> attributes;
 
+    @Option(names = {"-i", "--ignore"}, description = "Ignore file")
+    String ignoreFile;
+
     /**
      * Options for the source location of the files.
      */
@@ -129,7 +132,7 @@ public class ExtractionRunner implements Runnable {
                 : new GitRepository(outputOptions.gitOutputOptions.outputRepo, outputOptions.gitOutputOptions.outputBranch,
                                     outputOptions.gitOutputOptions.userName, outputOptions.gitOutputOptions.password);
 
-        var task = new Task(location, pushableLocation, attributes);
+        var task = new Task(location, pushableLocation, attributes, ignoreFile);
 
         var extractor = new Extractor(task);
         extractor.process();

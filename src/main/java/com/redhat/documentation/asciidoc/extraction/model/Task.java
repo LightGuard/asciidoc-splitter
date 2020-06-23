@@ -1,6 +1,7 @@
 package com.redhat.documentation.asciidoc.extraction.model;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -11,17 +12,17 @@ public class Task {
     private final Location location;
     private final PushableLocation pushableLocation;
     private final Map<String, Object> attributes;
-    private final String ignoreFile;
+    private final List<String> ignoreFiles;
 
     public Task(Location location, PushableLocation pushableLocation) {
-        this(location, pushableLocation, Collections.emptyMap(), null);
+        this(location, pushableLocation, Collections.emptyMap(), Collections.emptyList());
     }
 
-    public Task(Location location, PushableLocation pushableLocation, Map<String, Object> attributes, String ignoreFile) {
+    public Task(Location location, PushableLocation pushableLocation, Map<String, Object> attributes, List<String> ignoreFiles) {
         this.location = location;
         this.pushableLocation = pushableLocation;
         this.attributes = Objects.isNull(attributes) ? Collections.emptyMap() : attributes;
-        this.ignoreFile = Objects.isNull(ignoreFile) ? null : ignoreFile;
+        this.ignoreFiles = Objects.isNull(ignoreFiles) ? Collections.emptyList() : ignoreFiles;
     }
 
     /**
@@ -45,8 +46,8 @@ public class Task {
         return Map.copyOf(attributes);
     }
 
-    public String getIgnoreFile() {
-        return ignoreFile;
+    public List<String> getIgnoreFiles() {
+        return ignoreFiles;
     }
 
     @Override
@@ -60,12 +61,12 @@ public class Task {
         Task task = (Task) o;
         return Objects.equals(location, task.location) &&
                Objects.equals(pushableLocation, task.pushableLocation) &&
-               Objects.equals(attributes, task.attributes) && Objects.equals(ignoreFile, task.ignoreFile);
+               Objects.equals(attributes, task.attributes) && Objects.equals(ignoreFiles, task.ignoreFiles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, pushableLocation, attributes, ignoreFile);
+        return Objects.hash(location, pushableLocation, attributes, ignoreFiles);
     }
 
     @Override
@@ -74,7 +75,7 @@ public class Task {
                 "location=" + location +
                 ", pushableLocation=" + pushableLocation +
                 ", attributes=" + attributes +
-                ", ignoreFiles=" + ignoreFile +
+                ", ignoreFiles=" + ignoreFiles +
                 '}';
     }
 }

@@ -61,7 +61,7 @@ public class Extractor {
 
         for (File file : new AsciiDocDirectoryWalker(sourceDirPath.toString())) {
             // Skip ignore files
-            if (file.getParent() != null && file.getName().equals(task.getIgnoreFile())) {
+            if (task.getIgnoreFiles().contains(file.getName())) {
                 continue;
             }
 

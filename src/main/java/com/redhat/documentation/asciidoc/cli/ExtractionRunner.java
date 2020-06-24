@@ -40,7 +40,7 @@ public class ExtractionRunner implements Runnable {
     Map<String, Object> attributes;
 
     @Option(names = {"-i", "--ignore"}, description = "Ignore file")
-    List<String> ignoreFiles;
+    List<File> ignoreFiles;
 
     /**
      * Options for the source location of the files.

@@ -1,5 +1,6 @@
 package com.redhat.documentation.asciidoc.extraction.model;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -12,13 +13,13 @@ public class Task {
     private final Location location;
     private final PushableLocation pushableLocation;
     private final Map<String, Object> attributes;
-    private final List<String> ignoreFiles;
+    private final List<File> ignoreFiles;
 
     public Task(Location location, PushableLocation pushableLocation) {
         this(location, pushableLocation, Collections.emptyMap(), Collections.emptyList());
     }
 
-    public Task(Location location, PushableLocation pushableLocation, Map<String, Object> attributes, List<String> ignoreFiles) {
+    public Task(Location location, PushableLocation pushableLocation, Map<String, Object> attributes, List<File> ignoreFiles) {
         this.location = location;
         this.pushableLocation = pushableLocation;
         this.attributes = Objects.isNull(attributes) ? Collections.emptyMap() : attributes;
@@ -46,8 +47,8 @@ public class Task {
         return Map.copyOf(attributes);
     }
 
-    public List<String> getIgnoreFiles() {
-        return ignoreFiles;
+    public List<File> getIgnoreFiles() {
+        return List.copyOf(ignoreFiles);
     }
 
     @Override

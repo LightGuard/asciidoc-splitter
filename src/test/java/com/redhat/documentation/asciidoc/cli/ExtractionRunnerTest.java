@@ -92,7 +92,7 @@ class ExtractionRunnerTest {
     @Test
     public void testKogitoCreatingExample() throws Exception {
         final var sourceDirectory = new File(KOGITO_ASCIIDOC_FOLDER);
-        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath(), "-i", "index.adoc"};
 
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
@@ -185,6 +185,29 @@ class ExtractionRunnerTest {
                 .resolve("assembly-chap-kogito-developing-decision-services.adoc");
 
         assertThat(Files.readString(chap)).contains("== Additional resources");
+    }
+
+    @Test
+    public void testIgnoreFiles() throws Exception {
+        final var sourceDirectory = new File("./examples/kogito/ignore_files");
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(),
+                "-o", this.outputDirectory.getAbsolutePath(),
+                "-i", "index.adoc"
+        };
+
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
+        // Modules
+        var modulesDir = new File(this.outputDirectory, "modules");
+        assertThat(modulesDir.exists()).isTrue();
+        assertThat(modulesDir.listFiles()).hasSize(1);
+        var topicDir = new File(modulesDir, "creating-running");
+        assertThat(topicDir.exists()).isTrue();
+        assertThat(topicDir.listFiles()).hasSize(10);
+
+        // Assemblies
+        var assembliesDir = new File(this.outputDirectory, "assemblies");
+        assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(1);
     }
 
     @Test

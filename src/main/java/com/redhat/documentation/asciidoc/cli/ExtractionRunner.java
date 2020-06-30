@@ -2,6 +2,7 @@ package com.redhat.documentation.asciidoc.cli;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -37,6 +38,9 @@ public class ExtractionRunner implements Runnable {
 
     @Option(names = {"-a", "--attributes"}, description = "Attributes to pass to asciidoctor")
     Map<String, Object> attributes;
+
+    @Option(names = {"-i", "--ignore"}, description = "Ignore file")
+    List<File> ignoreFiles;
 
     /**
      * Options for the source location of the files.
@@ -129,7 +133,7 @@ public class ExtractionRunner implements Runnable {
                 : new GitRepository(outputOptions.gitOutputOptions.outputRepo, outputOptions.gitOutputOptions.outputBranch,
                                     outputOptions.gitOutputOptions.userName, outputOptions.gitOutputOptions.password);
 
-        var task = new Task(location, pushableLocation, attributes);
+        var task = new Task(location, pushableLocation, attributes, ignoreFiles);
 
         var extractor = new Extractor(task);
         extractor.process();

@@ -1,0 +1,10 @@
+= Some new Document
+
+Now we have some extra content here.
+
+There is another paragraph here.
+
+[replace-with="new-doc.adoc" replace-with-id="hello-world"]
+link:{asciidoc-dir}/new-doc.adoc[See this section for more info].
+
+We'll add one more paragraph just to make sure this works in the middle of the file.

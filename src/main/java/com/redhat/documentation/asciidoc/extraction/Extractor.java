@@ -50,7 +50,9 @@ public class Extractor {
 
         OptionsBuilder optionsBuilder = OptionsBuilder.options();
         Asciidoctor asciidoctor = Asciidoctor.Factory.create();
-        asciidoctor.javaExtensionRegistry().preprocessor(preprocessor);
+        asciidoctor.javaExtensionRegistry()
+                        .preprocessor(preprocessor)
+                        .treeprocessor(new ReplaceWithTreeProcessor());
 
         // We need access to the line numbers and source
         optionsBuilder.sourcemap(true);

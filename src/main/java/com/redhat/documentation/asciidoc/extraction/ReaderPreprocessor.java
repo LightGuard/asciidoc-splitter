@@ -21,4 +21,10 @@ public class ReaderPreprocessor extends Preprocessor {
     public List<String> getLines() {
         return Collections.unmodifiableList(lines);
     }
+
+    public void updateLines(int start, int end, List<String> content) {
+        var prevLines = lines.subList(start -1 , end); // New zero based
+        prevLines.clear();
+        prevLines.addAll(content);
+    }
 }

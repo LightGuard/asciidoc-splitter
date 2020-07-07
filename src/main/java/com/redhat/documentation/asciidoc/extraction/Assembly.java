@@ -51,7 +51,7 @@ public class Assembly {
         // Grab the preamble
         if (doc.findBy(Map.of("context", ":preamble")).size() > 0) {
             for (int i = lines.indexOf("= " + doc.getTitle()); i < getPreambleEndLineNumber(doc, lines); i++) {
-                this.source.append(Util.fixIncludes(lines.get(i))).append("\n");
+                this.source.append(Util.tweakSource(lines.get(i))).append("\n");
             }
             this.source.append("\n");
         }
@@ -129,7 +129,7 @@ public class Assembly {
         var startingLine = section.getSourceLocation().getLineNumber();
         StringBuilder sectionSource = new StringBuilder();
         for (int i = startingLine; i < nextSectionStart; i++) {
-            sectionSource.append(Util.fixIncludes(lines.get(i))).append("\n");
+            sectionSource.append(Util.tweakSource(lines.get(i))).append("\n");
         }
         return sectionSource.toString();
     }

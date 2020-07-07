@@ -64,9 +64,16 @@ public class CopyTreeFileVisitor extends SimpleFileVisitor<Path> {
         Objects.requireNonNull(dir);
         Objects.requireNonNull(attrs);
 
+
         CopyOption[] options = new CopyOption[]{COPY_ATTRIBUTES};
 
-        var newDirectory = targetPath.resolve(sourcePath.getParent().relativize(dir));
+        var newDirectory = targetPath.resolve(sourcePath.getParent().relativize(dir)).normalize();
+
+        // If the dir is a symlink, create the link and move on
+        if (Files.isSymbolicLink(dir)) {
+            Files.createSymbolicLink(newDirectory, targetPath.getParent().relativize(dir));
+            return FileVisitResult.SKIP_SUBTREE;
+        }
 
         try {
             if (!newDirectory.toFile().exists()) {

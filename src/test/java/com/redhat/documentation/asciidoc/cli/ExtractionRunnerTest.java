@@ -152,7 +152,9 @@ class ExtractionRunnerTest {
         assertThat(exitCode).isEqualTo(0);
         final File titleDirectory = new File(this.outputDirectory, "titles-enterprise");
         assertThat(titleDirectory.isDirectory()).isTrue();
-        assertThat(titleDirectory.list()).containsOnly("kogito-configuring", "assemblies-test", "master-docinfo.xml", "index.adoc");
+        assertThat(titleDirectory.list()).containsOnly("kogito-configuring", "assemblies-test", "master-docinfo.xml", "index.adoc", "doc-content");
+
+        assertThat(Files.isSymbolicLink(titleDirectory.toPath().resolve("doc-content"))).isTrue();
     }
 
     @Test

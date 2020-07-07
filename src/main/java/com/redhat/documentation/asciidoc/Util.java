@@ -42,4 +42,15 @@ public class Util {
                              "${include}modules/${path}/${module}.adoc[leveloffset=+1]");
     }
 
+
+
+    /**
+     * A wrapper method for all the tweaks and fixes to asciidoc source.
+     * @param source Pre-tweaked source
+     * @return Source with tweaks/fixes applied
+     */
+    public static String tweakSource(String source) {
+        return fixIncludes(source);
+    }
+
 }

@@ -166,7 +166,7 @@ public class Extractor {
                     try (Writer output = new FileWriter(outputFile.toFile())) {
                             output.append(templateStart)
                                     .append("\n")
-                                    .append(Util.fixIncludes(a.getSource()))
+                                    .append(Util.tweakSource(a.getSource()))
                                     .append("\n")
                                     .append(templateEnd);
                     }
@@ -210,7 +210,7 @@ public class Extractor {
                                 .append("[id=\"").append(module.getId()).append("_{context}\"]\n")
                                 // Adding the section title
                                 .append("= ").append(module.getSection().getTitle()).append("\n")
-                                .append(Util.fixIncludes(module.getSource()));
+                                .append(Util.tweakSource(module.getSource()));
                     }
                 }
             }
@@ -240,7 +240,7 @@ public class Extractor {
         try {
             logger.fine("Moving files from the titles-enterprise directory");
             Files.walkFileTree(sourceDir, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
-                    new TitleCopyTreeFileVisitor(targetDir, sourceDir));
+                    new CopyTreeFileVisitor(sourceDir, targetDir));
         } catch (IOException e) {
             addIssue(Issue.error(e.toString(), null));
         }

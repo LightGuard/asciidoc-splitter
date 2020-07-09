@@ -189,7 +189,7 @@ class ExtractionRunnerTest {
         var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
         assertThat(exitCode).isEqualTo(0);
         var chap = outputDirectory.toPath().resolve("assemblies")
-                .resolve("assembly-chap-kogito-developing-decision-services.adoc");
+                .resolve("assembly-kogito-developing-decision-services.adoc");
 
         assertThat(Files.readString(chap)).contains("== Additional resources");
     }
@@ -229,7 +229,7 @@ class ExtractionRunnerTest {
         var sourceFile = new File(source, "chap-kogito-creating-running.adoc");
         var assembliesDir = new File(this.outputDirectory, "assemblies");
         assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(1);
-        var chapFile= new File(assembliesDir, "assembly-chap-kogito-creating-running.adoc");
+        var chapFile= new File(assembliesDir, "assembly-kogito-creating-running.adoc");
         assertThat(chapFile.exists()).isTrue();
         assertThat(!(Files.readString(sourceFile.toPath())).contains("ifdef::context[:parent-context: {context}]"));
         assertThat(!(Files.readString(chapFile.toPath())).contains("ifdef::context[:parent-context: {context}]"));
@@ -244,7 +244,7 @@ class ExtractionRunnerTest {
         assertThat(exitCode).isEqualTo(0);
 
         var chap = outputDirectory.toPath().resolve("assemblies")
-                .resolve("assembly-chap-kogito-configuring.adoc");
+                .resolve("assembly-kogito-configuring.adoc");
 
         assertThat(Files.readString(chap)).contains("ifdef::context[:parent-context: {context}]");
     }

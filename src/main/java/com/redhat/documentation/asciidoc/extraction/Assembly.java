@@ -33,6 +33,11 @@ public class Assembly {
             this.id = this.id.substring(1).replaceAll("_", "-");
         }
 
+        // remove "chap-" if it is found
+        if (this.id.contains("chap-")) {
+            this.id = this.id.replaceAll("chap-", "");
+        }
+
         if (this.id.contains("{context}")) {
             this.idWithoutContext = this.id.substring(0, this.id.lastIndexOf("{context}") - 1);
         } else {

@@ -23,9 +23,9 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  * Basic FileVisitor specialization which copies files.
  */
 public class CopyTreeFileVisitor extends SimpleFileVisitor<Path> {
-    private final Path targetPath;
-    private final Path sourcePath;
-    private final PathMatcher pathMatcher;
+    final Path targetPath;
+    final Path sourcePath;
+    final PathMatcher pathMatcher;
     private final Logger logger;
     private final Stack<Path> directories;
 
@@ -71,7 +71,7 @@ public class CopyTreeFileVisitor extends SimpleFileVisitor<Path> {
 
         // If the dir is a symlink, create the link and move on
         if (Files.isSymbolicLink(dir)) {
-            Files.createSymbolicLink(newDirectory, targetPath.getParent().relativize(dir));
+            Files.createSymbolicLink(newDirectory, Files.readSymbolicLink(dir));
             return FileVisitResult.SKIP_SUBTREE;
         }
 

@@ -240,7 +240,7 @@ public class Extractor {
         try {
             logger.fine("Moving files from the titles-enterprise directory");
             Files.walkFileTree(sourceDir, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
-                    new CopyTreeFileVisitor(sourceDir, targetDir));
+                    new TitlesEnterpriseCopyTreeFileVisitor(sourceDir, targetDir));
         } catch (IOException e) {
             addIssue(Issue.error(e.toString(), null));
         }

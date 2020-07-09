@@ -3,6 +3,7 @@ package com.redhat.documentation.asciidoc.cli;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
@@ -152,9 +153,13 @@ class ExtractionRunnerTest {
         assertThat(exitCode).isEqualTo(0);
         final File titleDirectory = new File(this.outputDirectory, "titles-enterprise");
         assertThat(titleDirectory.isDirectory()).isTrue();
-        assertThat(titleDirectory.list()).containsOnly("kogito-configuring", "assemblies-test", "master-docinfo.xml", "index.adoc", "doc-content");
+        assertThat(titleDirectory.list()).containsOnly("kogito-configuring", "assemblies-test", "master-docinfo.xml", "index.adoc");
 
-        assertThat(Files.isSymbolicLink(titleDirectory.toPath().resolve("doc-content"))).isTrue();
+        // Check for assemblies and not doc-content
+        var kogitoConfiguringDir = titleDirectory.toPath().resolve("kogito-configuring");
+        assertThat(kogitoConfiguringDir.toFile().list()).containsOnly("master-docinfo.xml", "master.adoc", "assemblies");
+        assertThat(kogitoConfiguringDir.resolve("assemblies")).isSymbolicLink();
+        assertThat(Files.readSymbolicLink(kogitoConfiguringDir.resolve("assemblies"))).isEqualTo(Path.of("..", "..", "assemblies"));
     }
 
     @Test

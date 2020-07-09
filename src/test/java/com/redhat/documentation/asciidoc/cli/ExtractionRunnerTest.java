@@ -160,6 +160,10 @@ class ExtractionRunnerTest {
         assertThat(kogitoConfiguringDir.toFile().list()).containsOnly("master-docinfo.xml", "master.adoc", "assemblies");
         assertThat(kogitoConfiguringDir.resolve("assemblies")).isSymbolicLink();
         assertThat(Files.readSymbolicLink(kogitoConfiguringDir.resolve("assemblies"))).isEqualTo(Path.of("..", "..", "assemblies"));
+
+        // Check for correct includes in master.adoc
+        var masterDoc = kogitoConfiguringDir.resolve("master.adoc");
+        assertThat(Files.readString(masterDoc)).contains("include::assemblies/assembly-kogito-configuring.adoc[]");
     }
 
     @Test

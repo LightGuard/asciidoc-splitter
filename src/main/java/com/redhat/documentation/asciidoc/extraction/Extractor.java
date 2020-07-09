@@ -114,13 +114,16 @@ public class Extractor {
         try {
             // Create symlinks for modules, _artifacts, and _images
             if (Files.notExists(assembliesDir.resolve("modules"))) // We only need this once
-                Files.createSymbolicLink(assembliesDir.resolve("modules"), targetDirPath.resolve("modules"));
+                Files.createSymbolicLink(assembliesDir.resolve("modules"),
+                                         assembliesDir.relativize(targetDirPath.resolve("modules")));
 
             if (Files.exists(sourceDirPath.resolve( "_artifacts")))
-                Files.createSymbolicLink(assembliesDir.resolve("_artifacts"), sourceDirPath.resolve("_artifacts"));
+                Files.createSymbolicLink(assembliesDir.resolve("_artifacts"),
+                                         assembliesDir.relativize(targetDirPath.resolve("_artifacts")));
 
             if (Files.exists(sourceDirPath.resolve("_images")))
-                Files.createSymbolicLink(assembliesDir.resolve("_images"), sourceDirPath.resolve("_images"));
+                Files.createSymbolicLink(assembliesDir.resolve("_images"),
+                                         assembliesDir.relativize(targetDirPath.resolve("_images")));
         } catch (IOException e) {
             this.logger.severe("Failed creating symlinks: " + e.getMessage());
         }

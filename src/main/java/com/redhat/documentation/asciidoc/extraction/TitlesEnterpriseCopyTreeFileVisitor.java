@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Objects;
 
+import com.redhat.documentation.asciidoc.Util;
+
 /**
  * A specific instance of CopyTreeFileVisitor used for the "titles-enterprise" directory.
  */
@@ -32,8 +34,11 @@ public class TitlesEnterpriseCopyTreeFileVisitor extends CopyTreeFileVisitor {
                 if (dir.getFileName().toString().equals("doc-content")) { // We don't need doc-content, but do need assemblies
                     var parentDir = dir.getParent().getFileName();
                     var assemblies = targetPath.resolve(Extractor.TITLES_ENTERPRISE).resolve(parentDir).resolve("assemblies");
+
+                    // Create symlink for assemblies and modules
                     Files.createSymbolicLink(assemblies,
                             assemblies.getParent().relativize(targetPath.resolve("assemblies")));
+
                     return FileVisitResult.SKIP_SUBTREE;
                 }
 
@@ -43,5 +48,23 @@ public class TitlesEnterpriseCopyTreeFileVisitor extends CopyTreeFileVisitor {
         }
 
         return super.preVisitDirectory(dir, attrs);
+    }
+
+    @Override
+    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        // if master.adoc
+        //  read file
+        //  fix includes
+        //  write to new location
+        // else
+        if (file.getFileName().toString().equals("master.adoc")) {
+            var lines = Files.readString(file);
+            var newFile = targetPath.resolve(Extractor.TITLES_ENTERPRISE)
+                                    .resolve(file.getParent().getFileName())
+                                    .resolve(file.getFileName());
+            Files.writeString(newFile, Util.fixIncludes(lines));
+            return FileVisitResult.CONTINUE;
+        }
+        return super.visitFile(file, attrs);
     }
 }

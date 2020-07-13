@@ -196,6 +196,7 @@ class ExtractionRunnerTest {
                 .resolve("assembly-kogito-developing-decision-services.adoc");
 
         assertThat(Files.readString(chap)).contains("== Additional resources");
+        assertThat(Files.readString(chap)).doesNotContain("endif::[]");
     }
 
     @Test

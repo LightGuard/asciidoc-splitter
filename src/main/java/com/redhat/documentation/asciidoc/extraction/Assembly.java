@@ -89,7 +89,7 @@ public class Assembly {
 
             } else {
                 // Add it to the list
-                moduleSources.add(new SectionWrapper(section, getSectionSource(lines, section, lines.size())));
+                moduleSources.add(new SectionWrapper(section, getSectionSource(lines, section, lines.size() - 1)));
             }
         }
 
@@ -134,6 +134,14 @@ public class Assembly {
         var startingLine = section.getSourceLocation().getLineNumber();
         StringBuilder sectionSource = new StringBuilder();
         for (int i = startingLine; i < nextSectionStart; i++) {
+            // We don't want lines that contain with ifdef::
+            if (lines.get(i).contains("ifdef::"))
+                continue;
+
+            // We also don't want lines that contain endif::
+            if (lines.get(i).contains("endif::"))
+                continue;
+
             sectionSource.append(Util.tweakSource(lines.get(i))).append("\n");
         }
         return sectionSource.toString();

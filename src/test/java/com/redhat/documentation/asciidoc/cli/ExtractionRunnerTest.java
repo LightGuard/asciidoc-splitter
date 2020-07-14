@@ -196,7 +196,6 @@ class ExtractionRunnerTest {
                 .resolve("assembly-kogito-developing-decision-services.adoc");
 
         assertThat(Files.readString(chap)).contains("== Additional resources");
-        assertThat(Files.readString(chap)).doesNotContain("endif::[]");
     }
 
     @Test
@@ -252,5 +251,23 @@ class ExtractionRunnerTest {
                 .resolve("assembly-kogito-configuring.adoc");
 
         assertThat(Files.readString(chap)).contains("ifdef::context[:parent-context: {context}]");
+    }
+
+    @Test
+    public void testPreambleIncluded() throws Exception {
+        final var sourceDirectory = new File("./examples/kogito/preamble-test");
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(),
+                "-o", this.outputDirectory.getAbsolutePath(),
+                "-a", "KOGITO-ENT=true"
+        };
+
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
+
+        var chap = outputDirectory.toPath().resolve("assemblies")
+                .resolve("assembly-kogito-creating-running.adoc");
+
+        assertThat(outputDirectory.toPath().resolve("modules").resolve("preamble-test")
+                .resolve("unknown-chap-kogito-creating-running.adoc")).doesNotExist();
     }
 }

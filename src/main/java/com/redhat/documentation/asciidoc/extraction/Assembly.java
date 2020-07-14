@@ -54,16 +54,19 @@ public class Assembly {
         this.source.append("[id=\"").append(this.idWithoutContext).append("_{context}\"]\n");
 
         // Grab the preamble
-        if (doc.findBy(Map.of("context", ":preamble")).size() > 0) {
-            for (int i = lines.indexOf("= " + doc.getTitle()); i < getPreambleEndLineNumber(doc, lines); i++) {
-                this.source.append(Util.tweakSource(lines.get(i))).append("\n");
-            }
-            this.source.append("\n");
+        var sections = doc.findBy(Map.of("context", ":section"));
+
+        // The first block should be the section with the document title
+        final int preambleEndLineNumber = getPreambleEndLineNumber(doc, lines);
+
+        for (int i = sections.get(0).getSourceLocation().getLineNumber() - 1; i < preambleEndLineNumber; i++) {
+            this.source.append(Util.tweakSource(lines.get(i))).append("\n");
         }
+        this.source.append("\n");
 
         List<SectionWrapper> moduleSources = new ArrayList<>();
 
-        var modules = doc.findBy(Map.of("context", ":section")).stream()
+        var modules = sections.stream()
                 .filter(ExtractedModule::isNodeAModule)
                 .map(Section.class::cast)
                 .collect(Collectors.toList());
@@ -117,7 +120,7 @@ public class Assembly {
     }
 
     private int getPreambleEndLineNumber(StructuralNode doc, List<String> lines) {
-        var nextSection = doc.getBlocks().get(1);
+        var nextSection = doc.findBy(Map.of("context", ":section")).get(1); // We need whatever the second section is
         var sectionEndLineNumber = nextSection.getSourceLocation().getLineNumber() -1;
 
         var nextSectionLine = lines.get(sectionEndLineNumber);

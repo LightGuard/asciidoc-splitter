@@ -22,8 +22,8 @@ public class ExtractedModule {
         var nodeId = node.getId();
 
         if (nodeId != null) {
-            if (nodeId.endsWith("{context}"))
-                return true;
+            if (nodeId.startsWith("chap-"))
+                return false;
 
             if (nodeId.startsWith("proc-") || nodeId.startsWith("con-") || nodeId.startsWith("ref-"))
                 return true;

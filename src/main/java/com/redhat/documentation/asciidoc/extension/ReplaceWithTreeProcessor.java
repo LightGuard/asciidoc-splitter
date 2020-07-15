@@ -1,4 +1,4 @@
-package com.redhat.documentation.asciidoc.extraction;
+package com.redhat.documentation.asciidoc.extension;
 
 import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.Document;

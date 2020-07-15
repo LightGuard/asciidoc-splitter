@@ -1,0 +1,9 @@
+= Basic test
+
+Some sort of preamble
+
+Then another paragraph
+
+ifeval::["{cmdcli}" == "oc"]
+* If using a version of OpenShift earlier than OpenShift 4 the link:https://github.com/coreos/prometheus-operator/tree/master/contrib/kube-prometheus[Prometheus Operator^] and Custom Resource Definitions must be installed.
+endif::[]

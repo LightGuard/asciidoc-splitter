@@ -137,8 +137,8 @@ public class Assembly {
         var startingLine = section.getSourceLocation().getLineNumber();
         StringBuilder sectionSource = new StringBuilder();
         for (int i = startingLine; i < nextSectionStart; i++) {
-            // We don't want lines that contain with ifdef::
-            if (lines.get(i).contains("ifdef::"))
+            // We don't want lines that contain with preprocess::
+            if (lines.get(i).contains("preprocess::"))
                 continue;
 
             // We also don't want lines that contain endif::

@@ -1,0 +1,10 @@
+= Basic test
+
+Some sort of preamble
+
+Then another paragraph
+
+ifdef::localtime[]
+This section should not be removed.
+endif::[]
+

@@ -1,7 +1,6 @@
-ifdef::context[:parent-context: {context}]
-
 [id='chap-kogito-creating-running_{context}']
 = Creating and running your first {PRODUCT} services
+ifdef::context[:parent-context: {context}]
 :context: kogito-creating-running
 
 // Purpose statement for the assembly
@@ -46,12 +45,12 @@ For example, {PRODUCT} is compatible with the following technologies:
 * *{OPENSHIFT}*, based on Kubernetes, is the target platform for building and managing containerized applications.
 * *Quarkus* is the new native Java stack for Kubernetes that you can use when you build applications with {PRODUCT} services.
 * *Spring Boot* is also supported with {PRODUCT} if you need to use the Spring Framework with {PRODUCT}.
-ifdef::KOGITO-COMM[]
-* *GraalVM* with Quarkus enables you to use native compilation with {PRODUCT}, resulting in fast start-up times and minimal footprint. For example, a native {PRODUCT} service starts in about 0.003ms, about 100 times faster than a non-native start-up. Fast start-up is almost a necessity in a cloud ecosystem, especially if you need small serverless applications.
-endif::[]
 * *Knative* enables you to build serverless applications with {PRODUCT} that you can scale up or down (to zero) as needed.
 * *Prometheus* and *Grafana* are compatible with {PRODUCT} services for monitoring and analytics with optional extensions.
 * *Kafka*, *Infinispan*, and *Keycloak* are also some of the middleware technologies that {PRODUCT} supports for messaging, persistence, and security.
+ifdef::KOGITO-COMM[]
+* *GraalVM* with Quarkus enables you to use native compilation with {PRODUCT}, resulting in fast start-up times and minimal footprint. For example, a native {PRODUCT} service starts in about 0.003ms, about 100 times faster than a non-native start-up. Fast start-up is almost a necessity in a cloud ecosystem, especially if you need small serverless applications.
+endif::[]
 
 === Domain-specific flexibility
 

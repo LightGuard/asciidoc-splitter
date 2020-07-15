@@ -1,0 +1,10 @@
+= Basic test
+
+Some sort of preamble
+
+Then another paragraph
+
+ifdef::datetime[]
+This section should be removed.
+endif::[]
+

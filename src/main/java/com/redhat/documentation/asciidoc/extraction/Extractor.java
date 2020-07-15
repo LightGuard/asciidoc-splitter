@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 import com.redhat.documentation.asciidoc.Util;
 import com.redhat.documentation.asciidoc.cli.ExtractionRunner;
 import com.redhat.documentation.asciidoc.cli.Issue;
+import com.redhat.documentation.asciidoc.extension.ReaderPreprocessor;
+import com.redhat.documentation.asciidoc.extension.ReplaceWithTreeProcessor;
 import com.redhat.documentation.asciidoc.extraction.model.Task;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.AttributesBuilder;

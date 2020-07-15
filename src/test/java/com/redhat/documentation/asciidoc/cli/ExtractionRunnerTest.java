@@ -88,6 +88,10 @@ class ExtractionRunnerTest {
         // Assemblies
         var assembliesDir = new File(this.outputDirectory, "assemblies");
         assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(1);
+
+        final Path assemblyFile = assembliesDir.toPath().resolve("assembly-monitoring.adoc");
+        assertThat(assemblyFile).exists();
+        assertThat(Files.readString(assemblyFile)).contains("= Monitoring {ProductName}");
     }
 
     @Test
@@ -235,8 +239,8 @@ class ExtractionRunnerTest {
         assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(1);
         var chapFile= new File(assembliesDir, "assembly-kogito-creating-running.adoc");
         assertThat(chapFile.exists()).isTrue();
-        assertThat(!(Files.readString(sourceFile.toPath())).contains("ifdef::context[:parent-context: {context}]"));
-        assertThat(!(Files.readString(chapFile.toPath())).contains("ifdef::context[:parent-context: {context}]"));
+        assertThat(!(Files.readString(sourceFile.toPath())).contains("preprocess::context[:parent-context: {context}]"));
+        assertThat(!(Files.readString(chapFile.toPath())).contains("preprocess::context[:parent-context: {context}]"));
     }
 
     @Test

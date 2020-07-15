@@ -30,11 +30,11 @@ IMPORTANT: The `{BOM_VERSION}` variable requires additional conditioning in sing
 .Example BOM declaration in single-sourced content
 [source,xml,subs="attributes+"]
 ----
-ifdef::KOGITO-ENT[]
+preprocess::KOGITO-ENT[]
   <groupId>com.redhat.ba</groupId>
   <artifactId>ba-platform-bom</artifactId>
 endif::[]
-ifdef::KOGITO-COMM[]
+preprocess::KOGITO-COMM[]
   <groupId>org.kie</groupId>
   <artifactId>kie-platform-bom</artifactId>
 endif::[]

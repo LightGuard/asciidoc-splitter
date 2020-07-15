@@ -4,8 +4,6 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-import com.redhat.documentation.asciidoc.extraction.ReaderPreprocessor;
-import com.redhat.documentation.asciidoc.extraction.ReplaceWithTreeProcessor;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.extension.JavaExtensionRegistry;

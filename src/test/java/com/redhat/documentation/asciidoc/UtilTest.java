@@ -17,7 +17,7 @@ class UtilTest {
     @Test
     public void testFixIncludesTags() {
         var testString = "include::{asciidoc-dir}/creating-running/chap-kogito-creating-running.adoc[tags=ref-kogito-app-examples]";
-        var expected = "include::../../modules/creating-running/ref-kogito-app-examples.adoc[leveloffset=+1]";
+        var expected = "include::modules/creating-running/ref-kogito-app-examples.adoc[leveloffset=+1]";
 
         assertThat(Util.fixIncludes(testString)).isEqualTo(expected);
         assertThat(Util.tweakSource(testString)).isEqualTo(expected);

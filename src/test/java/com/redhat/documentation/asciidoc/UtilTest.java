@@ -22,4 +22,24 @@ class UtilTest {
         assertThat(Util.fixIncludes(testString)).isEqualTo(expected);
         assertThat(Util.tweakSource(testString)).isEqualTo(expected);
     }
+
+    @Test
+    public void testFixSectionLevelForModule() {
+        var test = "==== Some sort of title";
+        var expected = "=== Some sort of title";
+
+        assertThat(Util.fixSectionLevelForModule(test)).isEqualTo(expected);
+    }
+
+    @Test
+    public void testFixSectionLevelForModuleWithPunctuation() {
+        var test = "==== Some sort of title {PRODUCT}";
+        var expected = "=== Some sort of title {PRODUCT}";
+
+        assertThat(Util.fixSectionLevelForModule(test)).isEqualTo(expected);
+
+        test = "=== GraphQL queries for process instances and user task instances (instance caches)";
+        expected = "== GraphQL queries for process instances and user task instances (instance caches)";
+        assertThat(Util.fixSectionLevelForModule(test)).isEqualTo(expected);
+    }
 }

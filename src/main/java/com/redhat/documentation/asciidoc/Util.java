@@ -1,5 +1,7 @@
 package com.redhat.documentation.asciidoc;
 
+import java.util.regex.Pattern;
+
 import org.asciidoctor.ast.ContentNode;
 
 public class Util {
@@ -51,6 +53,19 @@ public class Util {
      */
     public static String tweakSource(String source) {
         return fixIncludes(source);
+    }
+
+    public static String fixSectionLevelForModule(String source) {
+        // Fix up section levels for output
+        var pattern = Pattern.compile("^(?<sectionLevel>=+)\\s(?<title>(?:\\w|\\s|\\p{Punct})+)");
+        var matcher = pattern.matcher(source);
+
+        if (matcher.matches()) {
+            var sectionLevel = matcher.group("sectionLevel");
+            return sectionLevel.substring(0, sectionLevel.length() -1) + " " + matcher.group("title");
+        }
+
+        return source;
     }
 
 }

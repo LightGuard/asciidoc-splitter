@@ -212,7 +212,7 @@ public class Extractor {
                     try (Writer output = new FileWriter(moduleOutputFile.toFile())) {
                         output
                                 // Adding the id of the module
-                                .append("[id=\"").append(module.getId()).append("_{context}\"]\n")
+                                .append("[id='").append(module.getId()).append("_{context}']\n")
                                 // Adding the section title
                                 .append("= ").append(module.getSection().getTitle()).append("\n")
                                 .append(Util.tweakSource(module.getSource()));

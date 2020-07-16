@@ -52,7 +52,7 @@ public class Assembly {
 
         // Adding the id of the module
 //        this.source.append("[id=\"").append(this.idWithoutContext).append("_{context}\"]\n");
-        this.source.append("[id=\"").append(this.idWithoutContext).append("\"]\n"); // I don't think we need the context for assemblies
+        this.source.append("[id='assembly-").append(this.idWithoutContext).append("']\n"); // I don't think we need the context for assemblies
 
         // Grab the preamble
         var sections = doc.findBy(Map.of("context", ":section"));
@@ -138,15 +138,15 @@ public class Assembly {
         var startingLine = section.getSourceLocation().getLineNumber();
         StringBuilder sectionSource = new StringBuilder();
         for (int i = startingLine; i < nextSectionStart; i++) {
-            // We don't want lines that contain with preprocess::
-            if (lines.get(i).contains("preprocess::"))
+            // We don't want lines that contain with ifdef::
+            if (lines.get(i).contains("ifdef::"))
                 continue;
 
             // We also don't want lines that contain endif::
             if (lines.get(i).contains("endif::"))
                 continue;
 
-            sectionSource.append(Util.tweakSource(lines.get(i))).append("\n");
+            sectionSource.append(Util.fixIncludes(Util.fixSectionLevelForModule(lines.get(i)))).append("\n");
         }
         return sectionSource.toString();
     }

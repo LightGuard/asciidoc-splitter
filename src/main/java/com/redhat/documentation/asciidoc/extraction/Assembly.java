@@ -51,7 +51,8 @@ public class Assembly {
         this.createAssembly = Boolean.parseBoolean(doc.getAttribute("assembly", "true").toString());
 
         // Adding the id of the module
-        this.source.append("[id=\"").append(this.idWithoutContext).append("_{context}\"]\n");
+//        this.source.append("[id=\"").append(this.idWithoutContext).append("_{context}\"]\n");
+        this.source.append("[id=\"").append(this.idWithoutContext).append("\"]\n"); // I don't think we need the context for assemblies
 
         // Grab the preamble
         var sections = doc.findBy(Map.of("context", ":section"));

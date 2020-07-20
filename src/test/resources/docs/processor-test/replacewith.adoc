@@ -2,6 +2,10 @@
 
 Now we have some extra content here.
 
+[replace-with="new-doc.adoc" replace-with-id="hello-world"]
+link:{asciidoc-dir}/new-doc.adoc[See this section for more info].
+
+== Some sort of module
 There is another paragraph here.
 
 [replace-with="new-doc.adoc" replace-with-id="hello-world"]

@@ -93,8 +93,18 @@ public class ReaderPreprocessor extends Preprocessor {
 
     public void updateLines(int start, int end, List<String> content) {
         var prevLines = lines.subList(start -1 , end); // New zero based
-        prevLines.clear();
-        prevLines.addAll(content);
+
+        if (prevLines.size() < content.size()) {
+            throw new IllegalStateException("Adding more content than replacing with \"replace-with\" starting at line "
+                                            + start + ". This will throw off line numbers for further processing.");
+        }
+        // Clear out any existing content
+        Collections.fill(prevLines, "");
+
+        // Remove the existing value at the specified index and add back in the new content.
+        for (int i = 0; i < content.size(); i++) {
+            prevLines.set(i, content.get(i));
+        }
     }
 
     class DirectiveSection {

@@ -10,7 +10,7 @@ public class ReplaceWithTreeProcessor extends Treeprocessor {
 
     @Override
     public Document process(Document document) {
-        processBlocks(document);
+        document.getBlocks().forEach(this::processBlocks);
         return document;
     }
 

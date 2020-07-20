@@ -215,7 +215,7 @@ public class Extractor {
                                 .append("[id='").append(module.getId()).append("_{context}']\n")
                                 // Adding the section title
                                 .append("= ").append(module.getSection().getTitle()).append("\n")
-                                .append(Util.tweakSource(module.getSource()));
+                                .append(module.getSource());
                     }
                 }
             }

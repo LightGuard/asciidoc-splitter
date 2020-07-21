@@ -1,5 +1,6 @@
 package com.redhat.documentation.asciidoc.extension;
 
+import com.redhat.documentation.asciidoc.Util;
 import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.StructuralNode;
@@ -47,6 +48,7 @@ public class ReplaceWithTreeProcessor extends Treeprocessor {
         String content = "include::" +
                          origBlock.getAttributes().get("replace-with") +
                          "[tags=" + origBlock.getAttributes().get("replace-with-id") + "]";
+        content = Util.fixIncludes(content);
         return createBlock((StructuralNode) origBlock.getParent(), "paragraph", content);
     }
 }

@@ -89,5 +89,4 @@ public class ReaderPreprocessorTest {
         assertThat(lines).contains("* If using a version of OpenShift earlier than OpenShift 4 the link:https://github.com/coreos/prometheus-operator/tree/master/contrib/kube-prometheus[Prometheus Operator^] and Custom Resource Definitions must be installed.");
         assertThat(lines).contains("endif::[]");
     }
-
 }

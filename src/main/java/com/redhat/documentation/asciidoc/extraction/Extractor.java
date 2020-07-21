@@ -49,12 +49,15 @@ public class Extractor {
     public void process() {
         logger.fine("Starting up Asciidoctor");
         var preprocessor = new ReaderPreprocessor();
+        var replaceWithProcessor = new ReplaceWithTreeProcessor();
 
         OptionsBuilder optionsBuilder = OptionsBuilder.options();
         Asciidoctor asciidoctor = Asciidoctor.Factory.create();
         asciidoctor.javaExtensionRegistry()
                         .preprocessor(preprocessor)
-                        .treeprocessor(new ReplaceWithTreeProcessor());
+                        .treeprocessor(replaceWithProcessor);
+
+        replaceWithProcessor.setReaderPreprocessor(preprocessor);
 
         // We need access to the line numbers and source
         optionsBuilder.sourcemap(true);

@@ -2,13 +2,13 @@
 
 Now we have some extra content here.
 
-[replace-with="new-doc.adoc" replace-with-id="hello-world"]
+[replace-with="new-doc.adoc" replace-with-params="leveloffset=+1"]
 link:{asciidoc-dir}/new-doc.adoc[See this section for more info].
 
 == Some sort of module
 There is another paragraph here.
 
-[replace-with="new-doc.adoc" replace-with-id="hello-world"]
+[replace-with="new-doc.adoc" replace-with-params="leveloffset=+1"]
 link:{asciidoc-dir}/new-doc.adoc[See this section for more info].
 
 We'll add one more paragraph just to make sure this works in the middle of the file.

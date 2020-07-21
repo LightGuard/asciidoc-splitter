@@ -11,7 +11,7 @@ As a developer of business processes and decisions, you can configure {PRODUCT} 
 [id='con-kogito-supporting-services-and-configuration_{context}']
 == {PRODUCT} supporting services and runtime configuration
 
-[replace-with="end-to-end/chap-kogito-creating-running.adoc" replace-with-id="ref-kogito-app-examples"]
+[replace-with="end-to-end/ref-kogito-app-examples.adoc" replace-with-params="leveloffset=+1"]
 link:{asciidoc-dir}/creating-running/chap-kogito-creating-running.adoc[My Test].
 
 {PRODUCT} supporting services consist of middleware infrastructure services and other dedicated services that help you build additional functionality in the {PRODUCT} domain-specific services that you create.

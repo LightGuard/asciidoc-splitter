@@ -29,7 +29,8 @@ public class ReplaceWithEndToEndTest extends ExtractionRunnerBase {
         var moduleWithReplacement = outputDirectory.toPath().resolve("modules/end-to-end/con-kogito-supporting-services-and-configuration.adoc");
 
         assertThat(Files.readString(moduleWithReplacement)).doesNotContain("link:{asciidoc-dir}/creating-running/chap-kogito-creating-running.adoc[My Test].");
-        assertThat(Files.readString(moduleWithReplacement)).doesNotContain("[replace-with=\"chap-kogito-creating-running.adoc\" replace-with-id=\"ref-kogito-app-examples\"]");
+        assertThat(Files.readString(moduleWithReplacement)).doesNotContain("[replace-with=\"../creating-running/ref-kogito-app-examples.adoc\" replace-with-param=\"leveloffset=+1\"]");
+        //                                                            include::../modules/end-to-end/ref-kogito-app-examples.adoc[leveloffset=+1]
         assertThat(Files.readString(moduleWithReplacement)).contains("include::modules/end-to-end/ref-kogito-app-examples.adoc[leveloffset=+1]");
     }
 }

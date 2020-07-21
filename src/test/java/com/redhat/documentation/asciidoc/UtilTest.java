@@ -20,7 +20,6 @@ class UtilTest {
         var expected = "include::modules/creating-running/ref-kogito-app-examples.adoc[leveloffset=+1]";
 
         assertThat(Util.fixIncludes(testString)).isEqualTo(expected);
-        assertThat(Util.tweakSource(testString)).isEqualTo(expected);
     }
 
     @Test

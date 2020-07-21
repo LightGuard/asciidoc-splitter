@@ -38,10 +38,20 @@ public class Util {
     }
 
     public static String fixIncludes(String source) {
-        return source.replaceAll("(?<include>include::)(?<path>(\\w|\\/|-)*)chap-(?<filename>.+)\\.(?<extension>.+)\\[]",
+        return source.replaceAll("(?<include>include::)(?<path>(\\w|/|-)*)chap-(?<filename>.+)\\.(?<extension>.+)\\[]",
                                         "${include}assemblies/assembly-${filename}.${extension}[]")
-                     .replaceAll("(?<include>include::)(\\{asciidoc-dir}\\/)?(?<path>(\\w|\\/|-)*)\\/(?<filename>.*)\\[tags=(?<module>.+)]",
+                     .replaceAll("(?<include>include::)(\\{asciidoc-dir}/)?(?<path>(\\w|/|-)*)/(?<filename>.*)\\[tags=(?<module>.+)]",
                              "${include}modules/${path}/${module}.adoc[leveloffset=+1]");
+    }
+
+    public static String fixModuleInclude(String source) {
+        var pattern = Pattern.compile("(?<include>include::)(?<path>(\\w|/|-)*)/(?<filename>.+)\\[(?<params>.+)]");
+        var matcher = pattern.matcher(source);
+        if (matcher.matches()) {
+            var params = "null".equals(matcher.group("params")) ? "" : matcher.group("params");
+            return matcher.replaceAll("${include}modules/${path}/${filename}[" + params + "]");
+        }
+        return source;
     }
 
 
@@ -52,7 +62,7 @@ public class Util {
      * @return Source with tweaks/fixes applied
      */
     public static String tweakSource(String source) {
-        return fixIncludes(source);
+        return fixModuleInclude(fixIncludes(source));
     }
 
     public static String fixSectionLevelForModule(String source) {

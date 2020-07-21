@@ -47,8 +47,8 @@ public class ReplaceWithTreeProcessor extends Treeprocessor {
     private Block replaceWith(StructuralNode origBlock) {
         String content = "include::" +
                          origBlock.getAttributes().get("replace-with") +
-                         "[tags=" + origBlock.getAttributes().get("replace-with-id") + "]";
-        content = Util.fixIncludes(content);
+                         "[" + origBlock.getAttributes().get("replace-with-params") + "]";
+        content = Util.fixModuleInclude(content);
         return createBlock((StructuralNode) origBlock.getParent(), "paragraph", content);
     }
 }

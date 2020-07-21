@@ -44,7 +44,7 @@ public class ExtensionTesting {
         var doc = asciidoctor.loadFile(adoc, optionsBuilder.asMap());
         var lines = readerPreprocessor.getLines();
 
-        assertThat(lines).contains("include::new-doc.adoc[tags=hello-world]");
-        assertThat(lines).doesNotContain("[replace-with=\"new-doc.adoc\" replace-with-id=\"hello-world\"]");
+        assertThat(lines).contains("include::new-doc.adoc[leveloffset=+1]");
+        assertThat(lines).doesNotContain("[replace-with=\"new-doc.adoc\" replace-with-param=\"leveloffset=+1\"]");
     }
 }

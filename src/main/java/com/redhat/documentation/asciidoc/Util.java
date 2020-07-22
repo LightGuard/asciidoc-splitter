@@ -49,7 +49,10 @@ public class Util {
         var matcher = pattern.matcher(source);
         if (matcher.matches()) {
             var params = "null".equals(matcher.group("params")) ? "" : matcher.group("params");
-            return matcher.replaceAll("${include}modules/${path}/${filename}[" + params + "]");
+
+            // Getting a little lazy with the second replacement, but it seems to be the correct fix.
+            return matcher.replaceAll("${include}modules/${path}/${filename}[" + params + "]")
+                          .replaceAll("modules/modules/", "../../modules/");
         }
         return source;
     }

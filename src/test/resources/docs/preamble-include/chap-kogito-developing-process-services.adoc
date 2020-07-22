@@ -1,0 +1,523 @@
+[id='chap-kogito-developing-process-services']
+= Developing process services with {PRODUCT}
+ifdef::context[:parent-context: {context}]
+:context: kogito-developing-process-services
+
+// Purpose statement for the assembly
+As a developer of business processes, you can use {PRODUCT} business automation to develop process services using Business Process Model and Notation (BPMN) 2.0 models. BPMN process models are graphical representations of the steps required to achieve a business goal. You can design your BPMN processes with the {PRODUCT} BPMN modeler in VSCode or import existing BPMN processes into your {PRODUCT} projects for deployment and execution.
+
+For more information about BPMN, see the Object Management Group (OMG) https://www.omg.org/spec/BPMN/2.0/About-BPMN[Business Process Model and Notation 2.0 specification].
+
+// Modules - concepts, procedures, refs, etc.
+
+include::{asciidoc-dir}/creating-running/chap-kogito-creating-running.adoc[tags=ref-kogito-app-examples]
+
+[id='con-bpmn_{context}']
+== Business Process Model and Notation (BPMN) 2.0
+Business Process Model and Notation (BPMN) 2.0 is a standard established by the Object Management Group (OMG) for describing and modeling business processes. BPMN defines an XML schema that enables BPMN models to be shared between BPMN-compliant platforms and across organizations so that business analysts and business process developers can collaborate in designing and implementing BPMN process services. The BPMN standard is similar to and can be used together with the Decision Model and Notation (DMN) standard for designing and modeling business decisions.
+
+For more information about BPMN, see the Object Management Group (OMG) https://www.omg.org/spec/BPMN/2.0/About-BPMN[Business Process Model and Notation 2.0 specification].
+
+[id='ref-bpmn-model-example_{context}']
+=== BPMN model example
+
+A typical BPMN business process consists of the following basic components:
+
+* Start events to initiate the process
+* Tasks or other steps that are completed as part of the process
+* Connectors to link the process nodes and create a sequence flow
+* End events to terminate the process
+
+The following example is a real-world BPMN model scenario that demonstrates how you can use process modeling to reach a business goal based on business decisions, tasks, or other services. In this scenario, an order service uses business processes for ordering items, for verifying the order, and for evaluating customer age.
+
+NOTE: This example is based on the `process-quarkus-example` application in the https://github.com/kiegroup/kogito-examples[`kogito-examples`] repository in GitHub. However, this example may differ from the exact example source code as {PRODUCT} continues to be developed. Be sure to explore this and other {PRODUCT} examples in GitHub to help you develop your own applications.
+
+The `orders.bpmn2` process in the example describes the steps that need to be followed when ordering items. The process includes a script task for writing debug information and a call activity for invoking a subprocess, using a custom `Order` data object.
+
+.Example `orders.bpmn2` process
+image::kogito/bpmn/bpmn-model-example-orders.png[Image of `orders.bpmn` example process]
+
+The `Add items` subprocess invokes the following `orderItems.bpmn2` process, which uses a `CalculationService.calculateTotal` custom Java service and a user task to verify the order.
+
+.Example `orderItems.bpmn2` process invoked as a subprocess
+image::kogito/bpmn/bpmn-model-example-order-items.png[Image of `orderItems.bpmn` example process]
+
+The `persons.bpmn2` process invokes a Decision Model and Notation (DMN) model in a business rule task to determine customer age, followed by a user task for special handling requirements for children, if applicable.
+
+.Example `persons.bpmn2` process invoked as a subprocess
+image::kogito/creating-running/kogito-bpmn-example-person.png[Image of `persons.bpmn` example process]
+
+Based on these processes and on application configurations, {PRODUCT} generates a set of REST operations to create new orders, to list and delete active orders, and to determine the age of a specified person.
+
+For example, the following REST operations use the endpoint `/orders` to interact with customer orders. You can use a REST client, curl utility, or the Swagger UI configured for the application at http://localhost:8080/swagger-ui/ to send API requests to interact with the running application.
+
+.Swagger UI to interact with all application endpoints (\http://localhost:8080/swagger-ui/)
+image::kogito/creating-running/kogito-swagger-example-jbpm.png[Image of Swagger UI for example application]
+
+NOTE: For the predefined {PRODUCT} example applications, the Swagger UI for interacting with service endpoints is available only on Quarkus examples that you run in
+ifdef::KOGITO-ENT[]
+development mode.
+endif::[]
+ifdef::KOGITO-COMM[]
+development mode or in native mode.
+endif::[]
+
+.Example POST request body to create an order (JSON)
+[source,json]
+----
+{
+  "approver": "john",
+  "order": {
+    "orderNumber": "12345",
+    "shipped": false
+  }
+}
+----
+
+.Example curl command to create an order
+[source]
+----
+curl -X POST http://localhost:8080/orders -H 'content-type: application/json' -H 'accept: application/json' -d '{"approver" : "john", "order" : {"orderNumber" : "12345", "shipped" : false}}'
+----
+
+The returned order displays an `"id"` field with a generated UUID that you can use to retrieve details about this specific order, if needed.
+
+.Example curl command to view active orders
+[source]
+----
+curl -X GET http://localhost:8080/orders -H 'content-type: application/json' -H 'accept: application/json'
+----
+
+.Example curl command to view order details by returned UUID
+[source]
+----
+curl -X GET http://localhost:8080/orders/6b53c227-6d5e-40b7-8c8c-a541a2a47d58 -H 'content-type: application/json' -H 'accept: application/json'
+----
+
+You use the `"id"` value for the order that was returned when you created the order or when you retrieved active orders.
+
+.Example curl command to cancel the order by returned UUID
+[source]
+----
+curl -X DELETE http://localhost:8080/orders/6b53c227-6d5e-40b7-8c8c-a541a2a47d58 -H 'content-type: application/json' -H 'accept: application/json'
+----
+
+The following is the BPMN source file for the `orders.bpmn2` process model, as an example:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- origin at X=0.0 Y=0.0 -->
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmn20="http://www.omg.org/bpmn20" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns="http://www.jboss.org/drools" xmlns:ns="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd" id="_gfw8oEcJEemyodG9iPy-Bw" exporter="org.eclipse.bpmn2.modeler.core" exporterVersion="1.5.0.Final-v20180515-1642-B1" targetNamespace="http://www.omg.org/bpmn20">
+  <bpmn2:itemDefinition id="_OrderItem" isCollection="false" structureRef="org.kie.kogito.examples.demo.Order"/>
+  <bpmn2:itemDefinition id="_approverItem" isCollection="false" structureRef="String"/>
+  <bpmn2:itemDefinition id="__9484CB12-FE52-434C-AE9F-3C3C267D1C96_orderInputXItem" isCollection="false" structureRef="org.kie.kogito.examples.demo.Order"/>
+  <bpmn2:itemDefinition id="__9484CB12-FE52-434C-AE9F-3C3C267D1C96_orderOutputXItem" isCollection="false" structureRef="org.kie.kogito.examples.demo.Order"/>
+  <bpmn2:process id="demo.Orders" drools:packageName="org.kie.kogito.examples" drools:version="1.0" drools:adHoc="false" name="Orders" isExecutable="true">
+    <bpmn2:documentation id="_gfw8oUcJEemyodG9iPy-Bw"><![CDATA[Deals with orders created by customer]]></bpmn2:documentation>
+    <bpmn2:property id="order" itemSubjectRef="_OrderItem" name="order"/>
+    <bpmn2:property id="approver" itemSubjectRef="_approverItem" name="approver"/>
+    <bpmn2:sequenceFlow id="_8216C810-34D8-4BFA-B814-1AA01907810F" sourceRef="_9484CB12-FE52-434C-AE9F-3C3C267D1C96" targetRef="_2D876EF2-93F4-4CBE-959A-04EF7BFA9CED"/>
+    <bpmn2:sequenceFlow id="_58684613-0155-48B2-8746-7675AFF24439" sourceRef="_0617D7DF-047A-4EC4-85E7-E201D640F4F5" targetRef="_9484CB12-FE52-434C-AE9F-3C3C267D1C96">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_B7B4282B-F317-4BF9-95E9-962B046EE815" sourceRef="_B44545AB-8B78-4FE4-B6B9-1D467954C070" targetRef="_0617D7DF-047A-4EC4-85E7-E201D640F4F5"/>
+    <bpmn2:scriptTask id="_0617D7DF-047A-4EC4-85E7-E201D640F4F5" name="Dump order" scriptFormat="http://www.java.com/java">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[Dump order]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_B7B4282B-F317-4BF9-95E9-962B046EE815</bpmn2:incoming>
+      <bpmn2:outgoing>_58684613-0155-48B2-8746-7675AFF24439</bpmn2:outgoing>
+      <bpmn2:script>System.out.println(&quot;Order has been created &quot; + order + &quot; with assigned approver &quot; + approver.toUpperCase());</bpmn2:script>
+    </bpmn2:scriptTask>
+    <bpmn2:endEvent id="_2D876EF2-93F4-4CBE-959A-04EF7BFA9CED">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_8216C810-34D8-4BFA-B814-1AA01907810F</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:callActivity id="_9484CB12-FE52-434C-AE9F-3C3C267D1C96" drools:independent="false" drools:waitForCompletion="true" name="Add items" calledElement="demo.orderItems">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[Add items]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_58684613-0155-48B2-8746-7675AFF24439</bpmn2:incoming>
+      <bpmn2:outgoing>_8216C810-34D8-4BFA-B814-1AA01907810F</bpmn2:outgoing>
+      <bpmn2:ioSpecification id="_gfw8okcJEemyodG9iPy-Bw">
+        <bpmn2:dataInput id="_9484CB12-FE52-434C-AE9F-3C3C267D1C96_orderInputX" drools:dtype="org.kie.kogito.examples.demo.Order" itemSubjectRef="__9484CB12-FE52-434C-AE9F-3C3C267D1C96_orderInputXItem" name="order"/>
+        <bpmn2:dataOutput id="_9484CB12-FE52-434C-AE9F-3C3C267D1C96_orderOutputX" drools:dtype="org.kie.kogito.examples.demo.Order" itemSubjectRef="__9484CB12-FE52-434C-AE9F-3C3C267D1C96_orderOutputXItem" name="order"/>
+        <bpmn2:inputSet id="_gfw8o0cJEemyodG9iPy-Bw">
+          <bpmn2:dataInputRefs>_9484CB12-FE52-434C-AE9F-3C3C267D1C96_orderInputX</bpmn2:dataInputRefs>
+        </bpmn2:inputSet>
+        <bpmn2:outputSet id="_gfw8pEcJEemyodG9iPy-Bw">
+          <bpmn2:dataOutputRefs>_9484CB12-FE52-434C-AE9F-3C3C267D1C96_orderOutputX</bpmn2:dataOutputRefs>
+        </bpmn2:outputSet>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation id="_gfw8pUcJEemyodG9iPy-Bw">
+        <bpmn2:sourceRef>order</bpmn2:sourceRef>
+        <bpmn2:targetRef>_9484CB12-FE52-434C-AE9F-3C3C267D1C96_orderInputX</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataOutputAssociation id="_gfw8pkcJEemyodG9iPy-Bw">
+        <bpmn2:sourceRef>_9484CB12-FE52-434C-AE9F-3C3C267D1C96_orderOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>order</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:callActivity>
+    <bpmn2:startEvent id="_B44545AB-8B78-4FE4-B6B9-1D467954C070">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:outgoing>_B7B4282B-F317-4BF9-95E9-962B046EE815</bpmn2:outgoing>
+    </bpmn2:startEvent>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="_gfw8p0cJEemyodG9iPy-Bw">
+    <bpmndi:BPMNPlane id="_gfw8qEcJEemyodG9iPy-Bw" bpmnElement="demo.Orders">
+      <bpmndi:BPMNShape id="shape__B44545AB-8B78-4FE4-B6B9-1D467954C070" bpmnElement="_B44545AB-8B78-4FE4-B6B9-1D467954C070">
+        <dc:Bounds height="56.0" width="56.0" x="100.0" y="100.0"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__9484CB12-FE52-434C-AE9F-3C3C267D1C96" bpmnElement="_9484CB12-FE52-434C-AE9F-3C3C267D1C96" isExpanded="true">
+        <dc:Bounds height="101.0" width="153.0" x="458.5" y="78.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="11.0" width="41.0" x="514.0" y="123.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__2D876EF2-93F4-4CBE-959A-04EF7BFA9CED" bpmnElement="_2D876EF2-93F4-4CBE-959A-04EF7BFA9CED">
+        <dc:Bounds height="56.0" width="56.0" x="712.0" y="100.0"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__0617D7DF-047A-4EC4-85E7-E201D640F4F5" bpmnElement="_0617D7DF-047A-4EC4-85E7-E201D640F4F5">
+        <dc:Bounds height="102.0" width="154.0" x="236.0" y="77.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="11.0" width="48.0" x="289.0" y="122.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_shape__B44545AB-8B78-4FE4-B6B9-1D467954C070_to_shape__0617D7DF-047A-4EC4-85E7-E201D640F4F5" bpmnElement="_B7B4282B-F317-4BF9-95E9-962B046EE815" sourceElement="shape__B44545AB-8B78-4FE4-B6B9-1D467954C070" targetElement="shape__0617D7DF-047A-4EC4-85E7-E201D640F4F5">
+        <di:waypoint xsi:type="dc:Point" x="156.0" y="128.0"/>
+        <di:waypoint xsi:type="dc:Point" x="236.0" y="128.0"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__0617D7DF-047A-4EC4-85E7-E201D640F4F5_to_shape__9484CB12-FE52-434C-AE9F-3C3C267D1C96" bpmnElement="_58684613-0155-48B2-8746-7675AFF24439" sourceElement="shape__0617D7DF-047A-4EC4-85E7-E201D640F4F5" targetElement="shape__9484CB12-FE52-434C-AE9F-3C3C267D1C96">
+        <di:waypoint xsi:type="dc:Point" x="313.0" y="128.0"/>
+        <di:waypoint xsi:type="dc:Point" x="458.5" y="128.5"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__9484CB12-FE52-434C-AE9F-3C3C267D1C96_to_shape__2D876EF2-93F4-4CBE-959A-04EF7BFA9CED" bpmnElement="_8216C810-34D8-4BFA-B814-1AA01907810F" sourceElement="shape__9484CB12-FE52-434C-AE9F-3C3C267D1C96" targetElement="shape__2D876EF2-93F4-4CBE-959A-04EF7BFA9CED">
+        <di:waypoint xsi:type="dc:Point" x="535.0" y="128.5"/>
+        <di:waypoint xsi:type="dc:Point" x="740.0" y="128.0"/>
+        <bpmndi:BPMNLabel/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>
+----
+
+[id='ref-bpmn-support_{context}']
+== BPMN2 support in {PRODUCT}
+
+{PRODUCT} currently supports a subset of the https://www.omg.org/spec/BPMN/2.0/About-BPMN[Business Process Model and Notation 2.0 specification]. Although the {PRODUCT} BPMN modeler displays many BPMN components in the canvas palette, the {PROCESS_ENGINE} (process runtime component) in {PRODUCT} currently executes only the supported subset of components. If you use any BPMN components from the {PRODUCT} BPMN modeler palette that are not supported by the {PROCESS_ENGINE}, your {PRODUCT} project might fail to compile or execute. Additional BPMN components are added to {PRODUCT} runtime support with every release.
+
+The following tables list the components from the BPMN2 specification that are currently supported in {PRODUCT}:
+
+.Support status icons
+[cols="30%,70%" options="header"]
+|===
+|Key
+|Description
+
+a|image:kogito/bpmn/grn_check.png[] | Supported by {PRODUCT} runtime
+a|image:kogito/bpmn/bk_x.png[] | Not supported by {PRODUCT} runtime
+|===
+
+.BPMN2 components
+[cols="25%,25%,30%,20%" options="header"]
+|===
+2+|Component type
+|Component
+|Support status
+
+2.12+|Start events  |None              |image:kogito/bpmn/grn_check.png[]
+                    |Message           |image:kogito/bpmn/grn_check.png[]
+                    |Timer             |image:kogito/bpmn/grn_check.png[]
+                    |Signal            |image:kogito/bpmn/grn_check.png[]
+                    |Error             |image:kogito/bpmn/bk_x.png[]
+                    |Escalation        |image:kogito/bpmn/bk_x.png[]
+                    |Cancel            |image:kogito/bpmn/bk_x.png[]
+                    |Compensation      |image:kogito/bpmn/bk_x.png[]
+                    |Conditional       |image:kogito/bpmn/bk_x.png[]
+                    |Link              |image:kogito/bpmn/bk_x.png[]
+                    |Multiple          |image:kogito/bpmn/bk_x.png[]
+                    |Parallel multiple |image:kogito/bpmn/bk_x.png[]
+1.32+|Intermediate events  .11+|Catching    |Message           |image:kogito/bpmn/grn_check.png[]
+                                            |Timer             |image:kogito/bpmn/grn_check.png[]
+                                            |Signal            |image:kogito/bpmn/grn_check.png[]
+                                            |Error             |image:kogito/bpmn/bk_x.png[]
+                                            |Escalation        |image:kogito/bpmn/bk_x.png[]
+                                            |Cancel            |image:kogito/bpmn/bk_x.png[]
+                                            |Compensation      |image:kogito/bpmn/bk_x.png[]
+                                            |Conditional       |image:kogito/bpmn/bk_x.png[]
+                                            |Link              |image:kogito/bpmn/bk_x.png[]
+                                            |Multiple          |image:kogito/bpmn/bk_x.png[]
+                                            |Parallel multiple |image:kogito/bpmn/bk_x.png[]
+                          .10+|Boundary     |Message           |image:kogito/bpmn/grn_check.png[]
+                                            |Timer             |image:kogito/bpmn/grn_check.png[]
+                                            |Signal            |image:kogito/bpmn/grn_check.png[]
+                                            |Error             |image:kogito/bpmn/bk_x.png[]
+                                            |Escalation        |image:kogito/bpmn/bk_x.png[]
+                                            |Cancel            |image:kogito/bpmn/bk_x.png[]
+                                            |Compensation      |image:kogito/bpmn/bk_x.png[]
+                                            |Conditional       |image:kogito/bpmn/bk_x.png[]
+                                            |Multiple          |image:kogito/bpmn/bk_x.png[]
+                                            |Parallel multiple |image:kogito/bpmn/bk_x.png[]
+                          .11+|Throwing     |Message           |image:kogito/bpmn/grn_check.png[]
+                                            |Timer             |image:kogito/bpmn/bk_x.png[]
+                                            |Signal            |image:kogito/bpmn/bk_x.png[]
+                                            |Error             |image:kogito/bpmn/bk_x.png[]
+                                            |Escalation        |image:kogito/bpmn/bk_x.png[]
+                                            |Cancel            |image:kogito/bpmn/bk_x.png[]
+                                            |Compensation      |image:kogito/bpmn/bk_x.png[]
+                                            |Conditional       |image:kogito/bpmn/bk_x.png[]
+                                            |Link              |image:kogito/bpmn/bk_x.png[]
+                                            |Multiple          |image:kogito/bpmn/bk_x.png[]
+                                            |Parallel multiple |image:kogito/bpmn/bk_x.png[]
+2.9+|End events    |None              |image:kogito/bpmn/grn_check.png[]
+                    |Message           |image:kogito/bpmn/grn_check.png[]
+                    |Error             |image:kogito/bpmn/grn_check.png[]
+                    |Terminate         |image:kogito/bpmn/grn_check.png[]
+                    |Signal            |image:kogito/bpmn/bk_x.png[]
+                    |Escalation        |image:kogito/bpmn/bk_x.png[]
+                    |Cancel            |image:kogito/bpmn/bk_x.png[]
+                    |Compensation      |image:kogito/bpmn/bk_x.png[]
+                    |Multiple          |image:kogito/bpmn/bk_x.png[]
+2.6+|Tasks    |Business rule    |image:kogito/bpmn/grn_check.png[]
+              |Script           |image:kogito/bpmn/grn_check.png[]
+              |User             |image:kogito/bpmn/grn_check.png[]
+              |Service          |image:kogito/bpmn/grn_check.png[]
+              |Send             |image:kogito/bpmn/bk_x.png[]
+              |Receive          |image:kogito/bpmn/bk_x.png[]
+2.4+|Subprocesses   |Embedded           |image:kogito/bpmn/grn_check.png[]
+                    a|Reusable
+                    (call activity)   |image:kogito/bpmn/grn_check.png[]
+                    |Ad hoc             |image:kogito/bpmn/bk_x.png[]
+                    |Event              |image:kogito/bpmn/bk_x.png[]
+2.6+|Gateways   |Inclusive      |image:kogito/bpmn/grn_check.png[]
+                |Exclusive      |image:kogito/bpmn/grn_check.png[]
+                |Parallel       |image:kogito/bpmn/grn_check.png[]
+                |Event-based    |image:kogito/bpmn/grn_check.png[]
+                |Complex        |image:kogito/bpmn/bk_x.png[]
+                |Chaining       |image:kogito/bpmn/bk_x.png[]
+
+2.3+|Connectors   |Sequence flow     |image:kogito/bpmn/grn_check.png[]
+                  |Message flow      |image:kogito/bpmn/bk_x.png[]
+                  |Association       |image:kogito/bpmn/bk_x.png[]
+2.2+|Collaborators    |Lane             |image:kogito/bpmn/bk_x.png[]
+                      |Pool             |image:kogito/bpmn/bk_x.png[]
+2.2+|Artifacts        |Group            |image:kogito/bpmn/bk_x.png[]
+                      |Text annotation  |image:kogito/bpmn/bk_x.png[]
+|===
+
+For more information about BPMN components, see the Object Management Group (OMG) https://www.omg.org/spec/BPMN/2.0/About-BPMN[Business Process Model and Notation 2.0 specification].
+
+[id='proc-bpmn-model-creating_{context}']
+== Creating and editing BPMN models in the {PRODUCT} BPMN modeler
+
+You can use the {PRODUCT} BPMN modeler in VSCode to design BPMN process models and define process logic for a complete and functional BPMN model.
+
+{PRODUCT} currently supports a subset of the https://www.omg.org/spec/BPMN/2.0/About-BPMN[Business Process Model and Notation 2.0 specification]. Although the {PRODUCT} BPMN modeler displays many BPMN components in the canvas palette, the {PROCESS_ENGINE} (process runtime component) in {PRODUCT} currently executes only the supported subset of components. If you use any BPMN components from the {PRODUCT} BPMN modeler palette that are not supported by the {PROCESS_ENGINE}, your {PRODUCT} project might fail to compile or execute. Additional BPMN components are added to {PRODUCT} runtime support with every release.
+
+For more information about BPMN2 support in {PRODUCT}, see xref:ref-bpmn-support_kogito-developing-process-services[].
+
+.Prerequisites
+* https://code.visualstudio.com/[VSCode] 1.43.0 or later is installed.
+* The {PRODUCT} https://github.com/kiegroup/kogito-tooling/releases[VSCode extension] is installed and enabled in your VSCode IDE. For information about enabling the VSCode extension, see
+ifdef::KOGITO-ENT[]
+{URL_CREATING_RUNNING}#proc-kogito-vscode-extension_kogito-creating-running[_{CREATING_RUNNING}_].
+endif::[]
+ifdef::KOGITO-COMM[]
+xref:proc-kogito-vscode-extension_kogito-creating-running[].
+endif::[]
+* You have created a {PRODUCT} project and have included any Java objects required for your {PRODUCT} service. For information about creating a project, see
+ifdef::KOGITO-ENT[]
+{URL_CREATING_RUNNING}[_{CREATING_RUNNING}_].
+endif::[]
+ifdef::KOGITO-COMM[]
+xref:chap-kogito-creating-running[].
+endif::[]
+
+.Procedure
+. In your VSCode IDE, create or import a BPMN file in the relevant folder of your {PRODUCT} project, typically in `src/main/resources`.
++
+NOTE: For a new BPMN file, you can also enter `bpmn.new` in a web browser to design your business process in the {PRODUCT} online BPMN modeler. When you finish creating your process, you can click *Download* in the online modeler page to import your BPMN file into your {PRODUCT} project.
+
+. Open the new or imported BPMN file to view the process diagram in the {PRODUCT} BPMN modeler.
++
+--
+If the process diagram does not open in the {PRODUCT} BPMN modeler, ensure that you have installed and enabled the {PRODUCT} https://github.com/kiegroup/kogito-tooling/releases[VSCode extension].
+
+If the {PRODUCT} BPMN modeler opens only the XML source of the BPMN file and displays an error message, review the reported errors and the BPMN model file to ensure that all BPMN elements are correctly defined.
+--
+. Select the background of the BPMN modeler canvas and, in the upper-right corner of the modeler, click *Properties* to add or verify information for the BPMN file as described in the following table:
++
+--
+.General process properties
+[cols="30%,70%", options="header"]
+|===
+|Label
+|Description
+
+| *Name*
+| Enter the name of the process.
+
+| *ID*
+| Enter an identifier for this process, such as `orderItems`.
+
+| *Package*
+| Enter the package location for this process in your {PRODUCT} project, such as `org.acme`.
+
+| *ProcessType*
+| Specify whether the process is public or private (or null, if not applicable).
+
+| *Version*
+| Enter the artifact version for the process.
+
+| *Ad hoc*
+| Select this option if this process is an ad hoc subprocess. (Currently not supported.)
+
+| *Process Instance Description*
+| Enter a description of the process purpose.
+
+| *Global Variables*
+|  Add any global variables for the process. Global variables are visible to all process instances and assets in a project. Global variables are typically used by business rules and constraints and are created dynamically by the rules or constraints.
+
+| *Imports*
+| Click to open the *Imports* window and add any data object classes required for your process.
+
+| *Executable*
+| Select this option to make the process executable as part of your {PRODUCT} project.
+
+| *SLA Due Date*
+| Enter the date when the service level agreement (SLA) expires.
+
+| *Process Variables*
+| Add any process variables for the process. Process variables are visible within the specific process instance. Process variables are initialized at process creation and destroyed on process completion.
+|===
+--
+. Begin adding components to your new or imported BPMN process model by clicking and dragging one of the BPMN nodes from the left palette:
++
+--
+.Adding BPMN components
+image::kogito/bpmn/bpmn-drag-nodes.png[]
+
+Although the {PRODUCT} BPMN modeler displays many BPMN components in the canvas palette, the {PROCESS_ENGINE} (process runtime component) in {PRODUCT} currently supports only the following BPMN components:
+
+* *Start events*
+** *Start*
+** *Start Signal*
+** *Start Timer*
+** *Start Message*
+* *Intermediate events*
+** *Intermediate Signal* (catching and boundary)
+** *Intermediate Timer* (catching and boundary)
+** *Intermediate Message* (catching, boundary, and throwing)
+* *End events*
+** *End*
+** *End Error*
+** *End Terminate*
+** *End Message*
+* *Tasks*
+** *Business Rule*
+** *User*
+** *Service*
+** *Script*
+* *Subprocesses*
+** *Embedded*
+** *Reusable*
+* *Gateways*
+** *Parallel*
+** *Event*
+** *Exclusive*
+** *Inclusive*
+
+--
+. In the BPMN modeler canvas, for each new BPMN component that you add, select the new node, and in the upper-right corner of the BPMN modeler, click *Properties* to define the node identity and behavior.
++
+--
+For more information about BPMN component properties, see xref:ref-bpmn-support_kogito-developing-process-services[].
+
+For this example, use a business rule task based on a Decision Model and Notation (DMN) decision model as your first activity node.
+
+This example assumes that you have the following assets in your {PRODUCT} project:
+
+* A Java object `org.acme.Person`
+* A DMN model `PersonDecisions.dmn` with the namespace `\https://kiegroup.org/dmn/_52CEF9FD-9943-4A89-96D5-6F66810CA4C1`
+--
+. In the left palette, select *Activities* -> *Business Rule*, drag the task to the canvas, and link to it from a start event.
+. Select the business rule task and define the following properties:
+
+* *General*: Name the rule task `Evaluate person`.
+* *Implementation/Execution*: Set the following values:
+** *Rule Language*: `DMN`
+** *Namespace*: `\https://kiegroup.org/dmn/_52CEF9FD-9943-4A89-96D5-6F66810CA4C1`
+** *Decision Name*: `isAdult`
+** *DMN Model Name*: `PersonDecisions`
+* *Data Assignments*: Add the following assignments:
+** *Data Input*: Add a data input with the name `Person`, with the type `org.acme.Person`, and with the source `person`.
+** *Data Output*: Add a data output with the name `isAdult`, with the type `Boolean`, and with the source `isAdult`.
+. In the left palette, select *Gateways* -> *Exclusive*, drag the gateway to the canvas, and link to it from the rule task.
+. In the left palette, select *Activities* -> *User*, drag the user task to the canvas, and link to it from the exclusive gateway.
+. Select the user task and define the following properties:
+
+* *General*: Name the user task `Special handling for children`.
+* *Implementation/Execution*: Set the task name to `ChildrenHandling`, and add a data input with the name `person`, the type `org.acme.Person`, and the source `person`.
+. In the left palette, select *End Events* -> *End*, drag two end events to the canvas, and link to one end event from the user task and to the other end event from the exclusive gateway.
+. Select the connector that connects the exclusive gateway to the end event and for the *Implementation/Execution* property, set the *Condition Expression* to `Java` and enter the condition `return isAdult == true;`.
+. Select the connector that connects the exclusive gateway to the user task and for the *Implementation/Execution* property, set the *Condition Expression* to `Java` and enter the condition to `return isAdult == false;`
+. Save the BPMN process file.
++
+--
+The following is the BPMN model for applicant age evaluation in this example:
+
+.Example `persons.bpmn2` BPMN process
+image::kogito/creating-running/kogito-bpmn-example-person.png[Image of `persons.bpmn2` process diagram]
+
+You can continue adding or modifying any remaining components and properties of your BPMN process or create a separate example.
+
+The following are additional BPMN models that are used with the `persons.bpmn2` process as part of the same example application:
+
+.Example `orders.bpmn2` process
+image::kogito/bpmn/bpmn-model-example-orders.png[Image of `orders.bpmn2` example process]
+
+.Example `orderItems.bpmn2` process invoked as a subprocess
+image::kogito/bpmn/bpmn-model-example-order-items.png[Image of `orderItems.bpmn` example process]
+
+As an illustration of a more complex use case, the following is an example BPMN model from a separate mortgage loan application for determining loan approval:
+
+.Example business process for a mortgage loan application
+image::kogito/bpmn/bpmn-model-example-mortgage-application.png[Image of mortgage application business process.]
+
+For more {PRODUCT} examples and instructions for using them, see the https://github.com/kiegroup/kogito-examples[`kogito-examples`] repository in GitHub.
+--
+
+include::{asciidoc-dir}/decision-services/chap-kogito-using-dmn-models.adoc[tags=con-kogito-service-execution]
+
+ifdef::KOGITO-ENT[]
+== Additional resources
+* {URL_CREATING_RUNNING}[_{CREATING_RUNNING}_]
+* {URL_DEPLOYING_ON_OPENSHIFT}[_{DEPLOYING_ON_OPENSHIFT}_]
+* {URL_DECISION_SERVICES}[_{DECISION_SERVICES}_]
+* {URL_CONFIGURING_KOGITO}[_{CONFIGURING_KOGITO}_]
+
+endif::[]
+
+ifdef::parent-context[:context: {parent-context}]
+ifndef::parent-context[:!context:]

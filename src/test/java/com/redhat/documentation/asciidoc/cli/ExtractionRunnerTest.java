@@ -266,4 +266,22 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         assertThat(splitAssembly).doesNotContain("include::modules/modules/creating-running/ref-kogito-app-examples.adoc[leveloffset=+1]");
         assertThat(splitAssembly).contains("include::modules/creating-running/ref-kogito-app-examples.adoc[leveloffset=+1]");
     }
+
+    @Test
+    public void testModuleReferenceChapFileFix() throws Exception {
+        var sourceDir = new File("src/test/resources/docs/preamble-include");
+        var options = new String[]{"-s", sourceDir.getAbsolutePath(),
+                "-o", this.outputDirectory.getAbsolutePath(),
+                "-a", "KOGITO-ENT=true"
+        };
+
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
+
+        var splitAssembly = Files.readString(outputDirectory.toPath().resolve("modules")
+                .resolve("preamble-include").resolve("proc-bpmn-model-creating.adoc"));
+
+        assertThat(splitAssembly).doesNotContain("include::{asciidoc-dir}/decision-services/chap-kogito-using-dmn-models.adoc[tags=con-kogito-service-execution]");
+        assertThat(splitAssembly).contains("include::../../modules/decision-services/con-kogito-service-execution.adoc[leveloffset=+1]");
+    }
 }

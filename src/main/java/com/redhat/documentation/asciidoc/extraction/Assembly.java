@@ -61,7 +61,7 @@ public class Assembly {
         final int preambleEndLineNumber = getPreambleEndLineNumber(doc, lines);
 
         for (int i = sections.get(0).getSourceLocation().getLineNumber() - 1; i < preambleEndLineNumber; i++) {
-            this.source.append(Util.tweakSource(lines.get(i))).append("\n");
+            this.source.append(Util.fixIncludes(lines.get(i))).append("\n");
         }
         this.source.append("\n");
 

@@ -247,4 +247,23 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         assertThat(outputDirectory.toPath().resolve("modules").resolve("preamble-test")
                 .resolve("unknown-chap-kogito-creating-running.adoc")).doesNotExist();
     }
+
+    @Test
+    public void testPreambleIncludeRefs() throws Exception {
+        var sourceDir = new File("src/test/resources/docs/preamble-include");
+        var options = new String[]{"-s", sourceDir.getAbsolutePath(),
+                "-o", this.outputDirectory.getAbsolutePath(),
+                "-a", "KOGITO-ENT=true"
+        };
+
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
+
+        var splitAssembly = Files.readString(outputDirectory.toPath().resolve("assemblies")
+                .resolve("assembly-kogito-developing-process-services.adoc"));
+
+        assertThat(splitAssembly).doesNotContain("include::{asciidoc-dir}/creating-running/chap-kogito-creating-running.adoc[tags=ref-kogito-app-examples]");
+        assertThat(splitAssembly).doesNotContain("include::modules/modules/creating-running/ref-kogito-app-examples.adoc[leveloffset=+1]");
+        assertThat(splitAssembly).contains("include::modules/creating-running/ref-kogito-app-examples.adoc[leveloffset=+1]");
+    }
 }

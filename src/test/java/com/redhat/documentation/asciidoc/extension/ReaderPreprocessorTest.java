@@ -89,4 +89,32 @@ public class ReaderPreprocessorTest {
         assertThat(lines).contains("* If using a version of OpenShift earlier than OpenShift 4 the link:https://github.com/coreos/prometheus-operator/tree/master/contrib/kube-prometheus[Prometheus Operator^] and Custom Resource Definitions must be installed.");
         assertThat(lines).contains("endif::[]");
     }
+
+    @Test
+    public void testXrefMacroReplace() throws Exception {
+        var readerPreprocessor = new ReaderPreprocessor();
+
+        registry.preprocessor(readerPreprocessor);
+
+        var adoc = new File(this.getClass().getClassLoader().getResource("docs/xref-test/chap-xref-test.adoc").toURI());
+        var doc = asciidoctor.loadFile(adoc, optionsBuilder.asMap());
+        var lines = readerPreprocessor.getLines();
+
+        assertThat(lines).doesNotContain("Create an xref macro: xref:test-section[]");
+        assertThat(lines).contains("Create an xref macro: include::xref-test/chap-xref-test.adoc[tags=con-test-section]");
+    }
+
+    @Test
+    public void testXrefShortReplace() throws Exception {
+        var readerPreprocessor = new ReaderPreprocessor();
+
+        registry.preprocessor(readerPreprocessor);
+
+        var adoc = new File(this.getClass().getClassLoader().getResource("docs/xref-test/chap-xref-test.adoc").toURI());
+        var doc = asciidoctor.loadFile(adoc, optionsBuilder.asMap());
+        var lines = readerPreprocessor.getLines();
+
+        assertThat(lines).doesNotContain("Here's an inline xref <<test-section>>.");
+        assertThat(lines).contains("Here's an inline xref include::xref-test/chap-xref-test.adoc[tags=con-test-section].");
+    }
 }

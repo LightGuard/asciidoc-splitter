@@ -1,5 +1,6 @@
 package com.redhat.documentation.asciidoc.extension;
 
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -18,12 +19,11 @@ public class ReaderPreprocessor extends Preprocessor {
 
     @Override
     public void process(Document document, PreprocessorReader reader) {
-//        lines = reader.readLines();
         lines = reader.lines();
         reader.terminate();
 
         boolean containsIfEval = false;
-        var ifDefPattern = Pattern.compile("ifdef::(?<gate>.*)\\[]");
+        var ifDefPattern = Pattern.compile("ifn?def::(?<gate>.*)\\[]");
         Stack<DirectiveSection> directiveSections = new Stack<>();
         Stack<Integer> startLines = new Stack<>();
         Stack<Integer> endLines = new Stack<>();
@@ -41,6 +41,19 @@ public class ReaderPreprocessor extends Preprocessor {
             if (ifDefMatcher.matches()) { // We don't need single line
                 startLines.push(i);
                 gates.push(ifDefMatcher.group("gate").toLowerCase());
+            }
+
+            // TODO: Fixup xrefs
+            var filename = document.getSourceLocation().getFile();
+            var path = Path.of(document.getSourceLocation().getDir()).getFileName();
+            if (currLine.contains("xref:")) {
+                lines.set(i, currLine.replaceAll("xref:(?<ref>.+)\\[(?<attribs>.*)]",
+                                        "include::" + path + "/" + filename + "[tags=${ref}]"));
+            }
+
+            if (currLine.contains("<<")) {
+                lines.set(i, currLine.replaceAll("<<(?<ref>.+),?(?<attribs>.*)>>",
+                                        "include::" + path + "/"  + filename + "[tags=${ref}]"));
             }
 
             if (currLine.contains("endif::")) {

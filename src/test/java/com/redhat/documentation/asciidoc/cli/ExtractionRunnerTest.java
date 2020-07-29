@@ -284,4 +284,21 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         assertThat(splitAssembly).doesNotContain("include::{asciidoc-dir}/decision-services/chap-kogito-using-dmn-models.adoc[tags=con-kogito-service-execution]");
         assertThat(splitAssembly).contains("include::../../modules/decision-services/con-kogito-service-execution.adoc[leveloffset=+1]");
     }
+
+    @Test
+    public void testFullTripXrefCheck() throws Exception {
+        var sourceDir = new File("src/test/resources/docs/xref-test");
+        var options = new String[]{"-s", sourceDir.getAbsolutePath(),
+                "-o", this.outputDirectory.getAbsolutePath(),
+                "-a", "KOGITO-ENT=true"
+        };
+
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+        assertThat(exitCode).isEqualTo(0);
+
+        var xrefAssembly = Files.readString(outputDirectory.toPath().resolve("assemblies")
+                .resolve("assembly-xref-test.adoc"));
+
+        assertThat(xrefAssembly).contains("Here's an inline xref include::modules/xref-test/con-test-section.adoc[leveloffset=+1]");
+    }
 }

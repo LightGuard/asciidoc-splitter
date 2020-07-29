@@ -1,0 +1,13 @@
+[id='chap-xref-test']
+= Start of the doc
+
+Some sort of preamble.
+
+Create an xref macro: xref:con-test-section[]
+
+Here's an inline xref <<con-test-section>>.
+
+[id='con-test-section_{context}']
+== Test Section
+
+Some additional paragraph for testing purposes.

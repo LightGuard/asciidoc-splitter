@@ -1,5 +1,8 @@
 package com.redhat.documentation.asciidoc.extension;
 
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import com.redhat.documentation.asciidoc.Util;
 import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.Document;
@@ -11,7 +14,13 @@ public class ReplaceWithTreeProcessor extends Treeprocessor {
 
     @Override
     public Document process(Document document) {
-        document.getBlocks().forEach(this::processBlocks);
+        Objects.requireNonNull(this.readerPreprocessor, "ReaderPreProcessor must be set");
+
+        // Small (hopefully) optimization, no point in doing this if there isn't any replace-with sections
+        if (this.readerPreprocessor.getLines().stream()
+                    .filter(s -> s.contains("replace-with"))
+                    .collect(Collectors.toList()).size() > 0)
+            document.getBlocks().forEach(this::processBlocks);
         return document;
     }
 

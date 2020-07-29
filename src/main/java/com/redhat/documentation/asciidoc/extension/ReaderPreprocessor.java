@@ -43,7 +43,6 @@ public class ReaderPreprocessor extends Preprocessor {
                 gates.push(ifDefMatcher.group("gate").toLowerCase());
             }
 
-            // TODO: Fixup xrefs
             var filename = document.getSourceLocation().getFile();
             var path = Path.of(document.getSourceLocation().getDir()).getFileName();
             if (currLine.contains("xref:")) {
@@ -80,13 +79,6 @@ public class ReaderPreprocessor extends Preprocessor {
         }
 
         while (!directiveSections.empty()) {
-            // TODO: Check to see if the current one is nested within the next one
-            // If yes and removeSection true
-            //   continue and do the next one
-            // If yes and removeSection false
-            //   replace with
-            // If no
-            //   continue as normal
             var section = directiveSections.pop();
 
             if (section.shouldRemoveSection()) {

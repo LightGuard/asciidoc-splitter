@@ -1,0 +1,16 @@
+[id='chap-replace-with-openblock']
+= Some doc
+
+Preamble will go here
+
+[id='con-new-section']
+== Some new section
+
+A paragraph here.
+
+[replace-with="modules/creating-services/con-new-service.adoc" replace-with-params="leveloffset=+1"]
+--
+I want to see what happens here with.
+
+Then this should be another paragraph
+--

@@ -30,7 +30,26 @@ public class ReplaceWithEndToEndTest extends ExtractionRunnerBase {
 
         assertThat(Files.readString(moduleWithReplacement)).doesNotContain("link:{asciidoc-dir}/creating-running/chap-kogito-creating-running.adoc[My Test].");
         assertThat(Files.readString(moduleWithReplacement)).doesNotContain("[replace-with=\"../creating-running/ref-kogito-app-examples.adoc\" replace-with-param=\"leveloffset=+1\"]");
-        //                                                            include::../modules/end-to-end/ref-kogito-app-examples.adoc[leveloffset=+1]
         assertThat(Files.readString(moduleWithReplacement)).contains("include::../../modules/end-to-end/ref-kogito-app-examples.adoc[leveloffset=+1]");
     }
+//
+//    @Test
+//    public void openBlockTest() throws Exception {
+//        var sourceDirectory = new File("src/test/resources/docs/processor-test/openblock");
+//        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(),
+//                "-o", outputDirectory.getAbsolutePath(),
+//                "-a", "KOGITO-ENT=true"
+//        };
+//
+//        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
+//        assertThat(exitCode).isEqualTo(0);
+//
+//        var chap = outputDirectory.toPath().resolve("assemblies")
+//                .resolve("assembly-replace-with-openblock.adoc");
+//
+//        var moduleWithReplacement = outputDirectory.toPath().resolve("modules/openblock/con-new-section.adoc");
+//
+//        assertThat(Files.readString(moduleWithReplacement)).doesNotContain("[replace-with=\"creating-services/con-new-service.adoc\" replace-with-params=\"leveloffset=+1\"]");
+//        assertThat(Files.readString(moduleWithReplacement)).contains("include::../../modules/openblock/con-new-service.adoc[leveloffset=+1]");
+//    }
 }

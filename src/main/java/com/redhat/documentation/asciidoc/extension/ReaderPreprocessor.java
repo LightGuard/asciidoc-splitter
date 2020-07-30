@@ -1,6 +1,5 @@
 package com.redhat.documentation.asciidoc.extension;
 
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -43,17 +42,18 @@ public class ReaderPreprocessor extends Preprocessor {
                 gates.push(ifDefMatcher.group("gate").toLowerCase());
             }
 
-            var filename = document.getSourceLocation().getFile();
-            var path = Path.of(document.getSourceLocation().getDir()).getFileName();
-            if (currLine.contains("xref:")) {
-                lines.set(i, currLine.replaceAll("xref:(?<ref>.+)\\[(?<attribs>.*)]",
-                                        "include::" + path + "/" + filename + "[tags=${ref}]"));
-            }
-
-            if (currLine.contains("<<")) {
-                lines.set(i, currLine.replaceAll("<<(?<ref>.+),?(?<attribs>.*)>>",
-                                        "include::" + path + "/"  + filename + "[tags=${ref}]"));
-            }
+            // xref stuff
+//            var filename = document.getSourceLocation().getFile();
+//            var path = Path.of(document.getSourceLocation().getDir()).getFileName();
+//            if (currLine.contains("xref:")) {
+//                lines.set(i, currLine.replaceAll("xref:(?<ref>.+)\\[(?<attribs>.*)]",
+//                                        "include::" + path + "/" + filename + "[tags=${ref}]"));
+//            }
+//
+//            if (currLine.contains("<<")) {
+//                lines.set(i, currLine.replaceAll("<<(?<ref>.+),?(?<attribs>.*)>>",
+//                                        "include::" + path + "/"  + filename + "[tags=${ref}]"));
+//            }
 
             if (currLine.contains("endif::")) {
                 if (containsIfEval) {

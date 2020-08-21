@@ -103,6 +103,11 @@ public class Extractor {
 
         long errors = this.issues.stream().filter(Issue::isError).count();
 
+        try {
+            this.task.getPushableLocation().close();
+        } catch (Exception e) {
+            this.logger.severe(e.getMessage());
+        }
         this.logger.warning("Found " + this.issues.size() + " issues. " + errors + " Errors.");
     }
 

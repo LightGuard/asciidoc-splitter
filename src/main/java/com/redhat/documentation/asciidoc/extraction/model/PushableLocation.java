@@ -6,7 +6,7 @@ import java.util.Objects;
 /**
  * A specialized {@link Location} that allows for files to be "pushed", like a source repo.
  */
-public interface PushableLocation extends Location {
+public interface PushableLocation extends Location, AutoCloseable {
     /**
      * Save action for files.
      * This is mostly used in the concept of a source repository.
@@ -23,6 +23,11 @@ public interface PushableLocation extends Location {
         }
 
         return new PushableLocation() {
+            @Override
+            public void close() throws Exception {
+                // Empty impl, nothing to actually close
+            }
+
             @Override
             public void push() {
                 pushAction.run();

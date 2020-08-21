@@ -126,12 +126,12 @@ public class ExtractionRunner implements Runnable {
         Location location = inputOptions.inputDir != null
                 ? new LocalDirectoryLocation(this.inputOptions.inputDir)
                 : new GitRepository(inputOptions.gitInputOptions.sourceRepo, inputOptions.gitInputOptions.sourceBranch,
-                                    inputOptions.gitInputOptions.userName, inputOptions.gitInputOptions.password);
+                                    inputOptions.gitInputOptions.userName, inputOptions.gitInputOptions.password, false);
 
         PushableLocation pushableLocation = outputOptions.outputDir != null
                 ? PushableLocation.locationWrapper(new LocalDirectoryLocation(this.outputOptions.outputDir), () -> {})
                 : new GitRepository(outputOptions.gitOutputOptions.outputRepo, outputOptions.gitOutputOptions.outputBranch,
-                                    outputOptions.gitOutputOptions.userName, outputOptions.gitOutputOptions.password);
+                                    outputOptions.gitOutputOptions.userName, outputOptions.gitOutputOptions.password, true);
 
         var task = new Task(location, pushableLocation, attributes, ignoreFiles);
 

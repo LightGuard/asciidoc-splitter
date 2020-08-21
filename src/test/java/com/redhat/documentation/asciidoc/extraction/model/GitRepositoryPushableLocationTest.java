@@ -1,75 +1,58 @@
 package com.redhat.documentation.asciidoc.extraction.model;
 
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.RepositoryCache;
-import org.eclipse.jgit.transport.RefSpec;
-import org.eclipse.jgit.util.FS;
-import org.junit.jupiter.api.Test;
-
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+
+import com.redhat.documentation.asciidoc.extraction.DeletionFileVisitor;
+import org.eclipse.jgit.api.Git;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GitRepositoryPushableLocationTest {
 
     @Test
-    void getDirectoryPathShouldReturnDirectoryOfClonedRepo() throws IOException, GitAPIException {
-        File remoteDir = File.createTempFile("remote", "");
-        remoteDir.delete();
-        remoteDir.mkdirs();
+    void testCloningARepo() throws Exception{
+        var repo = new GitRepository("https://github.com/lightguard/asciidoc-splitter.git", false);
+        var path = repo.getDirectoryPath();
 
-        // Create bare repository
-        RepositoryCache.FileKey fileKey = RepositoryCache.FileKey.exact(remoteDir, FS.DETECTED);
-        Repository remoteRepo = fileKey.open(false);
-        remoteRepo.create(true);
+        assertThat(path.resolve(".git")).exists();
 
-        // Clone bare repository
-        File cloneDir = File.createTempFile("clone", "");
-        cloneDir.delete();
-        cloneDir.mkdirs();
-        Git.cloneRepository().setURI(remoteRepo.getDirectory().getAbsolutePath()).setDirectory(cloneDir).call();
-        assertThat(Files.isDirectory(cloneDir.toPath().resolve(".git"))).isTrue();
+        // clean-up
+        repo.close();
+        Files.walkFileTree(path, new DeletionFileVisitor());
     }
 
-
     @Test
-    void pushShouldCommitAndPushFilesToBareGitRepo() throws IOException, GitAPIException {
-        // Create a folder to act as remote repository
+    void testPush() throws Exception {
+        // Create bare repository
         File remoteDir = File.createTempFile("remote", "");
         remoteDir.delete();
         remoteDir.mkdirs();
+        Git origin = Git.init().setDirectory(remoteDir).call();
 
-        // Create bare repository
-        RepositoryCache.FileKey fileKey = RepositoryCache.FileKey.exact(remoteDir, FS.DETECTED);
-        Repository remoteRepo = fileKey.open(false);
-        remoteRepo.create(true);
+        // Seed repo so there is a HEAD
+        Files.writeString(remoteDir.toPath().resolve("first.txt"), "First file", StandardOpenOption.CREATE_NEW);
+        origin.add().addFilepattern("*.txt").call();
+        origin.commit().setMessage("Seeding the repo").call();
 
-        // Clone bare repository
-        File cloneDir = File.createTempFile("clone", "");
-        cloneDir.delete();
-        cloneDir.mkdirs();
-        Git git = Git.cloneRepository().setURI(remoteRepo.getDirectory().getAbsolutePath()).setDirectory(cloneDir).call();
+        var branchName = "new-branch";
+        var gitRepo = new GitRepository(origin.getRepository().getDirectory().toString(), branchName, true);
+        var gitRepoDir = gitRepo.getDirectoryPath();
+        assertThat(gitRepoDir.resolve(".git")).exists();
 
-        // Create sample file, add, commit and push to bare repository
-        File newFile = new File(cloneDir, "myNewFile");
-        newFile.createNewFile();
-        Files.writeString(newFile.toPath(), "Test content file");
-        git.add().addFilepattern(newFile.getName()).call();
-        git.commit().setMessage("First commit").setAuthor("a", "a@example.com ").call();
-        RefSpec refSpec = new RefSpec("master");
-        git.push().setRemote("origin").setRefSpecs(refSpec).call();
+        // Make a change
+        Files.writeString(gitRepoDir.resolve("new-file.txt"), "Hello out there!", StandardOpenOption.CREATE_NEW);
+        gitRepo.push();
 
-        // Second working directory to clone and test commit
-        File cloneDir2 = File.createTempFile("clone", "");
-        cloneDir2.delete();
-        cloneDir2.mkdirs();
-        Git git2 = Git.cloneRepository().setURI(remoteRepo.getDirectory().getAbsolutePath()).setDirectory(cloneDir2).call();
+        // Now check to see that the origin has the new branch
+        assertThat(origin.branchList().setContains(branchName).call()).hasSize(1);
 
-        // Check whether committed file exists
-        assertThat(new File(cloneDir2, "myNewFile").exists());
+        // Clean-up
+        origin.close();
+        Files.walkFileTree(remoteDir.toPath(), new DeletionFileVisitor());
+        gitRepo.close();
+        Files.walkFileTree(gitRepoDir, new DeletionFileVisitor());
     }
 }

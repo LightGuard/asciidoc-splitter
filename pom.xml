@@ -9,6 +9,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.mainClass>com.redhat.documentation.asciidoc.cli.ExtractionRunner</project.mainClass>
   </properties>
 
   <dependencies>
@@ -59,6 +60,7 @@
 
   <build>
     <plugins>
+      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
@@ -69,7 +71,7 @@
             <goals>
               <goal>shade</goal>
             </goals>
-            <!-- This is terrible, we're removing all the jar signing.... maybe we need a better solution? -->
+             This is terrible, we're removing all the jar signing.... maybe we need a better solution?
             <configuration>
               <filters>
                 <filter>
@@ -92,6 +94,7 @@
           </execution>
         </executions>
       </plugin>
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -114,6 +117,46 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.0.0-M4</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory/lib}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <descriptors>
+            <descriptor>${project.basedir}/src/assembly/bin.xml</descriptor>
+          </descriptors>
+          <!--<descriptorRefs>-->
+            <!--<descriptorRef>bin</descriptorRef>-->
+          <!--</descriptorRefs>-->
+          <archive>
+            <manifest>
+              <mainClass>com.redhat.documentation.asciidoc.cli.ExtractionRunner</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <id>create-archive</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

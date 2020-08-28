@@ -33,20 +33,21 @@ public class ExtractionRunner implements Runnable {
     @ArgGroup(heading = "Output", exclusive = true, multiplicity = "1")
     OutputOptions outputOptions;
 
-    @Option(names = {"-v", "--verbose"}, description = "Verbose logging", defaultValue = "false")
+    @Option(names = {"-v"}, description = "Verbose logging", defaultValue = "false")
     boolean verbose;
 
-    @Option(names = {"-a", "--attributes"}, description = "Attributes to pass to asciidoctor")
+    @Option(names = {"-a"}, split = "\\|",
+            description = "Key=Value pairs to set as attributes to asciidoctor. Multiples separated by '|': 'key1=v1|key2=v2'")
     Map<String, Object> attributes;
 
-    @Option(names = {"-i", "--ignore"}, description = "Ignore file")
+    @Option(names = {"-i"}, split = ",", description = "Ignore file, multiples separated by ','")
     List<File> ignoreFiles;
 
     /**
      * Options for the source location of the files.
      */
     static class InputOptions {
-        @Option(names = { "-s", "--sourceDir" }, description = "Directory containing the input asciidoc files.")
+        @Option(names = {"-s"}, description = "Directory containing the input asciidoc files.")
         File inputDir;
 
         @ArgGroup(exclusive = false)
@@ -57,7 +58,7 @@ public class ExtractionRunner implements Runnable {
      * Options for the output location of the generated files.
      */
     static class OutputOptions {
-        @Option(names = { "-o", "--outputDir" }, description = "Directory to place generated modules and assemblies.")
+        @Option(names = {"-o"}, description = "Directory to place generated modules and assemblies.")
         File outputDir;
 
         @ArgGroup(exclusive = false)
@@ -68,17 +69,16 @@ public class ExtractionRunner implements Runnable {
      * Options for the source repo.
      */
     static class GitInputOptions {
-        @Option(names = { "-sr", "--sourceRepo" }, description = "Git URL to the source repository.", required = true)
+        @Option(names = {"-sr"}, description = "Git URL to the source repository.", required = true)
         String sourceRepo;
 
-        @Option(names = { "-sb",
-                "--sourceBranch" }, defaultValue = "master", description = "Branch in source repository.")
+        @Option(names = {"-sb"}, defaultValue = "master", description = "Branch in source repository.")
         String sourceBranch;
 
-        @Option(names = { "-su", "--source-username" }, description = "Source Git Username")
+        @Option(names = {"-su"}, description = "Source Git Username")
         String userName;
 
-        @Option(names = { "-sp", "--source-password" }, description = "Source Git Password", interactive = true)
+        @Option(names = {"-sp"}, description = "Source Git Password", interactive = true)
         String password;
     }
 
@@ -86,22 +86,22 @@ public class ExtractionRunner implements Runnable {
      * Options for the output repo.
      */
     static class GitOutputOptions {
-        @Option(names = { "-or", "--outputRepo" }, description = "Git URL to the output repository.", required = true)
+        @Option(names = {"-or"}, description = "Git URL to the output repository.", required = true)
         String outputRepo;
 
-        @Option(names = { "-ob",
-                "--outputBranch" }, defaultValue = "master", description = "Branch in output repository.")
+        @Option(names = {"-ob"}, defaultValue = "master", description = "Branch in output repository.")
         String outputBranch;
 
-        @Option(names = { "-ou", "--output-username" }, description = "Output Git Username")
+        @Option(names = {"-ou"}, description = "Output Git Username")
         String userName;
 
-        @Option(names = { "-op", "--output-password" }, description = "Output Git Password", interactive = true)
+        @Option(names = {"-op"}, description = "Output Git Password", interactive = true)
         String password;
     }
 
     /**
      * Entry into the program
+     *
      * @param args CLI options.
      */
     public static void main(String... args) {
@@ -126,12 +126,13 @@ public class ExtractionRunner implements Runnable {
         Location location = inputOptions.inputDir != null
                 ? new LocalDirectoryLocation(this.inputOptions.inputDir)
                 : new GitRepository(inputOptions.gitInputOptions.sourceRepo, inputOptions.gitInputOptions.sourceBranch,
-                                    inputOptions.gitInputOptions.userName, inputOptions.gitInputOptions.password, false);
+                inputOptions.gitInputOptions.userName, inputOptions.gitInputOptions.password, false);
 
         PushableLocation pushableLocation = outputOptions.outputDir != null
-                ? PushableLocation.locationWrapper(new LocalDirectoryLocation(this.outputOptions.outputDir), () -> {})
+                ? PushableLocation.locationWrapper(new LocalDirectoryLocation(this.outputOptions.outputDir), () -> {
+        })
                 : new GitRepository(outputOptions.gitOutputOptions.outputRepo, outputOptions.gitOutputOptions.outputBranch,
-                                    outputOptions.gitOutputOptions.userName, outputOptions.gitOutputOptions.password, true);
+                outputOptions.gitOutputOptions.userName, outputOptions.gitOutputOptions.password, true);
 
         var task = new Task(location, pushableLocation, attributes, ignoreFiles);
 

@@ -5,19 +5,36 @@ At some point it will also include a way to run this via maven, and possibly gra
 
 == Building and Running
 
-Build using `./mvnw install -DskipTests` (until it's in a repo). This creates an
-uberjar named `asciidoc-splitter-1.0-SNAPSHOT.jar` in the `target` directory.
+Build using `./mvnw install -DskipTests` (until it's in a repo).
+The build will create a distribution directory in the `target` directory.
+This distribution directory will contain all the necessary jars and files needed to run the application.
 
 Run as follows:
 
-`java -jar target/asciidoc-splitter-1.0-SNAPSHOT.jar`
+[source]
+----
+target/asciidoc-splitter-1.0-SNAPSHOT-bin/bin/asciidoc-splitter.sh
+----
 
-Specify two options:
+Note the name of the directory will change based on the version of the splitter.
 
-`-s` or `--sourceDir`:: Directory that contains the asciidoc files to process.
-`-o` or `--outputDir`:: Directory to place the generated files.
+The list of relevant options are:
 
-NOTE: There is also a `-h` or `--help` if you need a refresher
+[source,bash]
+----
+  -a=<String=Object>[\|<String=Object>...]
+                           Key=Value pairs to set as attributes to asciidoctor.
+                             Multiples separated by '|': 'key1=v1|key2=v2'
+  -h, --help               Show this help message and exit.
+  -i=<ignoreFiles>[,<ignoreFiles>...]
+                           Ignore file, multiples separated by ','
+      -ob=<outputBranch>   Branch in output repository.
+      -or=<outputRepo>     Git URL to the output repository.
+      -sb=<sourceBranch>   Branch in source repository.
+      -sr=<sourceRepo>     Git URL to the source repository.
+  -v                       Verbose logging
+  -V, --version            Print version information and exit.
+----
 
 == Contributing
 

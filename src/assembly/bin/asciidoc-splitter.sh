@@ -12,7 +12,8 @@ VALID_ARGS=$?
 
 JAR_DIR=$(dirname "$0")/../lib
 JAR_NAME=${project.artifactId}-${project.version}.jar
-HELP_COMMAND="java -cp ${JAR_DIR}/${JAR_NAME}:${JAR_DIR}/* com.redhat.documentation.asciidoc.cli.ExtractionRunner -h"
+SPLITTER_COMMAND_BASE="java -cp ${JAR_DIR}/${JAR_NAME}:${JAR_DIR}/* com.redhat.documentation.asciidoc.cli.ExtractionRunner"
+HELP_COMMAND="${SPLITTER_COMMAND_BASE} -h"
 
 if [[ "$VALID_ARGS" -ne "0" ]]; then
   echo "Could not parse arguments."
@@ -28,8 +29,8 @@ do
     --sb) SOURCE_BRANCH="$2" ; shift 2  ;;
     --or) OUTPUT_REPO="$2"   ; shift 2  ;;
     --ob) OUTPUT_BRANCH="$2" ; shift 2  ;;
-      -i) IGNORE="$2"        ; shift 2  ;;
-      -a) ATTRIBS="$2"       ; shift 2  ;;
+      -i) IGNORE="-i $2"        ; shift 2  ;;
+      -a) ATTRIBS="-a $2"       ; shift 2  ;;
       -h) eval ${HELP_COMMAND} ; break ;;
     --) shift; break ;;
     *) echo "Unknown option: $1"
@@ -85,13 +86,16 @@ TEMP_WORK_DIR="$(mktemp -d)"
 
 echo "Cloning origin..."
 
-git clone --depth 1 -b ${SOURCE_BRANCH} ${TEMP_CHECKOUT_DIR} &> /dev/null
-# java -cp ${jar_name}:${jar_dir}/* com.redhat.documentation.asciidoc.cli.ExtractionRunner -s ${TEMP_CHECKOUT_DIR} -o ${TEMP_WORK_DIR}
-echo "New file" > ${TEMP_WORK_DIR}/new-file.txt
+git clone --depth 1 -b ${SOURCE_BRANCH} ${SOURCE_REPO} ${TEMP_CHECKOUT_DIR} &> /dev/null
+git clone -b ${OUTPUT_BRANCH} ${OUTPUT_REPO} ${TEMP_WORK_DIR} &> /dev/null
+eval "${SPLITTER_COMMAND_BASE} -s ${TEMP_CHECKOUT_DIR} -o ${TEMP_WORK_DIR} ${IGNORE} ${ATTRIBS}"
 
 echo "Committing work and pushing..."
-git add .
-#git add . &> /dev/null
-git commit -m 'Running asciidoc-splitter' -a
-#git commit -m 'Running asciidoc-splitter' -a &> /dev/null
-git push -f -u origin ${OUTPUT_BRANCH}
+cd ${TEMP_WORK_DIR}
+git add . &> /dev/null
+git commit -m 'Running asciidoc-splitter' -a &> /dev/null
+git push -f -u origin ${OUTPUT_BRANCH} &> /dev/null
+
+# Clean up
+rm -rf ${TEMP_CHECKOUT_DIR}
+rm -rf ${TEMP_WORK_DIR}

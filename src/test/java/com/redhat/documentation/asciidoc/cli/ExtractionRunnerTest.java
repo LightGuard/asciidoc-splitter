@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.redhat.documentation.asciidoc.extension.ReaderPreprocessor;
 import com.redhat.documentation.asciidoc.extraction.AsciidocFileFilter;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -59,6 +60,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         var topicDir = new File(modulesDir, "input");
         assertThat(topicDir.exists()).isTrue();
         assertThat(topicDir.listFiles()).hasSize(6);
+
         // Assemblies
         var assembliesDir = new File(this.outputDirectory, "assemblies");
         assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(1);
@@ -66,6 +68,13 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         final Path assemblyFile = assembliesDir.toPath().resolve("assembly-monitoring.adoc");
         assertThat(assemblyFile).exists();
         assertThat(Files.readString(assemblyFile)).contains("= Monitoring {ProductName}");
+
+        // Check for ifdef correctness
+        var outputFile = new File(topicDir, "proc-deploy-monitoring-infrastructure.adoc");
+        assertThat(Files.readString(outputFile.toPath())).doesNotContain(ReaderPreprocessor.SPLITTER_COMMENT + "ifeval::[\"{cmdcli}\" == \"oc\"]");
+        assertThat(Files.readString(outputFile.toPath())).doesNotContain(ReaderPreprocessor.SPLITTER_COMMENT + "endif::[]");
+        assertThat(Files.readString(outputFile.toPath())).contains("ifeval::[\"{cmdcli}\" == \"oc\"]");
+        assertThat(Files.readString(outputFile.toPath())).contains("endif::[]");
     }
 
     @Test

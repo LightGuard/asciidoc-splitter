@@ -138,15 +138,19 @@ public class Assembly {
         var startingLine = section.getSourceLocation().getLineNumber();
         StringBuilder sectionSource = new StringBuilder();
         for (int i = startingLine; i < nextSectionStart; i++) {
-            // We don't want lines that contain with ifdef::
-            if (lines.get(i).contains("ifdef::"))
-                continue;
+//            // We don't want lines that contain with ifdef::
+//            if (lines.get(i).contains("ifdef::"))
+//                continue;
+//
+//            // We also don't want lines that contain endif::
+//            if (lines.get(i).contains("endif::"))
+//                continue;
 
-            // We also don't want lines that contain endif::
-            if (lines.get(i).contains("endif::"))
-                continue;
-
-            sectionSource.append(Util.fixModuleInclude(Util.fixIncludes(Util.fixSectionLevelForModule(lines.get(i))))).append("\n");
+            sectionSource.append(
+                    Util.fixModuleInclude(
+                            Util.fixIncludes(
+                                    Util.fixSectionLevelForModule(
+                                            Util.removeSplitterComment(lines.get(i)))))).append("\n");
         }
         return sectionSource.toString();
     }

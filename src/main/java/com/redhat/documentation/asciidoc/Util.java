@@ -2,6 +2,7 @@ package com.redhat.documentation.asciidoc;
 
 import java.util.regex.Pattern;
 
+import com.redhat.documentation.asciidoc.extension.ReaderPreprocessor;
 import org.asciidoctor.ast.ContentNode;
 
 public class Util {
@@ -57,7 +58,15 @@ public class Util {
         return source;
     }
 
-
+    /**
+     * Removes the splitter comment (to step around ifdef) from the source, then returns.
+     *
+     * @param source source line
+     * @return source line without splitter comment
+     */
+    public static String removeSplitterComment(String source) {
+        return source.replaceAll(ReaderPreprocessor.SPLITTER_COMMENT, "");
+    }
 
     /**
      * A wrapper method for all the tweaks and fixes to asciidoc source.
@@ -65,7 +74,7 @@ public class Util {
      * @return Source with tweaks/fixes applied
      */
     public static String tweakSource(String source) {
-        return fixModuleInclude(fixIncludes(source));
+        return fixModuleInclude(fixIncludes(removeSplitterComment(source)));
     }
 
     public static String fixSectionLevelForModule(String source) {

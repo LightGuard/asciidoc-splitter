@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
-import java.util.regex.Pattern;
 
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.extension.Preprocessor;
@@ -14,6 +13,7 @@ import org.asciidoctor.extension.PreprocessorReader;
  * Preprocessor to get the lines of the source document.
  */
 public class ReaderPreprocessor extends Preprocessor {
+    public static final String SPLITTER_COMMENT = "// -- splitter comment -- ";
     private List<String> lines;
 
     @Override
@@ -22,7 +22,6 @@ public class ReaderPreprocessor extends Preprocessor {
         reader.terminate();
 
         boolean containsIfEval = false;
-        var ifDefPattern = Pattern.compile("ifn?def::(?<gate>.*)\\[]");
         Stack<DirectiveSection> directiveSections = new Stack<>();
         Stack<Integer> startLines = new Stack<>();
         Stack<Integer> endLines = new Stack<>();
@@ -31,16 +30,12 @@ public class ReaderPreprocessor extends Preprocessor {
         // We need to look at each line to check for ifdefs, I wish there were a better way to do this.
         for (int i = 0; i < lines.size(); i++) {
             var currLine = lines.get(i);
-            var ifDefMatcher = ifDefPattern.matcher(currLine);
 
-            if (currLine.contains("ifeval::")) {
-                containsIfEval = true;
+            if (currLine.startsWith("ifdef::") || currLine.startsWith("ifndef::") ||
+                currLine.startsWith("ifeval::") || currLine.startsWith("endif::")) {
+                lines.set(i, SPLITTER_COMMENT + currLine);
             }
-
-            if (ifDefMatcher.matches()) { // We don't need single line
-                startLines.push(i);
-                gates.push(ifDefMatcher.group("gate").toLowerCase());
-            }
+        }
 
             // xref stuff
 //            var filename = document.getSourceLocation().getFile();
@@ -54,40 +49,6 @@ public class ReaderPreprocessor extends Preprocessor {
 //                lines.set(i, currLine.replaceAll("<<(?<ref>.+),?(?<attribs>.*)>>",
 //                                        "include::" + path + "/"  + filename + "[tags=${ref}]"));
 //            }
-
-            if (currLine.contains("endif::")) {
-                if (containsIfEval) {
-                    // Skip if we have an ifeval and reset ifeval check
-                    containsIfEval = false;
-                    continue;
-                }
-
-                endLines.push(i);
-
-                if (endLines.size() > startLines.size()) {
-                    throw new RuntimeException("Unbalanced endif at line " + i);
-                }
-
-                // If we have the attribute so the gate resolves correctly, only remove the ifdef and endif
-                // otherwise, remove the whole section
-                if (document.getAttributes().containsKey(gates.pop())) {
-                    directiveSections.push(new DirectiveSection(startLines.pop(), endLines.pop(), false));
-                } else {
-                    directiveSections.push(new DirectiveSection(startLines.pop(), endLines.pop(), true));
-                }
-            }
-        }
-
-        while (!directiveSections.empty()) {
-            var section = directiveSections.pop();
-
-            if (section.shouldRemoveSection()) {
-                Collections.fill(lines.subList(section.getStart(), section.getEnd() + 1), "");
-            } else {
-                lines.set(section.getEnd(), "");
-                lines.set(section.getStart(), "");
-            }
-        }
 
         reader.restoreLines(lines);
     }

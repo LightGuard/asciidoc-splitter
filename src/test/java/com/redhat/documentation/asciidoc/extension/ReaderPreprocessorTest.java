@@ -31,21 +31,6 @@ public class ReaderPreprocessorTest {
     }
 
     @Test
-    public void testIfDefSectionRemoval() throws URISyntaxException {
-        var readerPreprocessor = new ReaderPreprocessor();
-
-        registry.preprocessor(readerPreprocessor);
-
-        var adoc = new File(this.getClass().getClassLoader().getResource("docs/preprocess/remove-ifdef-section.adoc").toURI());
-        var doc = asciidoctor.loadFile(adoc, optionsBuilder.asMap());
-        var lines = readerPreprocessor.getLines();
-
-        assertThat(lines).doesNotContain("ifdef::");
-        assertThat(lines).doesNotContain("endif::");
-        assertThat(lines).doesNotContain("This section should be removed.");
-    }
-
-    @Test
     public void testSingleLineInclusion() throws URISyntaxException {
         var readerPreprocessor = new ReaderPreprocessor();
 
@@ -55,14 +40,12 @@ public class ReaderPreprocessorTest {
         var doc = asciidoctor.loadFile(adoc, optionsBuilder.asMap());
         var lines = readerPreprocessor.getLines();
 
-        assertThat(lines).doesNotContain("ifdef::");
-        assertThat(lines).doesNotContain("endif::");
-        assertThat(lines).doesNotContain("This section should be removed.");
-        assertThat(lines).contains("ifdef::context[:parent-context: {context}]");
+        assertThat(lines).contains(ReaderPreprocessor.SPLITTER_COMMENT + "endif::[]");
+        assertThat(lines).contains(ReaderPreprocessor.SPLITTER_COMMENT + "ifdef::context[:parent-context: {context}]");
     }
 
     @Test
-    public void testIfDefDeclarationRemoval() throws URISyntaxException {
+    public void testIfDefComment() throws URISyntaxException {
         var readerPreprocessor = new ReaderPreprocessor();
 
         registry.preprocessor(readerPreprocessor);
@@ -71,8 +54,8 @@ public class ReaderPreprocessorTest {
         var doc = asciidoctor.loadFile(adoc, optionsBuilder.asMap());
         var lines = readerPreprocessor.getLines();
 
-        assertThat(lines).doesNotContain("ifdef::");
-        assertThat(lines).doesNotContain("endif::");
+        assertThat(lines).contains(ReaderPreprocessor.SPLITTER_COMMENT + "endif::[]");
+        assertThat(lines).contains(ReaderPreprocessor.SPLITTER_COMMENT + "ifdef::localtime[]");
         assertThat(lines).contains("This section should not be removed.");
     }
 
@@ -86,9 +69,9 @@ public class ReaderPreprocessorTest {
         var doc = asciidoctor.loadFile(adoc, optionsBuilder.asMap());
         var lines = readerPreprocessor.getLines();
 
-        assertThat(lines).contains("ifeval::[\"{cmdcli}\" == \"oc\"]");
+        assertThat(lines).contains(ReaderPreprocessor.SPLITTER_COMMENT + "ifeval::[\"{cmdcli}\" == \"oc\"]");
         assertThat(lines).contains("* If using a version of OpenShift earlier than OpenShift 4 the link:https://github.com/coreos/prometheus-operator/tree/master/contrib/kube-prometheus[Prometheus Operator^] and Custom Resource Definitions must be installed.");
-        assertThat(lines).contains("endif::[]");
+        assertThat(lines).contains(ReaderPreprocessor.SPLITTER_COMMENT + "endif::[]");
     }
 
     @Test

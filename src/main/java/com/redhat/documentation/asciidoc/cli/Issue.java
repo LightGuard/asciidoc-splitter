@@ -15,7 +15,7 @@ public class Issue {
         return new Issue(true, text, node);
     }
 
-    static Issue nonerror(String text, StructuralNode node) {
+    public static Issue nonerror(String text, StructuralNode node) {
         return new Issue(false, text, node);
     }
 

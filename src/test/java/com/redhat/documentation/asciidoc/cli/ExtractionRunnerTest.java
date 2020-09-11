@@ -24,8 +24,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/content-test").toURI());
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
-        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-        assertThat(exitCode).isEqualTo(0);
+        new CommandLine(new ExtractionRunner()).execute(options);
 
         // Modules
         var modulesDir = new File(this.outputDirectory, "modules");
@@ -50,8 +49,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         final var sourceDirectory = new File("./examples/sample/input");
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
-        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-        assertThat(exitCode).isEqualTo(0);
+        new CommandLine(new ExtractionRunner()).execute(options);
 
         // Modules
         var modulesDir = new File(this.outputDirectory, "modules");
@@ -82,8 +80,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         final var sourceDirectory = new File(KOGITO_ASCIIDOC_FOLDER);
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath(), "-i", "index.adoc"};
 
-        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-        assertThat(exitCode).isEqualTo(0);
+        new CommandLine(new ExtractionRunner()).execute(options);
 
         // Modules
         var modulesDir = new File(this.outputDirectory, "modules");
@@ -104,8 +101,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
 
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
-        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-        assertThat(exitCode).isEqualTo(0);
+        new CommandLine(new ExtractionRunner()).execute(options);
 
         var artifactsDir = new File(outputDirectory, "_artifacts");
         var imagesDir = new File(outputDirectory, "_images");
@@ -119,8 +115,8 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         final var sourceDirectory = new File("./examples/kogito/input");
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
-        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-        assertThat(exitCode).isEqualTo(0);
+        new CommandLine(new ExtractionRunner()).execute(options);
+
         assertThat(Files.exists(Paths.get(this.outputDirectory.toString(), "assemblies", "modules"))).isTrue();
         assertThat(Files.isSymbolicLink(Paths.get(this.outputDirectory.toString(), "assemblies", "modules"))).isTrue();
 
@@ -136,8 +132,8 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         final var sourceDirectory = new File("./examples/kogito/input");
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
-        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-        assertThat(exitCode).isEqualTo(0);
+        new CommandLine(new ExtractionRunner()).execute(options);
+
         final File titleDirectory = new File(this.outputDirectory, "titles-enterprise");
         assertThat(titleDirectory.isDirectory()).isTrue();
         assertThat(titleDirectory.list()).containsOnly("kogito-configuring", "assemblies-test", "master-docinfo.xml", "index.adoc");
@@ -158,8 +154,8 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         final var sourceDirectory = new File("./src/test/resources/docs/no-assembly");
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
-        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-        assertThat(exitCode).isEqualTo(0);
+        new CommandLine(new ExtractionRunner()).execute(options);
+
         final File assembliesDir = new File(this.outputDirectory, "assemblies");
         assertThat(assembliesDir.list()).containsOnly("modules");
 
@@ -177,8 +173,8 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
                 "-a", "KOGITO-ENT=true"
         };
 
-        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-        assertThat(exitCode).isEqualTo(0);
+        new CommandLine(new ExtractionRunner()).execute(options);
+
         var chap = outputDirectory.toPath().resolve("assemblies")
                 .resolve("assembly-kogito-developing-decision-services.adoc");
 
@@ -193,8 +189,8 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
                 "-i", "index.adoc"
         };
 
-        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-        assertThat(exitCode).isEqualTo(0);
+        new CommandLine(new ExtractionRunner()).execute(options);
+
         // Modules
         var modulesDir = new File(this.outputDirectory, "modules");
         assertThat(modulesDir.exists()).isTrue();
@@ -213,14 +209,13 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         final var sourceDirectory = new File(KOGITO_ASCIIDOC_FOLDER);
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
-        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-        assertThat(exitCode).isEqualTo(0);
+        new CommandLine(new ExtractionRunner()).execute(options);
 
-        var source= new File(sourceDirectory, "creating-running");
+        var source = new File(sourceDirectory, "creating-running");
         var sourceFile = new File(source, "chap-kogito-creating-running.adoc");
         var assembliesDir = new File(this.outputDirectory, "assemblies");
         assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(1);
-        var chapFile= new File(assembliesDir, "assembly-kogito-creating-running.adoc");
+        var chapFile = new File(assembliesDir, "assembly-kogito-creating-running.adoc");
         assertThat(chapFile.exists()).isTrue();
         assertThat(!(Files.readString(sourceFile.toPath())).contains("preprocess::context[:parent-context: {context}]"));
         assertThat(!(Files.readString(chapFile.toPath())).contains("preprocess::context[:parent-context: {context}]"));
@@ -231,8 +226,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         final var sourceDirectory = new File("./examples/kogito/parent-context");
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
-        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-        assertThat(exitCode).isEqualTo(0);
+        new CommandLine(new ExtractionRunner()).execute(options);
 
         var chap = outputDirectory.toPath().resolve("assemblies")
                 .resolve("assembly-kogito-configuring.adoc");
@@ -248,8 +242,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
                 "-a", "KOGITO-ENT=true"
         };
 
-        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-        assertThat(exitCode).isEqualTo(0);
+        new CommandLine(new ExtractionRunner()).execute(options);
 
         var chap = outputDirectory.toPath().resolve("assemblies")
                 .resolve("assembly-kogito-creating-running.adoc");
@@ -266,8 +259,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
                 "-a", "KOGITO-ENT=true"
         };
 
-        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-        assertThat(exitCode).isEqualTo(0);
+        new CommandLine(new ExtractionRunner()).execute(options);
 
         var splitAssembly = Files.readString(outputDirectory.toPath().resolve("assemblies")
                 .resolve("assembly-kogito-developing-process-services.adoc"));
@@ -285,8 +277,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
                 "-a", "KOGITO-ENT=true"
         };
 
-        var exitCode = new CommandLine(new ExtractionRunner()).execute(options);
-        assertThat(exitCode).isEqualTo(0);
+        new CommandLine(new ExtractionRunner()).execute(options);
 
         var splitAssembly = Files.readString(outputDirectory.toPath().resolve("modules")
                 .resolve("preamble-include").resolve("proc-bpmn-model-creating.adoc"));

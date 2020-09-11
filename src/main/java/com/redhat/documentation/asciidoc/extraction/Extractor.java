@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,7 +47,12 @@ public class Extractor {
         this.logger = LogManager.getLogManager().getLogger("");
     }
 
-    public void process() {
+    /**
+     * Process the source.
+     *
+     * @return exit code
+     */
+    public int process() {
         logger.fine("Starting up Asciidoctor");
         var preprocessor = new ReaderPreprocessor();
         var replaceWithProcessor = new ReplaceWithTreeProcessor();
@@ -54,8 +60,8 @@ public class Extractor {
         OptionsBuilder optionsBuilder = OptionsBuilder.options();
         Asciidoctor asciidoctor = Asciidoctor.Factory.create();
         asciidoctor.javaExtensionRegistry()
-                        .preprocessor(preprocessor)
-                        .treeprocessor(replaceWithProcessor);
+                .preprocessor(preprocessor)
+                .treeprocessor(replaceWithProcessor);
 
         replaceWithProcessor.setReaderPreprocessor(preprocessor);
 
@@ -109,6 +115,12 @@ public class Extractor {
             this.logger.severe(e.getMessage());
         }
         this.logger.warning("Found " + this.issues.size() + " issues. " + errors + " Errors.");
+
+        // We want to tell the script that there were errors and not to push
+        if (errors > 0)
+            return -1;
+
+        return 0;
     }
 
     /**
@@ -125,17 +137,31 @@ public class Extractor {
             // Create symlinks for modules, _artifacts, and _images
             if (Files.notExists(assembliesDir.resolve("modules"))) // We only need this once
                 Files.createSymbolicLink(assembliesDir.resolve("modules"),
-                                         assembliesDir.relativize(targetDirPath.resolve("modules")));
+                        assembliesDir.relativize(targetDirPath.resolve("modules")));
+        } catch (FileAlreadyExistsException e) {
+            this.logger.info("Symlink 'modules' already exists, continuing, please verify.");
+        } catch (IOException e) {
+            this.logger.severe("Failed creating symlink: " + e.getMessage());
+        }
 
-            if (Files.exists(sourceDirPath.resolve( "_artifacts")))
+        try {
+            if (Files.exists(sourceDirPath.resolve("_artifacts")))
                 Files.createSymbolicLink(assembliesDir.resolve("_artifacts"),
-                                         assembliesDir.relativize(targetDirPath.resolve("_artifacts")));
+                        assembliesDir.relativize(targetDirPath.resolve("_artifacts")));
+        } catch (FileAlreadyExistsException e) {
+            this.logger.info("Symlink '_artifacts' already exists, continuing, please verify.");
+        } catch (IOException e) {
+            this.logger.severe("Failed creating symlink: " + e.getMessage());
+        }
 
+        try {
             if (Files.exists(sourceDirPath.resolve("_images")))
                 Files.createSymbolicLink(assembliesDir.resolve("_images"),
-                                         assembliesDir.relativize(targetDirPath.resolve("_images")));
+                        assembliesDir.relativize(targetDirPath.resolve("_images")));
+        } catch (FileAlreadyExistsException e) {
+            this.logger.info("Symlink '_images' already exists, continuing, please verify.");
         } catch (IOException e) {
-            this.logger.severe("Failed creating symlinks: " + e.getMessage());
+            this.logger.severe("Failed creating symlink: " + e.getMessage());
         }
     }
 
@@ -177,11 +203,11 @@ public class Extractor {
                     var outputFile = assembliesDir.resolve(a.getFilename());
                     logger.fine("Writting assembly file: " + outputFile);
                     try (Writer output = new FileWriter(outputFile.toFile())) {
-                            output.append(templateStart)
-                                    .append("\n")
-                                    .append(Util.tweakSource(a.getSource()))
-                                    .append("\n")
-                                    .append(templateEnd);
+                        output.append(templateStart)
+                                .append("\n")
+                                .append(Util.tweakSource(a.getSource()))
+                                .append("\n")
+                                .append(templateEnd);
                     }
                 }
             } catch (IOException e) {
@@ -239,6 +265,11 @@ public class Extractor {
                         new CopyTreeFileVisitor(sourceDir, targetDir));
             }
         } catch (IOException e) {
+            if (e instanceof FileAlreadyExistsException) {
+                addIssue(Issue.nonerror("Directory already exists, please verify output: "
+                                        + ((FileAlreadyExistsException) e).getFile(), null));
+                return;
+            }
             addIssue(Issue.error(e.toString(), null));
         }
     }
@@ -255,6 +286,11 @@ public class Extractor {
             Files.walkFileTree(sourceDir, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
                     new TitlesEnterpriseCopyTreeFileVisitor(sourceDir, targetDir));
         } catch (IOException e) {
+            if (e instanceof FileAlreadyExistsException) {
+                addIssue(Issue.nonerror("File already exists, please verify output: "
+                                        + ((FileAlreadyExistsException) e).getFile(), null));
+                return;
+            }
             addIssue(Issue.error(e.toString(), null));
         }
     }

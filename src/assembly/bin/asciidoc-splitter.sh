@@ -90,6 +90,12 @@ git clone --depth 1 -b ${SOURCE_BRANCH} ${SOURCE_REPO} ${TEMP_CHECKOUT_DIR} &> /
 git clone -b ${OUTPUT_BRANCH} ${OUTPUT_REPO} ${TEMP_WORK_DIR} &> /dev/null
 eval "${SPLITTER_COMMAND_BASE} -s ${TEMP_CHECKOUT_DIR} -o ${TEMP_WORK_DIR} ${IGNORE} ${ATTRIBS}"
 
+JAVA_EXIT=$?
+
+if [[ "${JAVA_EXIT}" -ne "0" ]]; then
+    exit 9
+fi
+
 echo "Committing work and pushing..."
 cd ${TEMP_WORK_DIR}
 git add . &> /dev/null

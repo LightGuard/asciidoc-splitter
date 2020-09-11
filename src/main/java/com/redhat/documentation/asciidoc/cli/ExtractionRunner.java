@@ -20,7 +20,7 @@ import picocli.CommandLine.Option;
 
 @Command(name = "extract", mixinStandardHelpOptions = true, version = "1.0",
         description = "Create a modular documentation layout from a directory of asciidoc files.")
-public class ExtractionRunner implements Runnable {
+public class ExtractionRunner implements Runnable, CommandLine.IExitCodeGenerator {
 
     // Use the JBoss LogManager
     static {
@@ -42,6 +42,8 @@ public class ExtractionRunner implements Runnable {
 
     @Option(names = {"-i"}, split = ",", description = "Ignore file, multiples separated by ','")
     List<File> ignoreFiles;
+
+    int exitCode;
 
     /**
      * Options for the source location of the files.
@@ -109,6 +111,11 @@ public class ExtractionRunner implements Runnable {
         System.exit(exitCode);
     }
 
+    @Override
+    public int getExitCode() {
+        return this.exitCode;
+    }
+
     /**
      * Runs the program.
      */
@@ -137,7 +144,7 @@ public class ExtractionRunner implements Runnable {
         var task = new Task(location, pushableLocation, attributes, ignoreFiles);
 
         var extractor = new Extractor(task);
-        extractor.process();
-    }
 
+        this.exitCode = extractor.process();
+    }
 }

@@ -104,8 +104,8 @@ public class Extractor {
         createAssemblySymlinks(sourceDirPath, targetDirPath);
 
         // Push/Save the output
-        this.logger.info("Pushing content (if applicable)");
-        this.task.getPushableLocation().push();
+//        this.logger.info("Pushing content (if applicable)");
+//        this.task.getPushableLocation().push();
 
         long errors = this.issues.stream().filter(Issue::isError).count();
 

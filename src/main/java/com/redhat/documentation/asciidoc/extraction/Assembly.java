@@ -146,11 +146,7 @@ public class Assembly {
 //            if (lines.get(i).contains("endif::"))
 //                continue;
 
-            sectionSource.append(
-                    Util.fixModuleInclude(
-                            Util.fixIncludes(
-                                    Util.fixSectionLevelForModule(
-                                            Util.removeSplitterComment(lines.get(i)))))).append("\n");
+            sectionSource.append(Util.fixSectionLevelForModule(Util.tweakSource(lines.get(i)))).append("\n");
         }
         return sectionSource.toString();
     }

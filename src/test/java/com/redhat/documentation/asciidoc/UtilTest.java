@@ -41,4 +41,13 @@ class UtilTest {
         expected = "== GraphQL queries for process instances and user task instances (instance caches)";
         assertThat(Util.fixSectionLevelForModule(test)).isEqualTo(expected);
     }
+
+    @Test
+    public void testReplaceChapWithAssembly() {
+        var test = "some sort of xref:chap-dmn-models";
+        var expected = "some sort of xref:assembly-dmn-models";
+
+        assertThat(Util.replaceChapWithAssembly(test)).isEqualTo(expected);
+        assertThat(Util.tweakSource(test)).isEqualTo(expected);
+    }
 }

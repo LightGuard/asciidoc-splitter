@@ -69,12 +69,22 @@ public class Util {
     }
 
     /**
+     * Replaces "chap-" with "assembly-"
+     *
+     * @param source source line
+     * @return source line with "chap-" -> "assembly-" tweak
+     */
+    public static String replaceChapWithAssembly(String source) {
+        return source.replaceAll("chap-", "assembly-");
+    }
+
+    /**
      * A wrapper method for all the tweaks and fixes to asciidoc source.
      * @param source Pre-tweaked source
      * @return Source with tweaks/fixes applied
      */
     public static String tweakSource(String source) {
-        return fixModuleInclude(fixIncludes(removeSplitterComment(source)));
+        return fixModuleInclude(fixIncludes(removeSplitterComment(replaceChapWithAssembly(source))));
     }
 
     public static String fixSectionLevelForModule(String source) {

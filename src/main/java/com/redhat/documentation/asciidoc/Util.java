@@ -40,7 +40,9 @@ public class Util {
 
     public static String fixIncludes(String source) {
         return source.replaceAll("(?<include>include::)(?<path>(\\w|/|-)*)?chap-(?<filename>.+)\\.(?<extension>.+)\\[]",
-                                        "${include}assemblies/assembly-${filename}.${extension}[]")
+                "${include}assemblies/assembly-${filename}.${extension}[]")
+                .replaceAll("(?<include>include::)(?<path>(\\w|/|-)*)?assembly-(?<filename>.+)\\.(?<extension>.+)\\[]",
+                        "${include}assemblies/assembly-${filename}.${extension}[]")
                      .replaceAll("(?<include>include::)(\\{asciidoc-dir}/)?(?<path>(\\w|/|-)*)/(?<filename>.*)\\[tags=(?<module>.+)]",
                              "${include}modules/${path}/${module}.adoc[leveloffset=+1]");
     }

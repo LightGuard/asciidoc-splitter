@@ -203,11 +203,13 @@ public class Extractor {
                     var outputFile = assembliesDir.resolve(a.getFilename());
                     logger.fine("Writting assembly file: " + outputFile);
                     try (Writer output = new FileWriter(outputFile.toFile())) {
-                        output.append(templateStart)
-                                .append("\n")
+                        // TODO: We could search the source for parent-context and add if necessary
+                        //       Disabling for now.
+//                        output.append(templateStart)
+                        output.append("\n")
                                 .append(Util.tweakSource(a.getSource()))
-                                .append("\n")
-                                .append(templateEnd);
+                                .append("\n");
+//                                .append(templateEnd);
                     }
                 }
             } catch (IOException e) {

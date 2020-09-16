@@ -222,6 +222,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
     }
 
     @Test
+    @Disabled("Removing for now, issue #61")
     public void testParentContext() throws Exception {
         final var sourceDirectory = new File("./examples/kogito/parent-context");
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};

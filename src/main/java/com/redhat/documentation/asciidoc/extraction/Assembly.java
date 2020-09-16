@@ -93,7 +93,7 @@ public class Assembly {
 
             } else {
                 // Add it to the list
-                moduleSources.add(new SectionWrapper(section, getSectionSource(lines, section, lines.size() - 1)));
+                moduleSources.add(new SectionWrapper(section, getSectionSource(lines, section, lines.size())));
             }
         }
 

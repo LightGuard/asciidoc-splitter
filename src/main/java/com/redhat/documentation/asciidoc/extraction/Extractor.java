@@ -1,10 +1,8 @@
 package com.redhat.documentation.asciidoc.extraction;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Writer;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileVisitOption;
@@ -18,10 +16,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import com.redhat.documentation.asciidoc.Util;
-import com.redhat.documentation.asciidoc.cli.ExtractionRunner;
 import com.redhat.documentation.asciidoc.cli.Issue;
 import com.redhat.documentation.asciidoc.extension.ReaderPreprocessor;
 import com.redhat.documentation.asciidoc.extension.ReplaceWithTreeProcessor;
@@ -102,10 +98,6 @@ public class Extractor {
 
         // create symlinks in assemblies
         createAssemblySymlinks(sourceDirPath, targetDirPath);
-
-        // Push/Save the output
-//        this.logger.info("Pushing content (if applicable)");
-//        this.task.getPushableLocation().push();
 
         long errors = this.issues.stream().filter(Issue::isError).count();
 
@@ -189,10 +181,6 @@ public class Extractor {
     }
 
     private void writeAssemblies(Path outputDirectory) {
-        // Setup templates for modules
-        String templateStart = getTemplateContents("templates/start.adoc");
-        String templateEnd = getTemplateContents("templates/end.adoc");
-
         this.assemblies.forEach(a -> {
             try {
                 // Create any directories that need to be created
@@ -201,19 +189,15 @@ public class Extractor {
 
                 if (a.shouldCreateAssembly()) {
                     var outputFile = assembliesDir.resolve(a.getFilename());
-                    logger.fine("Writting assembly file: " + outputFile);
+                    logger.fine("Writing assembly file: " + outputFile);
                     try (Writer output = new FileWriter(outputFile.toFile())) {
                         // TODO: We could search the source for parent-context and add if necessary
                         //       Disabling for now.
-//                        output.append(templateStart)
-                        output.append("\n")
-                                .append(Util.tweakSource(a.getSource()))
-                                .append("\n");
-//                                .append(templateEnd);
+                        output.append(Util.tweakSource(a.getSource()));
                     }
                 }
             } catch (IOException e) {
-                logger.severe("Error writting assembly (" + a + "): " + e.getMessage());
+                logger.severe("Error writing assembly (" + a + "): " + e.getMessage());
                 throw new RuntimeException(e);
             }
         });
@@ -268,8 +252,7 @@ public class Extractor {
             }
         } catch (IOException e) {
             if (e instanceof FileAlreadyExistsException) {
-                addIssue(Issue.nonerror("Directory already exists, please verify output: "
-                                        + ((FileAlreadyExistsException) e).getFile(), null));
+                logger.fine("Directory already exists, please verify output: " + ((FileAlreadyExistsException) e).getFile());
                 return;
             }
             addIssue(Issue.error(e.toString(), null));
@@ -289,19 +272,10 @@ public class Extractor {
                     new TitlesEnterpriseCopyTreeFileVisitor(sourceDir, targetDir));
         } catch (IOException e) {
             if (e instanceof FileAlreadyExistsException) {
-                addIssue(Issue.nonerror("File already exists, please verify output: "
-                                        + ((FileAlreadyExistsException) e).getFile(), null));
+                logger.fine("File already exists, please verify output: " + ((FileAlreadyExistsException) e).getFile());
                 return;
             }
             addIssue(Issue.error(e.toString(), null));
         }
-    }
-
-    private String getTemplateContents(String templateLocation) {
-        final var cl = ExtractionRunner.class.getClassLoader();
-        final var resource = cl.getResourceAsStream(templateLocation);
-        assert resource != null;
-
-        return new BufferedReader(new InputStreamReader(resource)).lines().collect(Collectors.joining("\n"));
     }
 }

@@ -73,8 +73,19 @@ public class ExtractedModule {
         this.moduleType = Util.getModuleType(section);
 
         this.section = section;
-        this.source = lines;
         this.leveloffset = section.getLevel();
+
+        var newLines = new StringBuilder();
+        for (String s : lines.split("\n")) {
+            if (s.startsWith("=")) {
+                newLines.append(s.replaceAll("^=.", "=".repeat(this.leveloffset - 1)));
+            } else {
+                newLines.append(s);
+            }
+            newLines.append("\n");
+        }
+
+        this.source = newLines.toString();
         this.additonalResources = "Additional resources".equalsIgnoreCase(section.getTitle());
     }
 

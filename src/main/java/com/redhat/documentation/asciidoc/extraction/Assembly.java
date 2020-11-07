@@ -111,7 +111,8 @@ public class Assembly {
             }
 
             this.modules.add(extractedModule);
-            this.source.append("include::modules/")
+            this.source.append("include::modules")
+                    .append(File.separator)
                     .append(extractedModule.getFolder())
                     .append(File.separator)
                     .append(extractedModule.getFileName())

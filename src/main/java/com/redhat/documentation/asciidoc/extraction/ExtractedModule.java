@@ -1,6 +1,5 @@
 package com.redhat.documentation.asciidoc.extraction;
 
-import java.io.File;
 import java.util.Objects;
 
 import com.redhat.documentation.asciidoc.Util;
@@ -14,6 +13,7 @@ public class ExtractedModule {
     private String moduleType;
     private int leveloffset = 0;
     private boolean additonalResources = false;
+    private String folder;
 
     static boolean isNodeAModule(StructuralNode node) {
         if (node.getAttributes().containsKey(Util.MODULE_TYPE_ATTRIBUTE))
@@ -41,7 +41,10 @@ public class ExtractedModule {
     }
 
     public String getFolder() {
-        return new File(this.section.getSourceLocation().getDir()).getName();
+        if (this.folder == null) {
+            this.folder = this.section.getAttribute("splitter-doc-root", "", true).toString();
+        }
+        return folder;
     }
 
     @Override

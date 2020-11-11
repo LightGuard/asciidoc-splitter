@@ -81,6 +81,8 @@ public class Extractor {
 
             logger.fine("Loading file '" + file.getAbsolutePath() + "' into asciidoctor");
             var doc = asciidoctor.loadFile(file, optionsBuilder.asMap());
+            var loc = sourceDirPath.relativize(file.toPath()).toString().replace(file.getName(), "");
+            doc.setAttribute("splitter-doc-root", loc, true);
             var lines = preprocessor.getLines();
 
             findSections(doc, lines);
@@ -212,7 +214,7 @@ public class Extractor {
 
             for (ExtractedModule module : this.modules) {
                 // Create output file
-                if (!module.getFolder().isEmpty()) {
+//                if (!module.getFolder().isEmpty()) {
                     Path topicFolder = Files.createDirectories(modulesDir.resolve(module.getFolder()));
                     Path moduleOutputFile = Paths.get(topicFolder.toString(), module.getFileName());
 
@@ -237,7 +239,7 @@ public class Extractor {
                                 .append("= ").append(module.getSection().getTitle()).append("\n")
                                 .append(module.getSource());
                     }
-                }
+//                }
             }
         } catch (IOException e) {
             logger.severe("Error writing a module: " + e.getMessage());

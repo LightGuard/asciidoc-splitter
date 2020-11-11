@@ -30,10 +30,8 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         var modulesDir = new File(this.outputDirectory, "modules");
         assertThat(modulesDir.exists()).isTrue();
         var topicDir = new File(modulesDir, "content-test");
-        assertThat(modulesDir.listFiles()).hasSize(1);
-        assertThat(topicDir.exists()).isTrue();
-        assertThat(topicDir.listFiles()).hasSize(2);
-        var moduleFileNames = Objects.requireNonNull(topicDir.listFiles(new AsciidocFileFilter()));
+        assertThat(modulesDir.listFiles()).hasSize(2);
+        var moduleFileNames = Objects.requireNonNull(modulesDir.listFiles(new AsciidocFileFilter()));
         assertThat(Arrays.stream(moduleFileNames).map(File::getName).collect(Collectors.toList()))
                 .containsExactlyInAnyOrder("proc-module-one.adoc", "con-module-two.adoc");
 
@@ -54,10 +52,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         // Modules
         var modulesDir = new File(this.outputDirectory, "modules");
         assertThat(modulesDir.exists()).isTrue();
-        assertThat(modulesDir.listFiles()).hasSize(1);
-        var topicDir = new File(modulesDir, "input");
-        assertThat(topicDir.exists()).isTrue();
-        assertThat(topicDir.listFiles()).hasSize(6);
+        assertThat(modulesDir.listFiles()).hasSize(6);
 
         // Assemblies
         var assembliesDir = new File(this.outputDirectory, "assemblies");
@@ -68,7 +63,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         assertThat(Files.readString(assemblyFile)).contains("= Monitoring {ProductName}");
 
         // Check for ifdef correctness
-        var outputFile = new File(topicDir, "proc-deploy-monitoring-infrastructure.adoc");
+        var outputFile = new File(modulesDir, "proc-deploy-monitoring-infrastructure.adoc");
         assertThat(Files.readString(outputFile.toPath())).doesNotContain(ReaderPreprocessor.SPLITTER_COMMENT + "ifeval::[\"{cmdcli}\" == \"oc\"]");
         assertThat(Files.readString(outputFile.toPath())).doesNotContain(ReaderPreprocessor.SPLITTER_COMMENT + "endif::[]");
         assertThat(Files.readString(outputFile.toPath())).contains("ifeval::[\"{cmdcli}\" == \"oc\"]");
@@ -183,7 +178,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
 
     @Test
     public void testIgnoreFiles() throws Exception {
-        final var sourceDirectory = new File("./examples/kogito/ignore_files");
+        final var sourceDirectory = new File("./examples/kogito/ignore_files/asciidoc");
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(),
                 "-o", this.outputDirectory.getAbsolutePath(),
                 "-i", "index.adoc"
@@ -281,7 +276,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         new CommandLine(new ExtractionRunner()).execute(options);
 
         var splitAssembly = Files.readString(outputDirectory.toPath().resolve("modules")
-                .resolve("preamble-include").resolve("proc-bpmn-model-creating.adoc"));
+                .resolve("proc-bpmn-model-creating.adoc"));
 
         assertThat(splitAssembly).doesNotContain("include::{asciidoc-dir}/decision-services/chap-kogito-using-dmn-models.adoc[tags=con-kogito-service-execution]");
         assertThat(splitAssembly).contains("include::../../modules/decision-services/con-kogito-service-execution.adoc[leveloffset=+1]");

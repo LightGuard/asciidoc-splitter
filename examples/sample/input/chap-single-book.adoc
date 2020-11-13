@@ -3,18 +3,18 @@
 // assembly-service-admin-guide.adoc
 
 :parent-context: {context}
+
 [id='monitoring-{context}']
 = Monitoring {ProductName}
 
 You can monitor {ProductName} by deploying built-in monitoring tools or using your pre-existing monitoring infrastructure by deploying the required service monitors and Prometheus rules.
 
-[id='deploy-monitoring-infrastructure-{context}', module-type="proc"]
+[id='deploy-monitoring-infrastructure-{context}',module-type="proc"]
 == Installing monitoring infrastructure
 
 If you do not have a pre-existing infrastructure for monitoring, you must install one, which includes Prometheus, Alertmanager, Grafana, and `kube-state-metrics`.
 
 .Prerequisites
-
 ifeval::["{cmdcli}" == "oc"]
 * If using a version of OpenShift earlier than OpenShift 4 the link:https://github.com/coreos/prometheus-operator/tree/master/contrib/kube-prometheus[Prometheus Operator^] and Custom Resource Definitions must be installed.
 endif::[]
@@ -23,10 +23,10 @@ ifeval::["{cmdcli}" == "kubectl"]
 endif::[]
 
 .Procedure
-
 . (Optional) To change the default settings for Alertmanager and configure notifications:
 
-..   Create an Alertmanager configuration file. A sample file showing how email notifications are configured follows:
+.. Create an Alertmanager configuration file.
+A sample file showing how email notifications are configured follows:
 +
 ----
 apiVersion: v1
@@ -61,7 +61,7 @@ data:
         equal: ['alertname']
 ----
 
-..   Update the Alertmanager secret with the `base64` encoded file:
+.. Update the Alertmanager secret with the `base64` encoded file:
 +
 [options="nowrap",subs="+quotes,attributes"]
 ----
@@ -82,17 +82,15 @@ sed -i s/alertmanager.yaml:*/$(<CONFIG_FILE> | base64 -w0)/g install/alertmanage
 {cmdcli} apply -f install/bundles/monitoring
 ----
 
-[id='deploy-service-monitors-{context}', module-type="proc"]
+[id='deploy-service-monitors-{context}',module-type="proc"]
 == Deploying service monitors
 
 You must deploy the service monitors to enable Prometheus to monitor {ProductName}.
 
 .Prerequisites
-
 * Monitoring infrastructure must be present, whether pre-existing or link:{BookUrlBase}{BaseProductVersion}{BookNameUrl}#deploy-monitoring-infrastructure-messaging[installed following this procedure].
 
 .Procedure
-
 . Select the {ProductName} namespace:
 +
 [options="nowrap",subs="+quotes,attributes"]
@@ -107,7 +105,7 @@ You must deploy the service monitors to enable Prometheus to monitor {ProductNam
 {cmdcli} apply -f /install/components/service-monitors
 ----
 
-[id='deploy-prometheus-rules-{context}', module-type="proc"]
+[id='deploy-prometheus-rules-{context}',module-type="proc"]
 == Deploying Prometheus Rules for alerting
 
 You must deploy Prometheus rules to enable alerting for {ProductName}.
@@ -116,7 +114,6 @@ You must deploy Prometheus rules to enable alerting for {ProductName}.
 * Monitoring infrastructure must be present, whether pre-existing or link:{BookUrlBase}{BaseProductVersion}{BookNameUrl}#deploy-monitoring-infrastructure-messaging[installed following this procedure], and the link:{BookUrlBase}{BaseProductVersion}{BookNameUrl}#deploy-service-monitors-messaging[service monitors for {ProductName} must be deployed].
 
 .Procedure
-
 . Select the {ProductName} namespace:
 +
 [options="nowrap",subs="+quotes,attributes"]
@@ -131,11 +128,10 @@ You must deploy Prometheus rules to enable alerting for {ProductName}.
 {cmdcli} apply -f /install/components/prometheus
 ----
 
-[id='restart-component-{context}', module-type="proc"]
+[id='restart-component-{context}',module-type="proc"]
 == Restarting a component
 
 .Procedure
-
 * Delete the component's pod:
 +
 [options="nowrap",subs="+quotes,attributes"]
@@ -145,11 +141,10 @@ You must deploy Prometheus rules to enable alerting for {ProductName}.
 
 The component will be automatically restarted in a new pod.
 
-[id='get-logs-router-{context}', module-type="proc"]
+[id='get-logs-router-{context}',module-type="proc"]
 == Viewing router logs
 
 .Procedure
-
 . List all router pods and choose the pod for the relevant address space:
 +
 [options="nowrap",subs="+quotes,attributes"]
@@ -164,11 +159,10 @@ The component will be automatically restarted in a new pod.
 {cmdcli} logs _pod_ -c router
 ----
 
-[id='get-logs-broker-{context}', module-type="proc"]
+[id='get-logs-broker-{context}',module-type="proc"]
 == Viewing broker logs
 
 .Procedure
-
 . List all broker pods and choose the pod for the relevant address space:
 +
 [source,options="nowrap",subs="attributes"]

@@ -9,6 +9,7 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -76,6 +77,18 @@ public class Extractor {
 
             // Skip adoc files in the title enterprise directory
             if (file.getParent() != null && file.getParent().contains(TITLES_ENTERPRISE)) {
+                continue;
+            }
+
+            // We only want to process chap files, others should be moved to modules.
+            if (!file.getName().startsWith("chap-")) {
+                try {
+                    Path modulesDir = Files.createDirectories(targetDirPath.resolve("modules"));
+                    Files.copy(file.toPath(), modulesDir.resolve(file.getName()),
+                            StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    this.logger.severe("Could not move non chapter file: " + e.getMessage());
+                }
                 continue;
             }
 
@@ -214,32 +227,30 @@ public class Extractor {
 
             for (ExtractedModule module : this.modules) {
                 // Create output file
-//                if (!module.getFolder().isEmpty()) {
-                    Path topicFolder = Files.createDirectories(modulesDir.resolve(module.getFolder()));
-                    Path moduleOutputFile = Paths.get(topicFolder.toString(), module.getFileName());
+                Path topicFolder = Files.createDirectories(modulesDir.resolve(module.getFolder()));
+                Path moduleOutputFile = Paths.get(topicFolder.toString(), module.getFileName());
 
-                    if (moduleOutputFile.toFile().exists()) {
-                        if (visitedPaths.contains(moduleOutputFile)) {
-                            this.logger.severe("Already written to this file: " + moduleOutputFile + " for " + module);
-                            return;
-                        }
-                    } else {
-                        moduleOutputFile = Files.createFile(moduleOutputFile);
+                if (moduleOutputFile.toFile().exists()) {
+                    if (visitedPaths.contains(moduleOutputFile)) {
+                        this.logger.severe("Already written to this file: " + moduleOutputFile + " for " + module);
+                        return;
                     }
-                    visitedPaths.add(moduleOutputFile);
+                } else {
+                    moduleOutputFile = Files.createFile(moduleOutputFile);
+                }
+                visitedPaths.add(moduleOutputFile);
 
-                    logger.fine("Writing module file: " + moduleOutputFile);
+                logger.fine("Writing module file: " + moduleOutputFile);
 
-                    // Output the module
-                    try (Writer output = new FileWriter(moduleOutputFile.toFile())) {
-                        output
-                                // Adding the id of the module
-                                .append("[id='").append(module.getId()).append("_{context}']\n")
-                                // Adding the section title
-                                .append("= ").append(module.getSection().getTitle()).append("\n")
-                                .append(module.getSource());
-                    }
-//                }
+                // Output the module
+                try (Writer output = new FileWriter(moduleOutputFile.toFile())) {
+                    output
+                            // Adding the id of the module
+                            .append("[id='").append(module.getId()).append("_{context}']\n")
+                            // Adding the section title
+                            .append("= ").append(module.getSection().getTitle()).append("\n")
+                            .append(module.getSource());
+                }
             }
         } catch (IOException e) {
             logger.severe("Error writing a module: " + e.getMessage());

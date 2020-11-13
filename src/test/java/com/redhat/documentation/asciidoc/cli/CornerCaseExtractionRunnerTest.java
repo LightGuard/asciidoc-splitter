@@ -27,7 +27,7 @@ public class CornerCaseExtractionRunnerTest extends ExtractionRunnerBase {
     }
 
     @Test
-    public void nestingIssue79Test() throws Exception {
+    public void nestingIssue78Test() throws Exception {
         final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/issue-78").toURI());
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
@@ -40,5 +40,22 @@ public class CornerCaseExtractionRunnerTest extends ExtractionRunnerBase {
         assertThat(topicDir).exists();
         assertThat(Path.of(topicDir.toPath().toString(), "sub-sub-dir")).exists();
         assertThat(new File(topicDir, "issue-78")).doesNotExist();
+    }
+
+    @Test
+    public void onlyChapFilesIssue79() throws Exception {
+        final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/issue-79").toURI());
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+
+        new CommandLine(new ExtractionRunner()).execute(options);
+
+        var modulesDir = new File(this.outputDirectory, "modules");
+        var assembliesDir = new File(this.outputDirectory, "assemblies");
+        assertThat(assembliesDir).exists();
+        assertThat(modulesDir).exists();
+
+        assertThat(assembliesDir.toPath().resolve("ref-dmn-feel-builtin-functions.adoc")).doesNotExist();
+        assertThat(assembliesDir.toPath().resolve("assembly-ref-dmn-feel-builtin-functions.adoc")).doesNotExist();
+        assertThat(modulesDir.toPath().resolve("ref-dmn-feel-builtin-functions.adoc")).exists();
     }
 }

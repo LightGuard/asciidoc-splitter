@@ -75,5 +75,22 @@ public class CornerCaseExtractionRunnerTest extends ExtractionRunnerBase {
         assertThat(Files.lines(assemblyFile)).contains("ifdef::KOGITO-ENT[]");
     }
 
-    // TODO: create test for issue 81
+    @Test
+    public void additonalResources81Test() throws Exception {
+        final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/issue-80").toURI());
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+
+        new CommandLine(new ExtractionRunner()).execute(options);
+
+        var assemblies = new File(this.outputDirectory, "assemblies");
+        assertThat(assemblies.exists()).isTrue();
+        assertThat(assemblies.listFiles(pathname -> pathname.getName().contains(".adoc"))).hasSize(1);
+
+        var assemblyFile = assemblies.toPath().resolve("assembly-kogito-using-dmn-models.adoc");
+        assertThat(Files.lines(assemblyFile)).contains("[role=\"_additional-resources\"]");
+        assertThat(Files.lines(assemblyFile)).contains("* {URL_CREATING_RUNNING}[_{CREATING_RUNNING}_]");
+        assertThat(Files.lines(assemblyFile)).contains("* {URL_DEPLOYING_ON_OPENSHIFT}[_{DEPLOYING_ON_OPENSHIFT}_]");
+        assertThat(Files.lines(assemblyFile)).contains("* {URL_PROCESS_SERVICES}[_{PROCESS_SERVICES}_]");
+        assertThat(Files.lines(assemblyFile)).contains("* {URL_CONFIGURING_KOGITO}[_{CONFIGURING_KOGITO}_]");
+    }
 }

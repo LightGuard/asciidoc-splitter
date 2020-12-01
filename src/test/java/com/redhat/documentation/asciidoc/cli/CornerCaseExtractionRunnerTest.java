@@ -58,4 +58,22 @@ public class CornerCaseExtractionRunnerTest extends ExtractionRunnerBase {
         assertThat(assembliesDir.toPath().resolve("assembly-ref-dmn-feel-builtin-functions.adoc")).doesNotExist();
         assertThat(modulesDir.toPath().resolve("ref-dmn-feel-builtin-functions.adoc")).exists();
     }
+
+    @Test
+    public void conditionalIssue80Test() throws Exception {
+        final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/issue-80").toURI());
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+
+        new CommandLine(new ExtractionRunner()).execute(options);
+
+        var assemblies = new File(this.outputDirectory, "assemblies");
+        assertThat(assemblies.exists()).isTrue();
+        assertThat(assemblies.listFiles(pathname -> pathname.getName().contains(".adoc"))).hasSize(1);
+
+        var assemblyFile = assemblies.toPath().resolve("assembly-kogito-using-dmn-models.adoc");
+        assertThat(Files.lines(assemblyFile)).contains("ifdef::KOGITO-COMM[]");
+        assertThat(Files.lines(assemblyFile)).contains("ifdef::KOGITO-ENT[]");
+    }
+
+    // TODO: create test for issue 81
 }

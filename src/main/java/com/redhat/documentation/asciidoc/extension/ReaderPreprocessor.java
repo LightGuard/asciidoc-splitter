@@ -2,8 +2,7 @@ package com.redhat.documentation.asciidoc.extension;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.Stack;
+import java.util.regex.Pattern;
 
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.extension.Preprocessor;
@@ -15,40 +14,80 @@ import org.asciidoctor.extension.PreprocessorReader;
 public class ReaderPreprocessor extends Preprocessor {
     public static final String SPLITTER_COMMENT = "// -- splitter comment -- ";
     private List<String> lines;
+    private StringBuilder assemblyBody;
 
     @Override
     public void process(Document document, PreprocessorReader reader) {
         lines = reader.lines();
         reader.terminate();
 
-        boolean containsIfEval = false;
-        Stack<DirectiveSection> directiveSections = new Stack<>();
-        Stack<Integer> startLines = new Stack<>();
-        Stack<Integer> endLines = new Stack<>();
-        Stack<String> gates = new Stack<>();
+        assemblyBody = new StringBuilder();
+        boolean withinComment = false;
+        boolean withinModule = false;
+
+        // Regex used for finding a few things used in the loop
+        var idPattern = Pattern.compile("\\[id=\"(?<moduleId>(con|ref|proc)-.+)_\\{context}\"]");
+        var levelOffsetPattern = Pattern.compile("(?<offsetSize>^=+) .*");
+        var preProcessStartPattern = Pattern.compile("if(n?)(def|eval)::(.+)?\\[(.+)?]$");
 
         // We need to look at each line to check for ifdefs, I wish there were a better way to do this.
         for (int i = 0; i < lines.size(); i++) {
             var currLine = lines.get(i);
+            var idMatcher = idPattern.matcher(currLine);
 
-            if (currLine.startsWith("ifdef::") || currLine.startsWith("ifndef::") ||
-                currLine.startsWith("ifeval::") || currLine.startsWith("endif::")) {
+            // Flip the comment section
+            if (currLine.matches("^////")) {
+                withinComment = !withinComment;
+            }
+
+            // No longer in a module
+            if (currLine.trim().isEmpty()) {
+                if (idPattern.matcher(lines.get(i + 1)).matches())
+                    withinModule = false;
+
+                // check to see if the next section is within a conditional
+                if (preProcessStartPattern.matcher(lines.get(i + 1)).matches()) {
+                    // We also need to guard against IndexOutOfBounds
+                    if (i + 2 < lines.size() && idPattern.matcher(lines.get(i + 2)).matches())
+                        withinModule = false;
+                }
+            }
+
+            if (idMatcher.matches()) {
+                withinModule = true;
+                var levelOffsetMatcher = levelOffsetPattern.matcher(lines.get(i + 1));
+
+                if (idMatcher.matches() && levelOffsetMatcher.matches() && !withinComment) {
+                    assemblyBody.append("include::../modules/").append(idMatcher.group("moduleId")).append(".adoc")
+                            .append("[leveloffset=+")
+                            .append(levelOffsetMatcher.group("offsetSize").length() - 1)
+                            .append("]").append("\n\n");
+                }
+            }
+
+            if ((currLine.contains("[role=\"_additional-resources\"]") &&
+                 lines.get(i + 1).toLowerCase().contains("== additional resources")) && !withinComment) {
+                withinModule = false;
+                // Get the additional resources until a section break or the end of a preprocessor
+                for (int j = 0; j < lines.size(); j++) {
+                    if (lines.get(i + j).startsWith("endif::") || i + j > lines.size()) {
+                        break;
+                    } else {
+                        assemblyBody.append(lines.get(i + j)).append("\n");
+                    }
+                }
+            }
+
+            if (preProcessStartPattern.matcher(currLine).matches() || currLine.startsWith("endif::")) {
                 lines.set(i, SPLITTER_COMMENT + currLine);
+
+                if (!currLine.trim().matches("if(n?)def::(.+)?\\[.+]$") &&
+                    ((!withinComment && !withinModule) ||
+                     lines.get(i + 1).contains("[role=\"_additional-resources\"]"))) {
+                    assemblyBody.append(currLine).append("\n");
+                }
             }
         }
-
-            // xref stuff
-//            var filename = document.getSourceLocation().getFile();
-//            var path = Path.of(document.getSourceLocation().getDir()).getFileName();
-//            if (currLine.contains("xref:")) {
-//                lines.set(i, currLine.replaceAll("xref:(?<ref>.+)\\[(?<attribs>.*)]",
-//                                        "include::" + path + "/" + filename + "[tags=${ref}]"));
-//            }
-//
-//            if (currLine.contains("<<")) {
-//                lines.set(i, currLine.replaceAll("<<(?<ref>.+),?(?<attribs>.*)>>",
-//                                        "include::" + path + "/"  + filename + "[tags=${ref}]"));
-//            }
 
         reader.restoreLines(lines);
     }
@@ -57,8 +96,12 @@ public class ReaderPreprocessor extends Preprocessor {
         return Collections.unmodifiableList(lines);
     }
 
+    public StringBuilder getAssemblyBody() {
+        return assemblyBody;
+    }
+
     public void updateLines(int start, int end, List<String> content) {
-        var prevLines = lines.subList(start -1 , end); // New zero based
+        var prevLines = lines.subList(start - 1, end); // New zero based
 
         if (prevLines.size() < content.size()) {
             throw new IllegalStateException("Adding more content than replacing with \"replace-with\" starting at line "
@@ -70,54 +113,6 @@ public class ReaderPreprocessor extends Preprocessor {
         // Remove the existing value at the specified index and add back in the new content.
         for (int i = 0; i < content.size(); i++) {
             prevLines.set(i, content.get(i));
-        }
-    }
-
-    class DirectiveSection {
-        private final int start;
-        private final int end;
-        private final boolean removeSection;
-
-        DirectiveSection(int start, int end, boolean removeSection) {
-            this.start = start;
-            this.end = end;
-            this.removeSection = removeSection;
-        }
-
-        int getStart() {
-            return start;
-        }
-
-        int getEnd() {
-            return end;
-        }
-
-        boolean shouldRemoveSection() {
-            return removeSection;
-        }
-
-        @Override
-        public String toString() {
-            return "DirectiveSection{" +
-                   "start=" + start +
-                   ", end=" + end +
-                   ", removeSection=" + removeSection +
-                   '}';
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            DirectiveSection that = (DirectiveSection) o;
-            return start == that.start &&
-                   end == that.end &&
-                   removeSection == that.removeSection;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(start, end, removeSection);
         }
     }
 }

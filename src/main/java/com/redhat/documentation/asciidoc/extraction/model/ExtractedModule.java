@@ -1,4 +1,4 @@
-package com.redhat.documentation.asciidoc.extraction;
+package com.redhat.documentation.asciidoc.extraction.model;
 
 import java.util.Objects;
 
@@ -30,11 +30,6 @@ public class ExtractedModule {
 
             if (nodeId.endsWith("-proc") || nodeId.endsWith("-con") || nodeId.endsWith("-ref"))
                 return true;
-        }
-
-        // Special case Additional Resources
-        if ("Additional resources".equalsIgnoreCase(node.getTitle())) {
-            return true;
         }
 
         return false;

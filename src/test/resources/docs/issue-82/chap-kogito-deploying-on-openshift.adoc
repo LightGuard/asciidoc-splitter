@@ -2333,7 +2333,6 @@ $ oc logs -f kogito-operator-6d7b6d4466-9ng8t
 --
 
 ifdef::KOGITO-ENT[]
-
 [role="_additional-resources"]
 == Additional resources
 

@@ -22,6 +22,8 @@ import com.redhat.documentation.asciidoc.Util;
 import com.redhat.documentation.asciidoc.cli.Issue;
 import com.redhat.documentation.asciidoc.extension.ReaderPreprocessor;
 import com.redhat.documentation.asciidoc.extension.ReplaceWithTreeProcessor;
+import com.redhat.documentation.asciidoc.extraction.model.Assembly;
+import com.redhat.documentation.asciidoc.extraction.model.ExtractedModule;
 import com.redhat.documentation.asciidoc.extraction.model.Task;
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.AttributesBuilder;
@@ -98,7 +100,7 @@ public class Extractor {
             doc.setAttribute("splitter-doc-root", loc, true);
             var lines = preprocessor.getLines();
 
-            findSections(doc, lines);
+            findSections(doc, lines, preprocessor.getAssemblyBody());
 
             writeModules(targetDirPath);
             writeAssemblies(targetDirPath);
@@ -176,8 +178,8 @@ public class Extractor {
      * returns true if all went well. false if there was some problem with
      * uniqueness.
      */
-    private void findSections(Document doc, List<String> lines) {
-        var assembly = new Assembly(doc, lines);
+    private void findSections(Document doc, List<String> lines, StringBuilder processedBody) {
+        var assembly = new Assembly(doc, lines, processedBody);
         logger.fine("Found assembly: " + assembly.toString());
 
         this.assemblies.add(assembly);

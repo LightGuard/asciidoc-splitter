@@ -1,6 +1,5 @@
-package com.redhat.documentation.asciidoc.extraction;
+package com.redhat.documentation.asciidoc.extraction.model;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +24,7 @@ public class Assembly {
     private StringBuilder source;
     private boolean createAssembly;
 
-    public Assembly(Document doc, List<String> lines) {
+    public Assembly(Document doc, List<String> lines, StringBuilder processedBody) {
         this.id = (doc.getId() == null ? doc.getBlocks().get(0).getId() : doc.getId());
         // If there isn't an explicit id, it starts with an _
         if (this.id.startsWith("_")) {
@@ -51,7 +50,6 @@ public class Assembly {
         this.createAssembly = Boolean.parseBoolean(doc.getAttribute("assembly", "true").toString());
 
         // Adding the id of the module
-//        this.source.append("[id=\"").append(this.idWithoutContext).append("_{context}\"]\n");
         this.source.append("[id='assembly-").append(this.idWithoutContext).append("']\n"); // I don't think we need the context for assemblies
 
         // Grab the preamble
@@ -99,26 +97,9 @@ public class Assembly {
 
         moduleSources.forEach(wrapper -> {
             var extractedModule = new ExtractedModule(wrapper.getSection(), wrapper.getSource());
-
-            // Additional resources special case
-            if (extractedModule.isAdditonalResources()) {
-                this.source.append("=".repeat(extractedModule.getLeveloffset() + 1))
-                        .append(" ")
-                        .append(extractedModule.getSection().getTitle())
-                        .append("\n\n")
-                        .append(extractedModule.getSource());
-                return;
-            }
-
             this.modules.add(extractedModule);
-            this.source.append("include::modules")
-                    .append(File.separator)
-                    .append(extractedModule.getFolder())
-                    .append(File.separator)
-                    .append(extractedModule.getFileName())
-                    .append("[leveloffset=+" + extractedModule.getLeveloffset() + "]")
-                    .append("\n\n");
         });
+        this.source.append(processedBody);
     }
 
     private int getPreambleEndLineNumber(StructuralNode doc, List<String> lines) {

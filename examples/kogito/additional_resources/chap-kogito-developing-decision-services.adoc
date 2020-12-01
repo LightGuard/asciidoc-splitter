@@ -72,6 +72,8 @@ include::chap-kogito-using-spreadsheet-decision-tables.adoc[]
 include::{asciidoc-dir}/decision-engine/chap-kogito-decision-engine.adoc[]
 
 ifdef::KOGITO-ENT[]
+
+[role="_additional-resources"]
 == Additional resources
 * {URL_CREATING_RUNNING}[_{CREATING_RUNNING}_]
 * {URL_DEPLOYING_ON_OPENSHIFT}[_{DEPLOYING_ON_OPENSHIFT}_]

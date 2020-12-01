@@ -1,4 +1,4 @@
-package com.redhat.documentation.asciidoc.extraction;
+package com.redhat.documentation.asciidoc.extraction.model;
 
 import org.asciidoctor.ast.Section;
 

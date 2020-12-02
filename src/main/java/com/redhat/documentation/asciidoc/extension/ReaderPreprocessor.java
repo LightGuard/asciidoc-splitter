@@ -81,11 +81,18 @@ public class ReaderPreprocessor extends Preprocessor {
             if (preProcessStartPattern.matcher(currLine).matches() || currLine.startsWith("endif::")) {
                 lines.set(i, SPLITTER_COMMENT + currLine);
 
+                // special case endif (check for bounds, and also next and next next line for module boundary
+                if (currLine.startsWith("endif::") && (i + 1 < lines.size() && i + 2 < lines.size()) &&
+                    (idPattern.matcher(lines.get(i + 1)).matches() || idPattern.matcher(lines.get(i + 2)).matches())) {
+                    assemblyBody.append(currLine).append("\n");
+                    continue;
+                }
+
                 if (!currLine.trim().matches("if(n?)def::(.+)?\\[.+]$") &&
-                    ((!withinComment && !withinModule) ||
-                     lines.get(i + 1).contains("[role=\"_additional-resources\"]"))) {
+                    ((!withinComment && !withinModule) || lines.get(i + 1).contains("[role=\"_additional-resources\"]"))) {
                     assemblyBody.append(currLine).append("\n");
                 }
+
             }
         }
 

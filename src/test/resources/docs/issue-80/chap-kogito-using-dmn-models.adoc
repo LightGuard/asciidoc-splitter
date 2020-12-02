@@ -1292,7 +1292,6 @@ kogito.decisions.validation=DISABLED
 NOTE: If you enter an unrecognized `kogito.decisions.validation` configuration flag, all pre-compilation validation features are disabled and the {PRODUCT} CodeGen emits related log messages.
 
 ifdef::KOGITO-COMM[]
-
 [id="ref-dmn-feel-enhancements_{context}"]
 === FEEL enhancements in {PRODUCT}
 
@@ -3815,7 +3814,6 @@ For example {PRODUCT} services that use the Trusty Service and Explainability Se
 * https://github.com/kiegroup/kogito-examples/tree/stable/trusty-demonstration[`trusty-demonstration`]: A tutorial for deploying the `dmn-tracing-quarkus` example application on Kubernetes as a demonstration of {PRODUCT} Trusty Service and Explainability Service capabilities in a cloud environment.
 
 ifdef::KOGITO-ENT[]
-
 [role="_additional-resources"]
 == Additional resources
 

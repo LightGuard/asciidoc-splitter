@@ -72,11 +72,15 @@ public class CornerCaseExtractionRunnerTest extends ExtractionRunnerBase {
 
         var assemblyFile = assemblies.toPath().resolve("assembly-kogito-using-dmn-models.adoc");
         assertThat(Files.lines(assemblyFile)).contains("ifdef::KOGITO-COMM[]");
+        assertThat(Files.lines(assemblyFile)).contains("include::../modules/ref-dmn-feel-enhancements.adoc[leveloffset=+2]");
+        assertThat(Files.lines(assemblyFile)).contains("include::../modules/ref-dmn-model-enhancements.adoc[leveloffset=+2]");
+        assertThat(Files.lines(assemblyFile)).contains("endif::[]");
+
         assertThat(Files.lines(assemblyFile)).contains("ifdef::KOGITO-ENT[]");
     }
 
     @Test
-    public void additonalResources81Test() throws Exception {
+    public void additionalResources81Test() throws Exception {
         final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/issue-80").toURI());
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 

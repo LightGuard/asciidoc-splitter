@@ -2,7 +2,6 @@ package com.redhat.documentation.asciidoc.cli;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
@@ -18,7 +17,7 @@ public class CornerCaseExtractionRunnerTest extends ExtractionRunnerBase {
         new CommandLine(new ExtractionRunner()).execute(options);
 
         // Modules
-        var modulesDir = new File(this.outputDirectory, "modules");
+        var modulesDir = new File(this.outputDirectory, "modules").toPath().resolve("issue-82").toFile();
         assertThat(modulesDir.exists()).isTrue();
         assertThat(modulesDir.listFiles()).hasSize(29);
         var moduleContent = Files.lines(modulesDir.toPath().resolve("con-kogito-operator-architecture.adoc"));
@@ -38,7 +37,7 @@ public class CornerCaseExtractionRunnerTest extends ExtractionRunnerBase {
         assertThat(modulesDir).exists();
         var topicDir = new File(modulesDir, "sub-dir");
         assertThat(topicDir).exists();
-        assertThat(Path.of(topicDir.toPath().toString(), "sub-sub-dir")).exists();
+        assertThat(modulesDir.toPath().resolve("sub-sub-dir")).exists();
         assertThat(new File(topicDir, "issue-78")).doesNotExist();
     }
 
@@ -72,11 +71,27 @@ public class CornerCaseExtractionRunnerTest extends ExtractionRunnerBase {
 
         var assemblyFile = assemblies.toPath().resolve("assembly-kogito-using-dmn-models.adoc");
         assertThat(Files.lines(assemblyFile)).contains("ifdef::KOGITO-COMM[]");
-        assertThat(Files.lines(assemblyFile)).contains("include::../modules/ref-dmn-feel-enhancements.adoc[leveloffset=+2]");
-        assertThat(Files.lines(assemblyFile)).contains("include::../modules/ref-dmn-model-enhancements.adoc[leveloffset=+2]");
+        assertThat(Files.lines(assemblyFile)).contains("include::modules/dmn/ref-dmn-feel-enhancements.adoc[leveloffset=+2]");
+        assertThat(Files.lines(assemblyFile)).contains("include::modules/dmn/ref-dmn-model-enhancements.adoc[leveloffset=+2]");
         assertThat(Files.lines(assemblyFile)).contains("endif::[]");
 
         assertThat(Files.lines(assemblyFile)).contains("ifdef::KOGITO-ENT[]");
+    }
+
+    @Test
+    public void missingModulesIssue80AndIssue81Test() throws Exception {
+        final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/missing-modules").toURI());
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+
+        new CommandLine(new ExtractionRunner()).execute(options);
+
+        var assemblies = new File(this.outputDirectory, "assemblies");
+        var modulesDir = new File(this.outputDirectory, "modules");
+        assertThat(assemblies.exists()).isTrue();
+        assertThat(assemblies.listFiles(pathname -> pathname.getName().contains(".adoc"))).hasSize(1);
+
+        assertThat(modulesDir.exists()).isTrue();
+        assertThat(modulesDir.toPath().resolve("configuration").resolve("con-grafana-dashboards-metrics-monitoring.adoc")).exists();
     }
 
     @Test

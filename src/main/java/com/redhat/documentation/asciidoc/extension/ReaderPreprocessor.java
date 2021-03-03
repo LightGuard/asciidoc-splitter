@@ -1,5 +1,7 @@
 package com.redhat.documentation.asciidoc.extension;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -24,6 +26,7 @@ public class ReaderPreprocessor extends Preprocessor {
         assemblyBody = new StringBuilder();
         boolean withinComment = false;
         boolean withinModule = false;
+        var folderName = Path.of(document.getSourceLocation().getDir()).getFileName();
 
         // Regex used for finding a few things used in the loop
         var idPattern = Pattern.compile("\\[id=\"(?<moduleId>(con|ref|proc)-.+)_\\{context}\"]");
@@ -58,7 +61,11 @@ public class ReaderPreprocessor extends Preprocessor {
                 var levelOffsetMatcher = levelOffsetPattern.matcher(lines.get(i + 1));
 
                 if (idMatcher.matches() && levelOffsetMatcher.matches() && !withinComment) {
-                    assemblyBody.append("include::../modules/").append(idMatcher.group("moduleId")).append(".adoc")
+                    assemblyBody.append("include::modules")
+                            .append(File.separator)
+                            .append(folderName)
+                            .append(File.separator)
+                            .append(idMatcher.group("moduleId")).append(".adoc")
                             .append("[leveloffset=+")
                             .append(levelOffsetMatcher.group("offsetSize").length() - 1)
                             .append("]").append("\n\n");
@@ -70,10 +77,11 @@ public class ReaderPreprocessor extends Preprocessor {
                 withinModule = false;
                 // Get the additional resources until a section break or the end of a preprocessor
                 for (int j = 0; j < lines.size(); j++) {
-                    if (lines.get(i + j).startsWith("endif::") || i + j > lines.size()) {
+                    final String nextLine = lines.get(i + j);
+                    if (nextLine.startsWith("endif::") || idPattern.matcher(nextLine).matches() || i + j > lines.size()) {
                         break;
                     } else {
-                        assemblyBody.append(lines.get(i + j)).append("\n");
+                        assemblyBody.append(nextLine).append("\n");
                     }
                 }
             }

@@ -123,11 +123,11 @@ public class ExtractedModule {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ExtractedModule that = (ExtractedModule) o;
-        return id.equals(that.id);
+        return id.equals(that.id) && moduleType.equals(that.moduleType) && source.equals(that.source);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, moduleType, source);
     }
 }

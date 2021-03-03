@@ -84,6 +84,9 @@ fi
 TEMP_CHECKOUT_DIR="$(mktemp -d)"
 TEMP_WORK_DIR="$(mktemp -d)"
 
+echo "TEMP_CHECKOUT_DIR: ${TEMP_CHECKOUT_DIR}"
+echo "TEMP_WORK_DIR: ${TEMP_WORK_DIR}"
+
 echo "Cloning origin..."
 
 git clone --depth 1 -b ${SOURCE_BRANCH} ${SOURCE_REPO} ${TEMP_CHECKOUT_DIR} &> /dev/null
@@ -96,12 +99,12 @@ if [[ "${JAVA_EXIT}" -ne "0" ]]; then
     exit 9
 fi
 
-echo "Committing work and pushing..."
-cd ${TEMP_WORK_DIR}
-git add . &> /dev/null
-git commit -m 'Running asciidoc-splitter' -a &> /dev/null
-git push -f -u origin ${OUTPUT_BRANCH} &> /dev/null
+#echo "Committing work and pushing..."
+#cd ${TEMP_WORK_DIR}
+#git add . &> /dev/null
+#git commit -m 'Running asciidoc-splitter' -a &> /dev/null
+#git push -f -u origin ${OUTPUT_BRANCH} &> /dev/null
 
 # Clean up
-rm -rf ${TEMP_CHECKOUT_DIR}
-rm -rf ${TEMP_WORK_DIR}
+#rm -rf ${TEMP_CHECKOUT_DIR}
+#rm -rf ${TEMP_WORK_DIR}

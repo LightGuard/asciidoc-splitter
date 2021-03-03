@@ -96,7 +96,8 @@ public class Extractor {
 
             logger.fine("Loading file '" + file.getAbsolutePath() + "' into asciidoctor");
             var doc = asciidoctor.loadFile(file, optionsBuilder.asMap());
-            var loc = sourceDirPath.relativize(file.toPath()).toString().replace(file.getName(), "");
+//            var loc = sourceDirPath.relativize(file.toPath()).toString().replace(file.getName(), "");
+            var loc = Paths.get(doc.getSourceLocation().getDir()).getFileName();
             doc.setAttribute("splitter-doc-root", loc, true);
             var lines = preprocessor.getLines();
 

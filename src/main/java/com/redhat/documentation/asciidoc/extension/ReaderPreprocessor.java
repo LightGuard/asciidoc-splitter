@@ -26,6 +26,7 @@ public class ReaderPreprocessor extends Preprocessor {
         assemblyBody = new StringBuilder();
         boolean withinComment = false;
         boolean withinModule = false;
+        boolean preprocessorWithinModule = false;
         var folderName = Path.of(document.getSourceLocation().getDir()).getFileName();
 
         // Regex used for finding a few things used in the loop
@@ -50,6 +51,8 @@ public class ReaderPreprocessor extends Preprocessor {
 
                 // check to see if the next section is within a conditional
                 if (preProcessStartPattern.matcher(lines.get(i + 1)).matches()) {
+                    preprocessorWithinModule = false;
+
                     // We also need to guard against IndexOutOfBounds
                     if (i + 2 < lines.size() && idPattern.matcher(lines.get(i + 2)).matches())
                         withinModule = false;
@@ -90,7 +93,7 @@ public class ReaderPreprocessor extends Preprocessor {
                 lines.set(i, SPLITTER_COMMENT + currLine);
 
                 // special case endif (check for bounds, and also next and next next line for module boundary
-                if (currLine.startsWith("endif::") && (i + 1 < lines.size() && i + 2 < lines.size()) &&
+                if (currLine.startsWith("endif::") && !preprocessorWithinModule && (i + 1 < lines.size() && i + 2 < lines.size()) &&
                     (idPattern.matcher(lines.get(i + 1)).matches() || idPattern.matcher(lines.get(i + 2)).matches())) {
                     assemblyBody.append(currLine).append("\n");
                     continue;
@@ -98,9 +101,19 @@ public class ReaderPreprocessor extends Preprocessor {
 
                 if (!currLine.trim().matches("if(n?)def::(.+)?\\[.+]$") &&
                     ((!withinComment && !withinModule) || lines.get(i + 1).contains("[role=\"_additional-resources\"]"))) {
+                    preprocessorWithinModule = true;
                     assemblyBody.append(currLine).append("\n");
                 }
 
+                // Extra special case: ending a tag, ending a preconditional, starting a tag, starting a new module
+                if (currLine.startsWith("endif::")) {
+                    if (lines.get(i - 1).startsWith("// end::"))
+                        if (i + 1 < lines.size() && lines.get(i + 1).trim().isEmpty())
+                            if (i + 2 < lines.size() && lines.get(i + 2).startsWith("// tag::"))
+                                if (i + 3 < lines.size() && idPattern.matcher(lines.get(i + 3)).matches()) {
+                                    assemblyBody.append(currLine).append("\n");
+                                }
+                }
             }
         }
 

@@ -95,6 +95,35 @@ public class CornerCaseExtractionRunnerTest extends ExtractionRunnerBase {
     }
 
     @Test
+    public void nestedIfdefTest() throws Exception {
+        final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/nested-ifdef").toURI());
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+
+        new CommandLine(new ExtractionRunner()).execute(options);
+
+        var assemblies = new File(this.outputDirectory, "assemblies");
+        var modulesDir = new File(this.outputDirectory, "modules");
+
+        assertThat(assemblies.exists()).isTrue();
+        assertThat(assemblies.toPath().resolve("assembly-kogito-creating-running.adoc")).exists();
+
+        var assemblyLines = Files.readAllLines(assemblies.toPath().resolve("assembly-kogito-creating-running.adoc"));
+
+        // single line preprocessor
+        assertThat(assemblyLines.get(2)).startsWith("ifdef::");
+
+        assertThat(assemblyLines.get(13)).startsWith("ifdef::KOGITO-ENT[]");
+        assertThat(assemblyLines.get(18)).startsWith("endif::[]");
+
+        assertThat(assemblyLines.get(47)).startsWith("ifdef::KOGITO-ENT[]");
+        assertThat(assemblyLines.get(54)).startsWith("endif::");
+
+        var moduleLines = Files.readAllLines(modulesDir.toPath().resolve("nested-ifdef").resolve("con-kogito-automation.adoc"));
+        assertThat(moduleLines.get(30)).startsWith("ifdef::KOGITO-COMM[]");
+        assertThat(moduleLines.get(32)).startsWith("endif::[]");
+    }
+
+    @Test
     public void additionalResources81Test() throws Exception {
         final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/issue-80").toURI());
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};

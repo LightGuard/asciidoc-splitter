@@ -19,6 +19,10 @@ public class ExtractedModule {
         if (node.getAttributes().containsKey(Util.MODULE_TYPE_ATTRIBUTE))
             return true;
 
+        // Additional Resources (as a section) is considered a module, but should not be output as one.
+        if (node.getAttributes().containsValue("_additional-resources"))
+            return true;
+
         var nodeId = node.getId();
 
         if (nodeId != null) {

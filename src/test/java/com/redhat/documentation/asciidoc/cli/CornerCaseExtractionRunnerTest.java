@@ -3,6 +3,7 @@ package com.redhat.documentation.asciidoc.cli;
 import java.io.File;
 import java.nio.file.Files;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
@@ -110,17 +111,43 @@ public class CornerCaseExtractionRunnerTest extends ExtractionRunnerBase {
         var assemblyLines = Files.readAllLines(assemblies.toPath().resolve("assembly-kogito-creating-running.adoc"));
 
         // single line preprocessor
-        assertThat(assemblyLines.get(2)).startsWith("ifdef::");
+        assertThat(assemblyLines.get(3)).startsWith("ifdef::");
 
-        assertThat(assemblyLines.get(13)).startsWith("ifdef::KOGITO-ENT[]");
-        assertThat(assemblyLines.get(18)).startsWith("endif::[]");
+        assertThat(assemblyLines.get(14)).startsWith("ifdef::KOGITO-ENT[]");
+        assertThat(assemblyLines.get(19)).startsWith("endif::[]");
 
-        assertThat(assemblyLines.get(47)).startsWith("ifdef::KOGITO-ENT[]");
-        assertThat(assemblyLines.get(54)).startsWith("endif::");
+        assertThat(assemblyLines.get(44)).doesNotContain("endif::[]");
+
+        assertThat(assemblyLines.get(48)).startsWith("ifdef::KOGITO-ENT[]");
+        assertThat(assemblyLines.get(57)).startsWith("endif::");
 
         var moduleLines = Files.readAllLines(modulesDir.toPath().resolve("nested-ifdef").resolve("con-kogito-automation.adoc"));
-        assertThat(moduleLines.get(30)).startsWith("ifdef::KOGITO-COMM[]");
-        assertThat(moduleLines.get(32)).startsWith("endif::[]");
+        assertThat(moduleLines.get(36)).startsWith("ifdef::KOGITO-COMM[]");
+        assertThat(moduleLines.get(40)).startsWith("endif::[]");
+
+        moduleLines = Files.readAllLines(modulesDir.toPath().resolve("nested-ifdef").resolve("ref-kogito-glossary.adoc"));
+        assertThat(moduleLines).doesNotContain("Additional Resources");
+    }
+
+    @Test
+    @Disabled("Not sure what to do here")
+    public void includeTagSections() throws Exception {
+        final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/nested-ifdef").toURI());
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
+
+        new CommandLine(new ExtractionRunner()).execute(options);
+
+        var assemblies = this.outputDirectory.toPath().resolve("assemblies");
+        var modulesDir = this.outputDirectory.toPath().resolve("modules");
+
+        var assemblyLines = Files.readAllLines(assemblies.resolve("assembly-kogito-creating-running.adoc"));
+        assertThat(assemblyLines).doesNotContain("// tag::con-kogito-automation[]\n");
+        assertThat(assemblyLines).doesNotContain("// end::con-kogito-automation[]\n");
+
+
+        var moduleLines = Files.readAllLines(modulesDir.resolve("nested-ifdef").resolve("con-kogito-automation.adoc"));
+        assertThat(moduleLines).contains("// tag::con-kogito-automation[]\n");
+        assertThat(moduleLines).contains("// end::con-kogito-automation[]\n");
     }
 
     @Test

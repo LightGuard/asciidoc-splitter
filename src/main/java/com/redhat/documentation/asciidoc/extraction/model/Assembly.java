@@ -75,8 +75,12 @@ public class Assembly {
             var section = modulesItr.next();
 
             if (modulesItr.hasNext()) {
+                // For sanity, Additional Resources is a module, but not counted as one here
+                if (section.getAttributes().containsValue("_additional-resources"))
+                    continue;
+
                 var nextSection = modules.get(modulesItr.nextIndex());
-                var sectionEndLineNumber = nextSection.getSourceLocation().getLineNumber() -1;
+                var sectionEndLineNumber = nextSection.getSourceLocation().getLineNumber() - 1;
 
                 var nextSectionLine = lines.get(sectionEndLineNumber);
                 // We have to find the end of this section by looking at the next section and going back looking for
@@ -88,8 +92,11 @@ public class Assembly {
 
                 // Add it to the list
                 moduleSources.add(new SectionWrapper(section, getSectionSource(lines, section, sectionEndLineNumber)));
-
             } else {
+                // For sanity, Additional Resources is a module, but not counted as one here
+                if (section.getAttributes().containsValue("_additional-resources"))
+                    continue;
+
                 // Add it to the list
                 moduleSources.add(new SectionWrapper(section, getSectionSource(lines, section, lines.size())));
             }
@@ -118,6 +125,7 @@ public class Assembly {
 
     private String getSectionSource(List<String> lines, StructuralNode section, int nextSectionStart) {
         var startingLine = section.getSourceLocation().getLineNumber();
+        // TODO: Maybe we need to check here for the start of a tag?
         StringBuilder sectionSource = new StringBuilder();
         for (int i = startingLine; i < nextSectionStart; i++) {
 //            // We don't want lines that contain with ifdef::

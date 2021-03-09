@@ -59,6 +59,7 @@ public class ReaderPreprocessor extends Preprocessor {
                 }
             }
 
+            // If this is a module (by checking the id matches), create the appropriate include in the assembly body
             if (idMatcher.matches()) {
                 withinModule = true;
                 var levelOffsetMatcher = levelOffsetPattern.matcher(lines.get(i + 1));
@@ -75,6 +76,7 @@ public class ReaderPreprocessor extends Preprocessor {
                 }
             }
 
+            // Special case for additional resources
             if ((currLine.contains("[role=\"_additional-resources\"]") &&
                  lines.get(i + 1).toLowerCase().contains("== additional resources")) && !withinComment) {
                 withinModule = false;
@@ -89,16 +91,20 @@ public class ReaderPreprocessor extends Preprocessor {
                 }
             }
 
+            // Preprocessor hell
             if (preProcessStartPattern.matcher(currLine).matches() || currLine.startsWith("endif::")) {
+                // I want preprocessor directives ignored
                 lines.set(i, SPLITTER_COMMENT + currLine);
 
                 // special case endif (check for bounds, and also next and next next line for module boundary
-                if (currLine.startsWith("endif::") && !preprocessorWithinModule && (i + 1 < lines.size() && i + 2 < lines.size()) &&
-                    (idPattern.matcher(lines.get(i + 1)).matches() || idPattern.matcher(lines.get(i + 2)).matches())) {
+                if (currLine.startsWith("endif::") && !withinModule && !preprocessorWithinModule
+                    && (i + 1 < lines.size() && i + 2 < lines.size())
+                    && (idPattern.matcher(lines.get(i + 1)).matches() || idPattern.matcher(lines.get(i + 2)).matches())) {
                     assemblyBody.append(currLine).append("\n");
                     continue;
                 }
 
+                // Case for additional resources within a preprocessor directive
                 if (!currLine.trim().matches("if(n?)def::(.+)?\\[.+]$") &&
                     ((!withinComment && !withinModule) || lines.get(i + 1).contains("[role=\"_additional-resources\"]"))) {
                     preprocessorWithinModule = true;

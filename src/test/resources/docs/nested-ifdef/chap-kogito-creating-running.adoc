@@ -2038,7 +2038,6 @@ $ mvn clean package -Dnative
 $ ./target/sample-kogito-1.0-SNAPSHOT-runner
 ----
 --
-
 endif::[]
 
 [id="proc-kogito-interacting-app_{context}"]
@@ -2456,7 +2455,6 @@ endif::[]
 
 ifdef::KOGITO-ENT[]
 [role="_additional-resources"]
-
 == Additional resources
 
 * {URL_DEPLOYING_ON_OPENSHIFT}[_{DEPLOYING_ON_OPENSHIFT}_]

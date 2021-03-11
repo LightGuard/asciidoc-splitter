@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.redhat.documentation.asciidoc.Util;
+import com.redhat.documentation.asciidoc.extension.ReaderPreprocessor;
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.Section;
 import org.asciidoctor.ast.StructuralNode;
@@ -85,7 +87,8 @@ public class Assembly {
                 var nextSectionLine = lines.get(sectionEndLineNumber);
                 // We have to find the end of this section by looking at the next section and going back looking for
                 // a blank or empty string
-                while (!(nextSectionLine.isEmpty() || nextSectionLine.isBlank())) {
+
+                while (!(nextSectionLine.isEmpty() || nextSectionLine.isBlank()) || nextSectionLine.startsWith("endif::[]")) {
                     sectionEndLineNumber -= 1;
                     nextSectionLine = lines.get(sectionEndLineNumber);
                 }
@@ -125,9 +128,18 @@ public class Assembly {
 
     private String getSectionSource(List<String> lines, StructuralNode section, int nextSectionStart) {
         var startingLine = section.getSourceLocation().getLineNumber();
-        // TODO: Maybe we need to check here for the start of a tag?
+        var unmatchedIfdef = false;
+        var preProcessStartPattern = Pattern.compile(".*if(n?)(def|eval)::(.+)?\\[]$");
         StringBuilder sectionSource = new StringBuilder();
         for (int i = startingLine; i < nextSectionStart; i++) {
+            if (lines.get(i).startsWith(ReaderPreprocessor.SPLITTER_COMMENT)
+                && preProcessStartPattern.matcher(lines.get(i)).matches())
+                unmatchedIfdef = true;
+
+            if (i + 1 < nextSectionStart && lines.get(i).contains("endif::")) {
+                unmatchedIfdef = false;
+            }
+
 //            // We don't want lines that contain with ifdef::
 //            if (lines.get(i).contains("ifdef::"))
 //                continue;
@@ -136,7 +148,17 @@ public class Assembly {
 //            if (lines.get(i).contains("endif::"))
 //                continue;
 
+            // We don't want to end with an endif
+            if (i + 1 >= nextSectionStart && i + 1 < lines.size()
+                && lines.get(i).startsWith(ReaderPreprocessor.SPLITTER_COMMENT + "endif::")
+                && lines.get(i + 1).trim().isBlank()
+                && !unmatchedIfdef) {
+                unmatchedIfdef = false;
+                continue;
+            }
+
             sectionSource.append(Util.fixSectionLevelForModule(Util.tweakSource(lines.get(i)))).append("\n");
+
         }
         return sectionSource.toString();
     }

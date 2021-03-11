@@ -3,6 +3,7 @@ package com.redhat.documentation.asciidoc.cli;
 import java.io.File;
 import java.nio.file.Files;
 
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
@@ -127,6 +128,13 @@ public class CornerCaseExtractionRunnerTest extends ExtractionRunnerBase {
 
         moduleLines = Files.readAllLines(modulesDir.toPath().resolve("nested-ifdef").resolve("ref-kogito-glossary.adoc"));
         assertThat(moduleLines).doesNotContain("Additional Resources");
+
+        moduleLines = Files.readAllLines(modulesDir.toPath().resolve("nested-ifdef").resolve("con-kogito-quarkus-springboot.adoc"));
+        assertThat(moduleLines).hasSize(16);
+        assertThat(moduleLines).doesNotContain("endif::[]");
+
+        moduleLines = Files.readAllLines(modulesDir.toPath().resolve("nested-ifdef").resolve("proc-kogito-running-app.adoc"));
+        assertThat(moduleLines).haveExactly(2, new Condition<>(s -> "endif::[]".equals(s), "endif"));
     }
 
     @Test

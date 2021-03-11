@@ -23,6 +23,14 @@ class UtilTest {
     }
 
     @Test
+    public void testMovedIncludes() {
+        var testString = "include::ref-dmn-feel-builtin-functions.adoc[leveloffset=+3]";
+        var expected = "include::modules/ref-dmn-feel-builtin-functions.adoc[leveloffset=+3]";
+
+        assertThat(Util.fixIncludes(testString)).isEqualTo(expected);
+    }
+
+    @Test
     public void testFixSectionLevelForModule() {
         var test = "==== Some sort of title";
         var expected = "=== Some sort of title";

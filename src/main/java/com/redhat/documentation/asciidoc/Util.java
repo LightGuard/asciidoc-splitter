@@ -43,7 +43,9 @@ public class Util {
                 "${include}assemblies/assembly-${filename}.${extension}[]")
                 .replaceAll("(?<include>include::)(?<path>(\\w|/|-)*)?assembly-(?<filename>.+)\\.(?<extension>.+)\\[]",
                         "${include}assemblies/assembly-${filename}.${extension}[]")
-                     .replaceAll("(?<include>include::)(\\{asciidoc-dir}/)?(?<path>(\\w|/|-)*)/(?<filename>.*)\\[tags=(?<module>.+)]",
+                .replaceAll("(?<include>include::)(?<filename>[\\p{Alpha}\\-]+\\.adoc)\\[(?<opts>.*)]",
+                        "${include}modules/${filename}[${opts}]")
+                .replaceAll("(?<include>include::)(\\{asciidoc-dir}/)?(?<path>(\\w|/|-)*)/(?<filename>.*)\\[tags=(?<module>.+)]",
                              "${include}modules/${path}/${module}.adoc[leveloffset=+1]");
     }
 

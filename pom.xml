@@ -60,41 +60,6 @@
 
   <build>
     <plugins>
-      <!--
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.1</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-             This is terrible, we're removing all the jar signing.... maybe we need a better solution?
-            <configuration>
-              <filters>
-                <filter>
-                  <artifact>*:*</artifact>
-                  <excludes>
-                    <exclude>META-INF/*.SF</exclude>
-                    <exclude>META-INF/*.DSA</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
-                  </excludes>
-                </filter>
-              </filters>
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <manifestEntries>
-                    <Main-Class>com.redhat.documentation.asciidoc.cli.ExtractionRunner</Main-Class>
-                  </manifestEntries>
-                </transformer>
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -139,9 +104,6 @@
           <descriptors>
             <descriptor>${project.basedir}/src/assembly/bin.xml</descriptor>
           </descriptors>
-          <!--<descriptorRefs>-->
-            <!--<descriptorRef>bin</descriptorRef>-->
-          <!--</descriptorRefs>-->
           <archive>
             <manifest>
               <mainClass>com.redhat.documentation.asciidoc.cli.ExtractionRunner</mainClass>
@@ -158,6 +120,15 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>3.0.0-M1</version>
+        <configuration>
+          <scmCommentPrefix>[ci skip]</scmCommentPrefix>
+          <tagNameFormat>v@{project.version}</tagNameFormat>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -168,4 +139,11 @@
       <url>https://maven.pkg.github.com/LightGuard/asciidoc-splitter</url>
     </repository>
   </distributionManagement>
+
+  <scm>
+    <connection>scm:git:${project.scm.url}</connection>
+    <developerConnection>scm:git:${project.scm.url}</developerConnection>
+    <url>git@github.com:LightGuard/asciidoc-splitter.git</url>
+    <tag>HEAD</tag>
+  </scm>
 </project>

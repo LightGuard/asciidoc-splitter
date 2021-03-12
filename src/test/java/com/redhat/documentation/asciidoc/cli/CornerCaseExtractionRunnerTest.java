@@ -112,25 +112,25 @@ public class CornerCaseExtractionRunnerTest extends ExtractionRunnerBase {
         var assemblyLines = Files.readAllLines(assemblies.toPath().resolve("assembly-kogito-creating-running.adoc"));
 
         // single line preprocessor
-        assertThat(assemblyLines.get(3)).startsWith("ifdef::");
+        assertThat(assemblyLines.get(4)).startsWith("ifdef::");
 
-        assertThat(assemblyLines.get(14)).startsWith("ifdef::KOGITO-ENT[]");
-        assertThat(assemblyLines.get(19)).startsWith("endif::[]");
+        assertThat(assemblyLines.get(15)).startsWith("ifdef::KOGITO-ENT[]");
+        assertThat(assemblyLines.get(20)).startsWith("endif::[]");
 
-        assertThat(assemblyLines.get(44)).doesNotContain("endif::[]");
+        assertThat(assemblyLines.get(45)).doesNotContain("endif::[]");
 
-        assertThat(assemblyLines.get(48)).startsWith("ifdef::KOGITO-ENT[]");
-        assertThat(assemblyLines.get(57)).startsWith("endif::");
+        assertThat(assemblyLines.get(49)).startsWith("ifdef::KOGITO-ENT[]");
+        assertThat(assemblyLines.get(58)).startsWith("endif::");
 
         var moduleLines = Files.readAllLines(modulesDir.toPath().resolve("nested-ifdef").resolve("con-kogito-automation.adoc"));
-        assertThat(moduleLines.get(36)).startsWith("ifdef::KOGITO-COMM[]");
-        assertThat(moduleLines.get(40)).startsWith("endif::[]");
+        assertThat(moduleLines.get(37)).startsWith("ifdef::KOGITO-COMM[]");
+        assertThat(moduleLines.get(41)).startsWith("endif::[]");
 
         moduleLines = Files.readAllLines(modulesDir.toPath().resolve("nested-ifdef").resolve("ref-kogito-glossary.adoc"));
         assertThat(moduleLines).doesNotContain("Additional Resources");
 
         moduleLines = Files.readAllLines(modulesDir.toPath().resolve("nested-ifdef").resolve("con-kogito-quarkus-springboot.adoc"));
-        assertThat(moduleLines).hasSize(16);
+        assertThat(moduleLines).hasSize(17);
         assertThat(moduleLines).doesNotContain("endif::[]");
 
         moduleLines = Files.readAllLines(modulesDir.toPath().resolve("nested-ifdef").resolve("proc-kogito-running-app.adoc"));

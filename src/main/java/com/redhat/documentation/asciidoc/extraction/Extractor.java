@@ -165,9 +165,15 @@ public class Extractor {
         }
 
         try {
-            if (Files.exists(sourceDirPath.resolve("_images")))
+            if (Files.exists(sourceDirPath.resolve("_images"))) {
                 Files.createSymbolicLink(assembliesDir.resolve("_images"),
                         assembliesDir.relativize(targetDirPath.resolve("_images")));
+
+                // Add it for modules too
+                var modulesDir = assembliesDir.resolve("../modules");
+                Files.createSymbolicLink(modulesDir.resolve("_images"),
+                        modulesDir.relativize(targetDirPath.resolve("_images")));
+            }
         } catch (FileAlreadyExistsException e) {
             this.logger.info("Symlink '_images' already exists, continuing, please verify.");
         } catch (IOException e) {
@@ -252,6 +258,7 @@ public class Extractor {
                             .append("[id='").append(module.getId()).append("_{context}']\n")
                             // Adding the section title
                             .append("= ").append(module.getSection().getTitle()).append("\n")
+                            .append(":imagesdir: _images\n")
                             .append(module.getSource());
                 }
             }

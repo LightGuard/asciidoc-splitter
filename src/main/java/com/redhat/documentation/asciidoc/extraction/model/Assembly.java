@@ -63,7 +63,11 @@ public class Assembly {
         for (int i = sections.get(0).getSourceLocation().getLineNumber() - 1; i < preambleEndLineNumber; i++) {
             this.source.append(Util.fixIncludes(lines.get(i))).append("\n");
         }
+        // Add in the imagesdir
+        var offset = this.source.indexOf("\n\n") + 1; // We need the character AFTER what indexOf returns
+        this.source.insert(offset, ":imagesdir: _images\n");
         this.source.append("\n");
+
 
         List<SectionWrapper> moduleSources = new ArrayList<>();
 

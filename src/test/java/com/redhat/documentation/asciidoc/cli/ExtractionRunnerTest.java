@@ -105,6 +105,10 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
 
         assertThat(artifactsDir.exists()).isTrue();
         assertThat(imagesDir.exists()).isTrue();
+
+        // symlink for _images in modules and imagesdir in modules and assembly files
+        assertThat(outputDirectory.toPath().resolve("assemblies").resolve("_images")).isSymbolicLink();
+        assertThat(outputDirectory.toPath().resolve("modules").resolve("_images")).isSymbolicLink();
     }
 
     @Test
@@ -282,6 +286,23 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
 
         assertThat(splitAssembly).doesNotContain("include::{asciidoc-dir}/decision-services/chap-kogito-using-dmn-models.adoc[tags=con-kogito-service-execution]");
         assertThat(splitAssembly).contains("include::../../modules/decision-services/con-kogito-service-execution.adoc[leveloffset=+1]");
+    }
+
+    @Test
+    public void testImagesdirInOutput() throws Exception {
+        final var sourceDirectory = new File("src/test/resources/docs/content-test");
+        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(),
+                "-o", this.outputDirectory.getAbsolutePath(),
+        };
+
+        new CommandLine(new ExtractionRunner()).execute(options);
+
+        var chap = outputDirectory.toPath().resolve("assemblies")
+                .resolve("assembly-assembly-one.adoc");
+        var module = outputDirectory.toPath().resolve("modules").resolve("content-test").resolve("con-module-two.adoc");
+
+        assertThat(Files.readAllLines(chap).get(2)).isEqualTo(":imagesdir: _images");
+        assertThat(Files.lines(module)).containsOnlyOnce(":imagesdir: _images");
     }
 
     @Test

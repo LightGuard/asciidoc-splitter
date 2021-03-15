@@ -104,6 +104,12 @@
           <descriptors>
             <descriptor>${project.basedir}/src/assembly/bin.xml</descriptor>
           </descriptors>
+          <!--<descriptorRefs>-->
+            <!--<descriptorRef>bin</descriptorRef>-->
+          <!--</descriptorRefs>-->
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
           <archive>
             <manifest>
               <mainClass>com.redhat.documentation.asciidoc.cli.ExtractionRunner</mainClass>

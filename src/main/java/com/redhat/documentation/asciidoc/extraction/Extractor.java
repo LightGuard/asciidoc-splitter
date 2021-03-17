@@ -217,7 +217,10 @@ public class Extractor {
                     try (Writer output = new FileWriter(outputFile.toFile())) {
                         // TODO: We could search the source for parent-context and add if necessary
                         //       Disabling for now.
-                        output.append(Util.tweakSource(a.getSource()));
+                        if (task.isPv2())
+                            output.append(Util.fixForPv2(a.getSource()));
+                        else
+                            output.append(Util.tweakSource(a.getSource()));
                     }
                 }
             } catch (IOException e) {
@@ -257,9 +260,11 @@ public class Extractor {
                             // Adding the id of the module
                             .append("[id='").append(module.getId()).append("_{context}']\n")
                             // Adding the section title
-                            .append("= ").append(module.getSection().getTitle()).append("\n")
-                            .append(":imagesdir: _images\n")
-                            .append(module.getSource());
+                            .append("= ").append(module.getSection().getTitle()).append("\n");
+                    if (task.isPv2())
+                        output.append(":imagesdir: ../_images\n");
+
+                    output.append(module.getSource());
                 }
             }
         } catch (IOException e) {

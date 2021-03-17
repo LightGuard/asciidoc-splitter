@@ -104,4 +104,13 @@ public class Util {
         return source;
     }
 
+    public static CharSequence fixForPv2(String source) {
+        var offset = source.indexOf("\n\n") + 1; // We need the character AFTER what indexOf returns
+
+        var newSource = new StringBuilder(source);
+        newSource.insert(offset, ":imagesdir: _images\n");
+        newSource.append("\n");
+
+        return newSource;
+    }
 }

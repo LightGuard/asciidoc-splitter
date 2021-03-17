@@ -14,16 +14,18 @@ public class Task {
     private final PushableLocation pushableLocation;
     private final Map<String, Object> attributes;
     private final List<File> ignoreFiles;
+    private final boolean pv2;
 
     public Task(Location location, PushableLocation pushableLocation) {
-        this(location, pushableLocation, Collections.emptyMap(), Collections.emptyList());
+        this(location, pushableLocation, Collections.emptyMap(), Collections.emptyList(), false);
     }
 
-    public Task(Location location, PushableLocation pushableLocation, Map<String, Object> attributes, List<File> ignoreFiles) {
+    public Task(Location location, PushableLocation pushableLocation, Map<String, Object> attributes, List<File> ignoreFiles, boolean pv2) {
         this.location = location;
         this.pushableLocation = pushableLocation;
         this.attributes = Objects.isNull(attributes) ? Collections.emptyMap() : attributes;
         this.ignoreFiles = Objects.isNull(ignoreFiles) ? Collections.emptyList() : ignoreFiles;
+        this.pv2 = pv2;
     }
 
     /**
@@ -51,6 +53,10 @@ public class Task {
         return List.copyOf(ignoreFiles);
     }
 
+    public boolean isPv2() {
+        return pv2;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -62,21 +68,23 @@ public class Task {
         Task task = (Task) o;
         return Objects.equals(location, task.location) &&
                Objects.equals(pushableLocation, task.pushableLocation) &&
+               Objects.equals(pv2, task.pv2) &&
                Objects.equals(attributes, task.attributes) && Objects.equals(ignoreFiles, task.ignoreFiles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, pushableLocation, attributes, ignoreFiles);
+        return Objects.hash(location, pushableLocation, attributes, ignoreFiles, pv2);
     }
 
     @Override
     public String toString() {
         return "Task{" +
-                "location=" + location +
-                ", pushableLocation=" + pushableLocation +
-                ", attributes=" + attributes +
-                ", ignoreFiles=" + ignoreFiles +
-                '}';
+               "location=" + location +
+               ", pushableLocation=" + pushableLocation +
+               ", attributes=" + attributes +
+               ", ignoreFiles=" + ignoreFiles +
+               ", pv2=" + pv2 +
+               '}';
     }
 }

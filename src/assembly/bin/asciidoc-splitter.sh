@@ -10,8 +10,9 @@ unset -v RUN_GIT_PUSH
 unset -v OUTPUT_BRANCH
 unset -v IGNORE
 unset -v ATTRIBS
+unset -v PANTHEON_V2
 
-PARSED_ARGS=$(getopt -a -n asciidoc-splitter -o -i:vVhaso: -l sr:,sb:,or:,ob: -- "$@")
+PARSED_ARGS=$(getopt -a -n asciidoc-splitter -o -i:vVhaso: -l sr:,sb:,or:,ob:,pv2 -- "$@")
 VALID_ARGS=$?
 
 JAR_DIR=$(dirname "$0")/../lib
@@ -36,6 +37,7 @@ do
     --sb) SOURCE_BRANCH="$2" ; shift 2  ;;
     --or) OUTPUT_REPO="$2"   ; shift 2  ;;
     --ob) OUTPUT_BRANCH="$2" ; shift 2  ;;
+    --pv2) PANTHEON_V2="--pantheonV2"  ; shift 2  ;;
       -s) TEMP_CHECKOUT_DIR="$2" ; shift 2 ; RUN_GIT_CLONE=false ;;
       -o) TEMP_WORK_DIR="$2"     ; shift 2 ; RUN_GIT_PUSH=false ;;
       -i) IGNORE="-i $2"          ; shift 2  ;;
@@ -110,7 +112,7 @@ then
     git clone -b ${OUTPUT_BRANCH} ${OUTPUT_REPO} ${TEMP_WORK_DIR} &> /dev/null
 fi
 
-eval "${SPLITTER_COMMAND_BASE} -s ${TEMP_CHECKOUT_DIR} -o ${TEMP_WORK_DIR} ${IGNORE} ${ATTRIBS}"
+eval "${SPLITTER_COMMAND_BASE} -s ${TEMP_CHECKOUT_DIR} -o ${TEMP_WORK_DIR} ${IGNORE} ${ATTRIBS} ${PANTHEON_V2}"
 
 JAVA_EXIT=$?
 

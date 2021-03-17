@@ -293,6 +293,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         final var sourceDirectory = new File("src/test/resources/docs/content-test");
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(),
                 "-o", this.outputDirectory.getAbsolutePath(),
+                "--pantheonV2",
         };
 
         new CommandLine(new ExtractionRunner()).execute(options);
@@ -302,7 +303,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         var module = outputDirectory.toPath().resolve("modules").resolve("content-test").resolve("con-module-two.adoc");
 
         assertThat(Files.readAllLines(chap).get(2)).isEqualTo(":imagesdir: _images");
-        assertThat(Files.lines(module)).containsOnlyOnce(":imagesdir: _images");
+        assertThat(Files.lines(module)).containsOnlyOnce(":imagesdir: ../_images");
     }
 
     @Test

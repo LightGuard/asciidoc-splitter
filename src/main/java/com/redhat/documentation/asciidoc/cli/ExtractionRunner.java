@@ -43,6 +43,9 @@ public class ExtractionRunner implements Runnable, CommandLine.IExitCodeGenerato
     @Option(names = {"-i"}, split = ",", description = "Ignore file, multiples separated by ','")
     List<File> ignoreFiles;
 
+    @Option(names = {"--pantheonV2"}, description = "Enable Pantheon V2 compatible output.", defaultValue = "false")
+    boolean pv2;
+
     int exitCode;
 
     /**
@@ -141,7 +144,7 @@ public class ExtractionRunner implements Runnable, CommandLine.IExitCodeGenerato
                 : new GitRepository(outputOptions.gitOutputOptions.outputRepo, outputOptions.gitOutputOptions.outputBranch,
                 outputOptions.gitOutputOptions.userName, outputOptions.gitOutputOptions.password, true);
 
-        var task = new Task(location, pushableLocation, attributes, ignoreFiles);
+        var task = new Task(location, pushableLocation, attributes, ignoreFiles, pv2);
 
         var extractor = new Extractor(task);
 

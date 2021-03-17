@@ -21,7 +21,7 @@ jobs:
         maven-args: "clean install"
 
     - name: Maven Release
-      uses: qcastel/github-actions-maven-release@1.12.15
+      uses: qcastel/github-actions-maven-release@v1.12.15
       env:
         JAVA_HOME: /usr/lib/jvm/java-11-openjdk/
       with:

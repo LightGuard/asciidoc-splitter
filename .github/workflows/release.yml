@@ -25,9 +25,12 @@ jobs:
       env:
         JAVA_HOME: /usr/lib/jvm/java-11-openjdk/
       with:
+        access-token: ${{ secrets.GITHUB_ACCESS_TOKEN }}
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
         git-release-bot-name: "release-bot"
         git-release-bot-email: "release-bot@example.com"
+
+        maven-args: "-Dmaven.javadoc.skip=true -DskipTests -DskipITs -Ddockerfile.skip -DdockerCompose.skip"
 
         version-minor: true

@@ -111,6 +111,6 @@ public class Util {
         newSource.insert(offset, ":imagesdir: _images\n");
         newSource.append("\n");
 
-        return newSource;
+        return tweakSource(newSource.toString());
     }
 }

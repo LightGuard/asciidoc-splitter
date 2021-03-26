@@ -3,7 +3,7 @@
   <groupId>com.redhat.documentation</groupId>
   <artifactId>asciidoc-splitter</artifactId>
   <packaging>jar</packaging>
-  <version>1.2.0-SNAPSHOT</version>
+  <version>1.1.0</version>
   <name>asciidoc splitter</name>
 
   <properties>
@@ -149,6 +149,6 @@
     <connection>scm:git:${project.scm.url}</connection>
     <developerConnection>scm:git:${project.scm.url}</developerConnection>
     <url>git@github.com:LightGuard/asciidoc-splitter.git</url>
-    <tag>HEAD</tag>
+    <tag>v1.1.0</tag>
   </scm>
 </project>

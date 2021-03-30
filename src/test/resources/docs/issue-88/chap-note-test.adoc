@@ -1,0 +1,20 @@
+[id="chap-note-test"]
+= Top level section
+
+Some sort of preamble goes here.
+
+[WARNING]
+====
+This should also be in the assembly
+====
+
+[id="proc-first-section_{context}"]
+== First section
+
+Here's some information that goes here.
+Another sentence here should be good.
+
+[NOTE]
+====
+Here's a note
+====

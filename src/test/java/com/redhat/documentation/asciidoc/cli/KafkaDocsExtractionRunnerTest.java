@@ -3,6 +3,7 @@ package com.redhat.documentation.asciidoc.cli;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.assertj.core.data.Index;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -40,5 +41,30 @@ public class KafkaDocsExtractionRunnerTest extends ExtractionRunnerBase {
         assertThat(module).exists();
         assertThat(Files.lines(module)).contains("== Third Section");
         assertThat(Files.lines(module)).contains("=== Fourth Section");
+    }
+
+    @ParameterizedTest(name = "pantheonV2: {0}")
+    @ValueSource(booleans = {true, false})
+    public void issue88NoteTest(boolean pantheonV2) throws Exception {
+        executeRunner("docs/issue-88", pantheonV2);
+
+        var pantheonV2LineOffset = (pantheonV2) ? 1 : 0;
+
+        // assembly check
+        var assembliesDir = this.outputDirPath.resolve("assemblies");
+        var assembly = assembliesDir.resolve("assembly-note-test.adoc");
+        assertThat(Files.readAllLines(assembly)).contains("[WARNING]", Index.atIndex(5 + pantheonV2LineOffset));
+        assertThat(Files.readAllLines(assembly)).contains("====", Index.atIndex(6 + pantheonV2LineOffset));
+        assertThat(Files.readAllLines(assembly)).contains("====", Index.atIndex(8 + pantheonV2LineOffset));
+
+        // module check
+        var modulesDir = this.outputDirPath.resolve("modules").resolve("issue-88");
+        assertThat(modulesDir).exists();
+
+        final Path module = modulesDir.resolve("proc-first-section.adoc");
+        assertThat(module).exists();
+        assertThat(Files.lines(module)).contains("[NOTE]", Index.atIndex(6 + pantheonV2LineOffset));
+        assertThat(Files.lines(module)).contains("====", Index.atIndex(7 + pantheonV2LineOffset));
+        assertThat(Files.lines(module)).contains("====", Index.atIndex(9 + pantheonV2LineOffset));
     }
 }

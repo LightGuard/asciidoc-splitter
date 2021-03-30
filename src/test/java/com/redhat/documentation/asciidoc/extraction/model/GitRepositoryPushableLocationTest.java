@@ -1,16 +1,24 @@
 package com.redhat.documentation.asciidoc.extraction.model;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
 import com.redhat.documentation.asciidoc.extraction.DeletionFileVisitor;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.errors.ConfigInvalidException;
+import org.eclipse.jgit.util.SystemReader;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GitRepositoryPushableLocationTest {
+    @BeforeAll
+    static void clearConfig() throws IOException, ConfigInvalidException {
+        SystemReader.getInstance().getUserConfig().clear();
+    }
 
     @Test
     void testCloningARepo() throws Exception{
@@ -35,6 +43,7 @@ class GitRepositoryPushableLocationTest {
         // Seed repo so there is a HEAD
         Files.writeString(remoteDir.toPath().resolve("first.txt"), "First file", StandardOpenOption.CREATE_NEW);
         origin.add().addFilepattern("*.txt").call();
+        origin.getRepository().getConfig().clear();
         origin.commit().setMessage("Seeding the repo").call();
 
         var branchName = "new-branch";

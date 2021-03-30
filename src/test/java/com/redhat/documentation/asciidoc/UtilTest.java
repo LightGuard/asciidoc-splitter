@@ -33,9 +33,9 @@ class UtilTest {
     @Test
     public void testFixSectionLevelForModule() {
         var test = "==== Some sort of title";
-        var expected = "=== Some sort of title";
+        var expected = "== Some sort of title";
 
-        assertThat(Util.fixSectionLevelForModule(test)).isEqualTo(expected);
+        assertThat(Util.fixSectionLevelForModule(test, 2)).isEqualTo(expected);
     }
 
     @Test
@@ -43,11 +43,11 @@ class UtilTest {
         var test = "==== Some sort of title {PRODUCT}";
         var expected = "=== Some sort of title {PRODUCT}";
 
-        assertThat(Util.fixSectionLevelForModule(test)).isEqualTo(expected);
+        assertThat(Util.fixSectionLevelForModule(test, 1)).isEqualTo(expected);
 
         test = "=== GraphQL queries for process instances and user task instances (instance caches)";
         expected = "== GraphQL queries for process instances and user task instances (instance caches)";
-        assertThat(Util.fixSectionLevelForModule(test)).isEqualTo(expected);
+        assertThat(Util.fixSectionLevelForModule(test, 1)).isEqualTo(expected);
     }
 
     @Test

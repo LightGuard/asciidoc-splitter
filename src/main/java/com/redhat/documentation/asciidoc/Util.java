@@ -91,14 +91,15 @@ public class Util {
         return fixModuleInclude(fixIncludes(removeSplitterComment(replaceChapWithAssembly(source))));
     }
 
-    public static String fixSectionLevelForModule(String source) {
+    // TODO: issue-88
+    public static String fixSectionLevelForModule(String source, int offset) {
         // Fix up section levels for output
         var pattern = Pattern.compile("^(?<sectionLevel>=+)\\s(?<title>(?:\\w|\\s|\\p{Punct})+)");
         var matcher = pattern.matcher(source);
 
         if (matcher.matches()) {
             var sectionLevel = matcher.group("sectionLevel");
-            return sectionLevel.substring(0, sectionLevel.length() -1) + " " + matcher.group("title");
+            return sectionLevel.substring(0, sectionLevel.length() - offset) + " " + matcher.group("title");
         }
 
         return source;

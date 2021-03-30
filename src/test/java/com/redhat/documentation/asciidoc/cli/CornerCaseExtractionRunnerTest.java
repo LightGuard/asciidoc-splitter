@@ -22,9 +22,9 @@ public class CornerCaseExtractionRunnerTest extends ExtractionRunnerBase {
         var modulesDir = new File(this.outputDirectory, "modules").toPath().resolve("issue-82").toFile();
         assertThat(modulesDir.exists()).isTrue();
         assertThat(modulesDir.listFiles()).hasSize(29);
-        var moduleContent = Files.lines(modulesDir.toPath().resolve("con-kogito-operator-architecture.adoc"));
+        var moduleContent = Files.readAllLines(modulesDir.toPath().resolve("con-kogito-operator-architecture.adoc"));
 
-        assertThat(moduleContent.anyMatch(s -> s.startsWith("==="))).isFalse();
+        assertThat(moduleContent).contains("== {PRODUCT} Operator dependencies on third-party operators");
     }
 
     @Test

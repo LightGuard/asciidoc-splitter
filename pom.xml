@@ -9,6 +9,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.mainClass>com.redhat.documentation.asciidoc.cli.ExtractionRunner</project.mainClass>
+    <version.junit>5.7.0</version.junit>
   </properties>
 
   <dependencies>
@@ -40,14 +41,19 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <version>5.6.0</version>
+      <version>${version.junit}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.6.0</version>
+      <version>${version.junit}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <version>${version.junit}</version>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>
@@ -103,9 +109,6 @@
           <descriptors>
             <descriptor>${project.basedir}/src/assembly/bin.xml</descriptor>
           </descriptors>
-          <!--<descriptorRefs>-->
-            <!--<descriptorRef>bin</descriptorRef>-->
-          <!--</descriptorRefs>-->
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>

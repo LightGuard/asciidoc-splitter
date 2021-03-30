@@ -1,24 +1,18 @@
 package com.redhat.documentation.asciidoc.cli;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.Test;
-import picocli.CommandLine;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class KafkaDocsExtractionRunnerTest extends ExtractionRunnerBase {
-    @Test
-    public void ifdefNotCommentedTest() throws Exception {
-        final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource("docs/kafka-ifdef").toURI());
-        var options = new String[]{"-s", sourceDirectory.getAbsolutePath(),
-                "-o", this.outputDirectory.getAbsolutePath(),
-                "--pantheonV2"
-        };
-
-        new CommandLine(new ExtractionRunner()).execute(options);
+    @ParameterizedTest(name = "pantheonV2: {0}")
+    @ValueSource(booleans = {true, false})
+    public void ifdefNotCommentedTest(boolean pantheonV2) throws Exception {
+        executeRunner("docs/kafka-ifdef", pantheonV2);
 
         // assembly
         var assemblyDir = this.outputDirPath.resolve("assemblies");
@@ -31,5 +25,20 @@ public class KafkaDocsExtractionRunnerTest extends ExtractionRunnerBase {
         // Modules
         var modulesDir = this.outputDirPath.resolve("modules").resolve("kafka-ifdef");
         assertThat(modulesDir).exists();
+    }
+
+    @ParameterizedTest(name = "pantheonV2: {0}")
+    @ValueSource(booleans = {true, false})
+    public void sectionTest(boolean pantheonV2) throws Exception {
+        executeRunner("docs/issue-87", pantheonV2);
+
+        // module check
+        var modulesDir = this.outputDirPath.resolve("modules").resolve("issue-87");
+        assertThat(modulesDir).exists();
+
+        final Path module = modulesDir.resolve("proc-first-section.adoc");
+        assertThat(module).exists();
+        assertThat(Files.lines(module)).contains("== Third Section");
+        assertThat(Files.lines(module)).contains("=== Fourth Section");
     }
 }

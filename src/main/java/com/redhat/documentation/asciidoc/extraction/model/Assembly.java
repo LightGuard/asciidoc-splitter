@@ -156,7 +156,7 @@ public class Assembly {
                 continue;
             }
 
-            sectionSource.append(Util.fixSectionLevelForModule(Util.tweakSource(lines.get(i)))).append("\n");
+            sectionSource.append(Util.fixSectionLevelForModule(Util.tweakSource(lines.get(i)), section.getLevel())).append("\n");
 
         }
         return sectionSource.toString();

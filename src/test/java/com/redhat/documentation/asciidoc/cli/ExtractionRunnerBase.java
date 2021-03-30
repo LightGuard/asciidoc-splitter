@@ -2,13 +2,17 @@ package com.redhat.documentation.asciidoc.cli;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.redhat.documentation.asciidoc.extraction.DeletionFileVisitor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import picocli.CommandLine;
 
 public class ExtractionRunnerBase {
     public static final String KOGITO_ASCIIDOC_FOLDER = "./examples/kogito/input/doc-content/src/main/asciidoc";
@@ -34,5 +38,16 @@ public class ExtractionRunnerBase {
     @AfterEach
     void tearDown() throws IOException {
         Files.walkFileTree(outputDirectory.toPath(), new DeletionFileVisitor());
+    }
+
+    void executeRunner(String sourceDir, boolean pantheonV2) throws URISyntaxException {
+        final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource(sourceDir).toURI());
+        final List<String> options = new ArrayList<>(List.of("-s", sourceDirectory.getAbsolutePath(),
+                "-o", this.outputDirectory.getAbsolutePath()));
+
+        if (pantheonV2)
+            options.add("--pantheonV2");
+
+        new CommandLine(new ExtractionRunner()).execute(options.toArray(new String[]{}));
     }
 }

@@ -11,6 +11,7 @@ unset -v OUTPUT_BRANCH
 unset -v IGNORE
 unset -v ATTRIBS
 unset -v PANTHEON_V2
+unset -v VERBOSE
 
 PARSED_ARGS=$(getopt -a -n asciidoc-splitter -o -i:vVhaso: -l sr:,sb:,or:,ob:,pv2 -- "$@")
 VALID_ARGS=$?
@@ -42,6 +43,7 @@ do
       -o) TEMP_WORK_DIR="$2"     ; shift 2 ; RUN_GIT_PUSH=false ;;
       -i) IGNORE="-i $2"          ; shift 2  ;;
       -a) ATTRIBS="-a $2"         ; shift 2  ;;
+      -v) VERBOSE="-v"            ; shift 1  ;;
       -h) eval ${HELP_COMMAND}    ; exit 0 ;;
     --) shift; break ;;
     *) echo "Unknown option: $1"
@@ -112,7 +114,7 @@ then
     git clone -b ${OUTPUT_BRANCH} ${OUTPUT_REPO} ${TEMP_WORK_DIR} &> /dev/null
 fi
 
-eval "${SPLITTER_COMMAND_BASE} -s ${TEMP_CHECKOUT_DIR} -o ${TEMP_WORK_DIR} ${IGNORE} ${ATTRIBS} ${PANTHEON_V2}"
+eval "${SPLITTER_COMMAND_BASE} ${VERBOSE} -s ${TEMP_CHECKOUT_DIR} -o ${TEMP_WORK_DIR} ${IGNORE} ${ATTRIBS} ${PANTHEON_V2}"
 
 JAVA_EXIT=$?
 

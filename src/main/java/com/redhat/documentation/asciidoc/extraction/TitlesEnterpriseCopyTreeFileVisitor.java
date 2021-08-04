@@ -1,13 +1,13 @@
 package com.redhat.documentation.asciidoc.extraction;
 
+import com.redhat.documentation.asciidoc.Util;
+
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Objects;
-
-import com.redhat.documentation.asciidoc.Util;
 
 /**
  * A specific instance of CopyTreeFileVisitor used for the "titles-enterprise" directory.
@@ -32,8 +32,11 @@ public class TitlesEnterpriseCopyTreeFileVisitor extends CopyTreeFileVisitor {
         if (dir.toString().contains(Extractor.TITLES_ENTERPRISE)) { // We're inside the titles-enterprise directory
             if (Files.isSymbolicLink(dir)) {
                 if (dir.getFileName().toString().equals("doc-content")) { // We don't need doc-content, but do need assemblies
-                    var parentDir = dir.getParent().getFileName();
-                    var assemblies = targetPath.resolve(Extractor.TITLES_ENTERPRISE).resolve(parentDir).resolve("assemblies");
+                    // Location of "titles-enterprise"
+                    final int start = dir.getParent().toString().indexOf(Extractor.TITLES_ENTERPRISE);
+                    var newDir = targetPath.resolve(dir.getParent().toString().substring(start));
+
+                    var assemblies = targetPath.resolve(newDir).resolve("assemblies");
 
                     // Create symlink for assemblies and modules
                     Files.createSymbolicLink(assemblies,
@@ -59,9 +62,16 @@ public class TitlesEnterpriseCopyTreeFileVisitor extends CopyTreeFileVisitor {
         // else
         if (file.getFileName().toString().equals("master.adoc")) {
             var lines = Files.readString(file);
-            var newFile = targetPath.resolve(Extractor.TITLES_ENTERPRISE)
-                                    .resolve(file.getParent().getFileName())
-                                    .resolve(file.getFileName());
+
+            // Location of "titles-enterprise"
+            final int start = file.toString().indexOf(Extractor.TITLES_ENTERPRISE);
+            var newFile = targetPath.resolve(file.toString().substring(start));
+
+            // Create the directory structure if we need to
+            if (!Files.exists(newFile.getParent())) {
+                Files.createDirectories(newFile.getParent());
+            }
+
             Files.writeString(newFile, Util.fixIncludes(lines));
             return FileVisitResult.CONTINUE;
         }

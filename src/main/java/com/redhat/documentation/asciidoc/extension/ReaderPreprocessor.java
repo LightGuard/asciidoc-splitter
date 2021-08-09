@@ -1,14 +1,14 @@
 package com.redhat.documentation.asciidoc.extension;
 
+import org.asciidoctor.ast.Document;
+import org.asciidoctor.extension.Preprocessor;
+import org.asciidoctor.extension.PreprocessorReader;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import org.asciidoctor.ast.Document;
-import org.asciidoctor.extension.Preprocessor;
-import org.asciidoctor.extension.PreprocessorReader;
 
 /**
  * Preprocessor to get the lines of the source document.
@@ -81,7 +81,7 @@ public class ReaderPreprocessor extends Preprocessor {
                  lines.get(i + 1).toLowerCase().contains("== additional resources")) && !withinComment) {
                 withinModule = false;
                 // Get the additional resources until a section break or the end of a preprocessor
-                for (int j = 0; j < lines.size(); j++) {
+                for (int j = 0; i + j < lines.size(); j++) {
                     final String nextLine = lines.get(i + j);
                     if (nextLine.startsWith("endif::") || idPattern.matcher(nextLine).matches() || i + j > lines.size()) {
                         break;

@@ -23,7 +23,7 @@ public class OptaplannerVaccinationExtractionRunnerTest extends ExtractionRunner
         // Modules
         var modulesDir = this.outputDirPath.resolve("modules").resolve("optaplanner-vaccination");
         assertThat(modulesDir).exists();
-        assertThat(modulesDir.toFile().list()).containsExactly("con-pinned-planning-entities.adoc",
+        assertThat(modulesDir.toFile().list()).containsExactlyInAnyOrder("con-pinned-planning-entities.adoc",
                 "con-vaccination-contraints.adoc", "con-vaccination-scheduler.adoc", "con-optaplanner-solver.adoc",
                 "vaccination-native-proc.adoc", "vaccination-scheduler-package-proc.adoc", "con-continuous-planning.adoc",
                 "vaccination-scheduler-download-proc.adoc");

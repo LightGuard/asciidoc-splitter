@@ -1,23 +1,5 @@
 package com.redhat.documentation.asciidoc.extraction;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.FileVisitOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
 import com.redhat.documentation.asciidoc.Util;
 import com.redhat.documentation.asciidoc.cli.Issue;
 import com.redhat.documentation.asciidoc.extension.ReaderPreprocessor;
@@ -29,7 +11,15 @@ import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.OptionsBuilder;
 import org.asciidoctor.ast.Document;
-import org.asciidoctor.jruby.AsciiDocDirectoryWalker;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.*;
+import java.util.*;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class Extractor {
     public static final String TITLES_ENTERPRISE = "titles-enterprise";
@@ -71,51 +61,47 @@ public class Extractor {
         final Path sourceDirPath = this.task.getLocation().getDirectoryPath().normalize();
         final Path targetDirPath = this.task.getPushableLocation().getDirectoryPath().normalize();
 
-        for (File file : new AsciiDocDirectoryWalker(sourceDirPath.toString())) {
-            // Skip ignore files
-            if (task.getIgnoreFiles().contains(new File(file.getName()))) {
-                continue;
-            }
+        try {
+            var walker = new AsciidocChapFileVisitor(task.getIgnoreFiles());
+            Files.walkFileTree(sourceDirPath, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE, walker);
 
-            // Skip adoc files in the title enterprise directory
-            if (file.getParent() != null && file.getParent().contains(TITLES_ENTERPRISE)) {
-                continue;
-            }
-
-            // We only want to process chap files, others should be moved to modules.
-            if (!file.getName().startsWith("chap-")) {
-                try {
-                    Path modulesDir = Files.createDirectories(targetDirPath.resolve("modules"));
-                    Files.copy(file.toPath(), modulesDir.resolve(file.getName()),
-                            StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
-                } catch (IOException e) {
-                    this.logger.severe("Could not move non chapter file: " + e.getMessage());
+            for (File file : walker.getAdocFiles()) {
+                // We only want to process chap files, others should be moved to modules.
+                if (!file.getName().startsWith("chap-")) {
+                    try {
+                        Path modulesDir = Files.createDirectories(targetDirPath.resolve("modules"));
+                        Files.copy(file.toPath(), modulesDir.resolve(file.getName()),
+                                StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
+                    } catch (IOException e) {
+                        this.logger.severe("Could not move non chapter file: " + e.getMessage());
+                    }
+                    continue;
                 }
-                continue;
+
+                logger.fine("Loading file '" + file.getAbsolutePath() + "' into asciidoctor");
+                var doc = asciidoctor.loadFile(file, optionsBuilder.asMap());
+                var loc = Paths.get(doc.getSourceLocation().getDir()).getFileName();
+                doc.setAttribute("splitter-doc-root", loc, true);
+                var lines = preprocessor.getLines();
+
+                findSections(doc, lines, preprocessor.getAssemblyBody());
+
+                writeModules(targetDirPath);
+                writeAssemblies(targetDirPath);
             }
 
-            logger.fine("Loading file '" + file.getAbsolutePath() + "' into asciidoctor");
-            var doc = asciidoctor.loadFile(file, optionsBuilder.asMap());
-//            var loc = sourceDirPath.relativize(file.toPath()).toString().replace(file.getName(), "");
-            var loc = Paths.get(doc.getSourceLocation().getDir()).getFileName();
-            doc.setAttribute("splitter-doc-root", loc, true);
-            var lines = preprocessor.getLines();
+            // Create the _images and _artifacts directories
+            createAndCopyDir(sourceDirPath.resolve("_artifacts"), targetDirPath);
+            createAndCopyDir(sourceDirPath.resolve("_images"), targetDirPath);
 
-            findSections(doc, lines, preprocessor.getAssemblyBody());
+            // Create and setup titles-enterprise folder, if necessary
+            moveTitles(sourceDirPath.resolve(TITLES_ENTERPRISE), targetDirPath);
 
-            writeModules(targetDirPath);
-            writeAssemblies(targetDirPath);
+            // create symlinks in assemblies
+            createAssemblySymlinks(sourceDirPath, targetDirPath);
+        } catch (IOException e) {
+            this.logger.severe(e.getMessage());
         }
-
-        // Create the _images and _artifacts directories
-        createAndCopyDir(sourceDirPath.resolve("_artifacts"), targetDirPath);
-        createAndCopyDir(sourceDirPath.resolve("_images"), targetDirPath);
-
-        // Create and setup titles-enterprise folder, if necessary
-        moveTitles(sourceDirPath.resolve(TITLES_ENTERPRISE), targetDirPath);
-
-        // create symlinks in assemblies
-        createAssemblySymlinks(sourceDirPath, targetDirPath);
 
         long errors = this.issues.stream().filter(Issue::isError).count();
 

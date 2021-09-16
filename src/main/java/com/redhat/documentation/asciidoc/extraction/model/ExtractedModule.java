@@ -1,10 +1,10 @@
 package com.redhat.documentation.asciidoc.extraction.model;
 
-import java.util.Objects;
-
 import com.redhat.documentation.asciidoc.Util;
 import org.asciidoctor.ast.Section;
 import org.asciidoctor.ast.StructuralNode;
+
+import java.util.Objects;
 
 public class ExtractedModule {
     private String id;
@@ -26,6 +26,9 @@ public class ExtractedModule {
         var nodeId = node.getId();
 
         if (nodeId != null) {
+            // Remove "_{context}" if it exists.
+            nodeId = nodeId.replace("_{context}", "");
+
             if (nodeId.startsWith("chap-"))
                 return false;
 

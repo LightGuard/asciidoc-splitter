@@ -1,9 +1,9 @@
 package com.redhat.documentation.asciidoc;
 
-import java.util.regex.Pattern;
-
 import com.redhat.documentation.asciidoc.extension.ReaderPreprocessor;
 import org.asciidoctor.ast.ContentNode;
+
+import java.util.regex.Pattern;
 
 public class Util {
 
@@ -24,15 +24,16 @@ public class Util {
         if (node.getAttributes().containsKey(MODULE_TYPE_ATTRIBUTE))
             return node.getAttributes().get(MODULE_TYPE_ATTRIBUTE).toString();
 
-        var id = node.getId();
+        // Get the Id of the node, and strip off "_{context}" if it exists
+        var id = node.getId().replace("_{context}", "");
 
-        if (id.startsWith("con-"))
+        if (id.startsWith("con-") || id.endsWith("-con"))
             return "con";
 
-        if (id.startsWith("proc-"))
+        if (id.startsWith("proc-") || id.endsWith("-proc"))
             return "proc";
 
-        if (id.startsWith("ref-"))
+        if (id.startsWith("ref-") || id.endsWith("-ref"))
             return "ref";
 
         return "unknown"; // punt, we don't know

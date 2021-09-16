@@ -205,7 +205,7 @@ This was possible because Gus and Hugo requested a reschedule.
 This will not cause any confusion because Amy and Edna were never notified about their draft dates.
 Now, because they have appointments in the published section of the planning window, they will be notified and asked to accept or reject their appointments, and their appointments are now pinned.
 
-[id="proc-vaccination-scheduler-download_{context}"]
+[id="vaccination-scheduler-download-proc_{context}"]
 == Downloading and running the OptaPlanner vaccination appointment scheduler
 
 Download the OptaPlanner vaccination appointment scheduler quick start archive, start it in Quarkus development mode, and view the application in a browser.
@@ -252,7 +252,7 @@ http://localhost:8080/
 . Make changes to the source code then press the F5 key to refresh your browser.
 Notice that the changes that you made are now available.
 
-[id="proc-vaccination-scheduler-package_{context}"]
+[id="vaccination-scheduler-package-proc_{context}"]
 == Package and run the OptaPlanner vaccination appointment scheduler
 
 When you have completed development work on the OptaPlanner vaccination appointment scheduler in `quarkus:dev` mode, run the application as a conventional JAR file.
@@ -295,7 +295,7 @@ To run the application on port 8081, add `-Dquarkus.http.port=8081` to the prece
 http://localhost:8080/
 ----
 
-[id="proc-vaccination-native_{context}"]
+[id="vaccination-native-proc_{context}"]
 == Run the OptaPlanner vaccination appointment scheduler as a native executable
 
 To take advantage of the small memory footprint and access speeds that Quarkus offers, compile the OptaPlanner vaccination appointment scheduler in Quarkus native mode.

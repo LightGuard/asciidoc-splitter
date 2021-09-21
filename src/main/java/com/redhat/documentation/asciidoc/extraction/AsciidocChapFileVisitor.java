@@ -7,10 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static com.redhat.documentation.asciidoc.extraction.Extractor.TITLES_ENTERPRISE;
 
@@ -25,8 +22,26 @@ public class AsciidocChapFileVisitor extends SimpleFileVisitor<Path> {
     }
 
     @Override
+    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+        Objects.requireNonNull(dir);
+        Objects.requireNonNull(attrs);
+
+        if (this.ignoredFiles.contains(new File(dir.toFile().getName()))) {
+            return FileVisitResult.SKIP_SUBTREE;
+        }
+
+        return super.preVisitDirectory(dir, attrs);
+    }
+
+    @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
         if (this.ignoredFiles.contains(new File(file.toFile().getName()))) {
+            return FileVisitResult.CONTINUE;
+        }
+
+        if (!file.getFileName().toString().endsWith(".adoc")
+                && !file.getFileName().toString().endsWith(".ad")
+                && !file.getFileName().toString().endsWith(".asc")) {
             return FileVisitResult.CONTINUE;
         }
 

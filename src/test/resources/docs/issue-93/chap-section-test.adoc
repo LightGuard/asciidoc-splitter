@@ -1,0 +1,18 @@
+[id="chap-section-test"]
+= Top level section
+
+Some sort of preamble goes here.
+
+[id="proc-first-section_{context}"]
+== First section
+
+Here's some information that goes here.
+Another sentence here should be good.
+
+=== Third Section
+
+This should retain the three `===` or at the very most be moved to a `==` section.
+
+==== Fourth Section
+
+Here's another section that should exist in the module.

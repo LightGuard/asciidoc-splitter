@@ -44,5 +44,6 @@ public class IgnoreFoldersTest extends ExtractionRunnerBase {
         assertThat(assembly).exists();
         var modules = outputDirectory.toPath().resolve("modules");
         assertThat(modules.resolve("issue-93").resolve("proc-first-section.adoc")).exists();
+        assertThat(modules.resolve("issue-93").resolve("proc-some-other.adoc")).doesNotExist();
     }
 }

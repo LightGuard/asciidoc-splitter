@@ -23,7 +23,7 @@ HELP_COMMAND="${SPLITTER_COMMAND_BASE} -h"
 
 if [[ "$VALID_ARGS" -ne "0" ]]; then
   echo "Could not parse arguments."
-  eval ${HELP_COMMAND}
+  eval "${HELP_COMMAND}"
   exit 1;
 fi
 
@@ -38,13 +38,13 @@ do
     --sb) SOURCE_BRANCH="$2" ; shift 2  ;;
     --or) OUTPUT_REPO="$2"   ; shift 2  ;;
     --ob) OUTPUT_BRANCH="$2" ; shift 2  ;;
-    --pv2) PANTHEON_V2="--pantheonV2"  ; shift 2  ;;
-      -s) TEMP_CHECKOUT_DIR="$2" ; shift 2 ; RUN_GIT_CLONE=false ;;
-      -o) TEMP_WORK_DIR="$2"     ; shift 2 ; RUN_GIT_PUSH=false ;;
-      -i) IGNORE="-i $2"          ; shift 2  ;;
-      -a) ATTRIBS="-a $2"         ; shift 2  ;;
-      -v) VERBOSE="-v"            ; shift 1  ;;
-      -h) eval ${HELP_COMMAND}    ; exit 0 ;;
+    --pv2) PANTHEON_V2="--pantheonV2"   ; shift 2  ;;
+      -s) TEMP_CHECKOUT_DIR="$2"        ; shift 2 ; RUN_GIT_CLONE=false ;;
+      -o) TEMP_WORK_DIR="$2"            ; shift 2 ; RUN_GIT_PUSH=false ;;
+      -i) IGNORE="-i $2 ${IGNORE}"      ; shift 2  ;;
+      -a) ATTRIBS="-a $2 ${ATTRIBS}"    ; shift 2  ;;
+      -v) VERBOSE="-v"                  ; shift 1  ;;
+      -h) eval "${HELP_COMMAND}"        ; exit 0 ;;
     --) shift; break ;;
     *) echo "Unknown option: $1"
       exit 2 ;;
@@ -56,13 +56,13 @@ if ${RUN_GIT_CLONE}
 then
     if [[ -z ${SOURCE_REPO+x} ]]; then
         echo "No source repo given, cannot continue."
-        eval ${HELP_COMMAND}
+        eval "${HELP_COMMAND}"
         exit 3
     fi
 
     if [[ -z ${SOURCE_BRANCH+x} ]]; then
         echo "No source branch given, cannot continue."
-        eval ${HELP_COMMAND}
+        eval "${HELP_COMMAND}"
         exit 4
     fi
 fi
@@ -71,13 +71,13 @@ if ${RUN_GIT_PUSH}
 then
     if [[ -z ${OUTPUT_REPO+x} ]]; then
         echo "No output repo given, cannot continue."
-        eval ${HELP_COMMAND}
+        eval "${HELP_COMMAND}"
         exit 5
     fi
 
     if [[ -z ${OUTPUT_BRANCH+x} ]]; then
         echo "No output branch given, cannot continue."
-        eval ${HELP_COMMAND}
+        eval "${HELP_COMMAND}"
         exit 6
     fi
 fi
@@ -85,7 +85,7 @@ fi
 # Check if the branch we want to check out exists
 if ${RUN_GIT_CLONE}
 then
-    git ls-remote --exit-code --heads ${SOURCE_REPO} ${SOURCE_BRANCH} &> /dev/null
+    git ls-remote --exit-code --heads "${SOURCE_REPO}" "${SOURCE_BRANCH}" &> /dev/null
     SOURCE_BRANCH_EXISTS=$?
 
     if [[ "${SOURCE_BRANCH_EXISTS}" -ne "0" ]]; then
@@ -94,7 +94,7 @@ then
     fi
 
     # Check if the branch we want to commit to exists
-    git ls-remote --exit-code --heads  ${OUTPUT_REPO} ${OUTPUT_BRANCH} &> /dev/null
+    git ls-remote --exit-code --heads  "${OUTPUT_REPO}" "${OUTPUT_BRANCH}" &> /dev/null
     OUTPUT_BRANCH_EXISTS=$?
 
     if [[ "${OUTPUT_BRANCH_EXISTS}" -ne "0" ]]; then
@@ -110,10 +110,13 @@ then
 
     echo "Cloning origin..."
 
-    git clone --depth 1 -b ${SOURCE_BRANCH} ${SOURCE_REPO} ${TEMP_CHECKOUT_DIR} &> /dev/null
-    git clone -b ${OUTPUT_BRANCH} ${OUTPUT_REPO} ${TEMP_WORK_DIR} &> /dev/null
+    git clone --depth 1 -b "${SOURCE_BRANCH}" "${SOURCE_REPO}" "${TEMP_CHECKOUT_DIR}" &> /dev/null
+    git clone -b "${OUTPUT_BRANCH}" "${OUTPUT_REPO}" "${TEMP_WORK_DIR}" &> /dev/null
 fi
 
+if [[ -z "${VERBOSE}" ]]; then
+  echo "${SPLITTER_COMMAND_BASE} ${VERBOSE} -s ${TEMP_CHECKOUT_DIR} -o ${TEMP_WORK_DIR} ${IGNORE} ${ATTRIBS} ${PANTHEON_V2}"
+fi
 eval "${SPLITTER_COMMAND_BASE} ${VERBOSE} -s ${TEMP_CHECKOUT_DIR} -o ${TEMP_WORK_DIR} ${IGNORE} ${ATTRIBS} ${PANTHEON_V2}"
 
 JAVA_EXIT=$?

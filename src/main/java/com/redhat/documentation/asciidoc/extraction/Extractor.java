@@ -65,10 +65,13 @@ public class Extractor {
             var walker = new AsciidocChapFileVisitor(task.getIgnoreFiles());
             Files.walkFileTree(sourceDirPath, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE, walker);
 
+            this.logger.info("Processing files: " + walker.getAdocFiles());
+
             for (File file : walker.getAdocFiles()) {
                 // We only want to process chap files, others should be moved to modules.
                 if (!file.getName().startsWith("chap-")) {
                     try {
+                        this.logger.fine("Copying non chap- file '" + file + "' to modules directory");
                         Path modulesDir = Files.createDirectories(targetDirPath.resolve("modules"));
                         Files.copy(file.toPath(), modulesDir.resolve(file.getName()),
                                 StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);

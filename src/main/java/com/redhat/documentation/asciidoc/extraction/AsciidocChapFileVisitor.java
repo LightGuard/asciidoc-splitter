@@ -8,17 +8,22 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import static com.redhat.documentation.asciidoc.extraction.Extractor.TITLES_ENTERPRISE;
 
 public class AsciidocChapFileVisitor extends SimpleFileVisitor<Path> {
-    private List<File> adocFiles = new ArrayList<>();
-    private List<File> ignoredFiles;
+    private final List<File> adocFiles;
+    private final List<File> ignoredFiles;
+    private final Logger logger;
 
     public AsciidocChapFileVisitor(Collection<File> ignoredFiles) {
         this.adocFiles = new ArrayList<>();
-        ;
         this.ignoredFiles = new ArrayList<>(ignoredFiles);
+        this.logger = LogManager.getLogManager().getLogger("");
+
+        this.logger.fine("Ignored files/directories: " + ignoredFiles);
     }
 
     @Override
@@ -27,6 +32,12 @@ public class AsciidocChapFileVisitor extends SimpleFileVisitor<Path> {
         Objects.requireNonNull(attrs);
 
         if (this.ignoredFiles.contains(new File(dir.toFile().getName()))) {
+            this.logger.fine("Ignoring directory (as asked): " + dir);
+            return FileVisitResult.SKIP_SUBTREE;
+        }
+
+        if (dir.toFile().toString().contains(TITLES_ENTERPRISE)) {
+            this.logger.fine("Ignoring directory (title_enterprise dir): " + dir);
             return FileVisitResult.SKIP_SUBTREE;
         }
 
@@ -35,23 +46,22 @@ public class AsciidocChapFileVisitor extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        this.logger.fine("Found file: " + file);
         if (this.ignoredFiles.contains(new File(file.toFile().getName()))) {
+            this.logger.fine("Ignoring file (as asked): " + file);
             return FileVisitResult.CONTINUE;
         }
 
         if (!file.getFileName().toString().endsWith(".adoc")
                 && !file.getFileName().toString().endsWith(".ad")
                 && !file.getFileName().toString().endsWith(".asc")) {
+            this.logger.fine("Ignoring file (non-adoc file): " + file);
             return FileVisitResult.CONTINUE;
         }
 
         // Skip symlinks
         if (Files.isSymbolicLink(file)) {
-            return FileVisitResult.CONTINUE;
-        }
-
-        // Skip adoc files in the title enterprise directory
-        if (file.toFile().getParent() != null && file.toFile().getParent().contains(TITLES_ENTERPRISE)) {
+            this.logger.fine("Ignoring symlink: " + file);
             return FileVisitResult.CONTINUE;
         }
 

@@ -19,6 +19,7 @@ public class OptaplannerVaccinationExtractionRunnerTest extends ExtractionRunner
         final Path vaccinationAssemblyDoc = assemblyDir.resolve("assembly-optaplanner-vaccination.adoc");
         assertThat(vaccinationAssemblyDoc).exists();
         assertThat(Files.lines(vaccinationAssemblyDoc)).contains("include::modules/optaplanner-vaccination/con-vaccination-scheduler.adoc[leveloffset=+1]");
+        assertThat(Files.lines(vaccinationAssemblyDoc)).contains("include::modules/optaplanner-vaccination/vaccination-scheduler-download-proc.adoc[leveloffset=+1]");
 
         // Modules
         var modulesDir = this.outputDirPath.resolve("modules").resolve("optaplanner-vaccination");

@@ -153,7 +153,7 @@ ifdef::OPTAPLANNER-ENT[]
 image::optimizer/vaccinationSchedulingValueProposal.png[]
 endif::OPTAPLANNER-ENT[]
 
-[id="con-continuous-planning_{context}"]
+[id='con-continuous-planning_{context}']
 == Continuous planning
 
 Continuous planning is the technique of managing one or more upcoming planning periods at the same time and repeating that process monthly, weekly, daily, hourly, or even more frequently.
@@ -205,7 +205,7 @@ This was possible because Gus and Hugo requested a reschedule.
 This will not cause any confusion because Amy and Edna were never notified about their draft dates.
 Now, because they have appointments in the published section of the planning window, they will be notified and asked to accept or reject their appointments, and their appointments are now pinned.
 
-[id="vaccination-scheduler-download-proc_{context}"]
+[id='vaccination-scheduler-download-proc_{context}']
 == Downloading and running the OptaPlanner vaccination appointment scheduler
 
 Download the OptaPlanner vaccination appointment scheduler quick start archive, start it in Quarkus development mode, and view the application in a browser.

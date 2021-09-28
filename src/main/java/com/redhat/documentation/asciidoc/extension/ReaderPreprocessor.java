@@ -30,7 +30,7 @@ public class ReaderPreprocessor extends Preprocessor {
         var folderName = Path.of(document.getSourceLocation().getDir()).getFileName();
 
         // Regex used for finding a few things used in the loop
-        var idPattern = Pattern.compile("\\[id=\"(?<moduleId>(con|ref|proc)-.+)_\\{context}\"]");
+        var idPattern = Pattern.compile("\\[id=[\"'](?<moduleId>(con|ref|proc)-.+)_\\{context}[\"']]");
         var levelOffsetPattern = Pattern.compile("(?<offsetSize>^=+) .*");
         var preProcessStartPattern = Pattern.compile("if(n?)(def|eval)::(.+)?\\[(.+)?]$");
 

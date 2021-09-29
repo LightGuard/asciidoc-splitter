@@ -1,3 +1,4 @@
 :KOGITO-ENT:
 
 include::doc-content/kogito-docs/src/main/asciidoc/configuration/chap-kogito-configuring.adoc[]
+include::title.adoc[]

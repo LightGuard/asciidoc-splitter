@@ -39,15 +39,22 @@ public class Util {
         return "unknown"; // punt, we don't know
     }
 
-    public static String fixIncludes(String source) {
-        return source.replaceAll("(?<include>include::)(?<path>(\\w|/|-)*)?chap-(?<filename>.+)\\.(?<extension>.+)\\[]",
-                "${include}assemblies/assembly-${filename}.${extension}[]")
+    public static String fixIncludes(String source, boolean shouldFixModules) {
+        var sourceFixed = source.replaceAll("(?<include>include::)(?<path>(\\w|/|-)*)?chap-(?<filename>.+)\\.(?<extension>.+)\\[]",
+                        "${include}assemblies/assembly-${filename}.${extension}[]")
                 .replaceAll("(?<include>include::)(?<path>(\\w|/|-)*)?assembly-(?<filename>.+)\\.(?<extension>.+)\\[]",
                         "${include}assemblies/assembly-${filename}.${extension}[]")
-                .replaceAll("(?<include>include::)(?<filename>[\\p{Alpha}\\-]+\\.adoc)\\[(?<opts>.*)]",
-                        "${include}modules/${filename}[${opts}]")
                 .replaceAll("(?<include>include::)(\\{asciidoc-dir}/)?(?<path>(\\w|/|-)*)/(?<filename>.*)\\[tags=(?<module>.+)]",
-                             "${include}modules/${path}/${module}.adoc[leveloffset=+1]");
+                        "${include}modules/${path}/${module}.adoc[leveloffset=+1]");
+        if (shouldFixModules) {
+            sourceFixed = sourceFixed.replaceAll("(?<include>include::)(?<filename>[\\p{Alpha}\\-]+\\.adoc)\\[(?<opts>.*)]",
+                    "${include}modules/${filename}[${opts}]");
+        }
+        return sourceFixed;
+    }
+
+    public static String fixIncludes(String source) {
+        return fixIncludes(source, true);
     }
 
     public static String fixModuleInclude(String source) {

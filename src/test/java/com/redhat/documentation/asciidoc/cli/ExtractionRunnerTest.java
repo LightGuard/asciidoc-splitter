@@ -1,5 +1,11 @@
 package com.redhat.documentation.asciidoc.cli;
 
+import com.redhat.documentation.asciidoc.extension.ReaderPreprocessor;
+import com.redhat.documentation.asciidoc.extraction.AsciidocFileFilter;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import picocli.CommandLine;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,12 +13,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import com.redhat.documentation.asciidoc.extension.ReaderPreprocessor;
-import com.redhat.documentation.asciidoc.extraction.AsciidocFileFilter;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import picocli.CommandLine;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -148,6 +148,8 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         // Check for correct includes in master.adoc
         var masterDoc = kogitoConfiguringDir.resolve("master.adoc");
         assertThat(Files.readString(masterDoc)).contains("include::assemblies/assembly-kogito-configuring.adoc[]");
+        assertThat(Files.readString(masterDoc)).contains("include::title.adoc[]");
+        assertThat(Files.readString(masterDoc)).doesNotContain("include::modules/title.adoc[]");
     }
 
     @Test

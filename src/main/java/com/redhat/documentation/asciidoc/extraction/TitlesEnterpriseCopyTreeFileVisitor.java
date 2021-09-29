@@ -72,7 +72,7 @@ public class TitlesEnterpriseCopyTreeFileVisitor extends CopyTreeFileVisitor {
                 Files.createDirectories(newFile.getParent());
             }
 
-            Files.writeString(newFile, Util.fixIncludes(lines));
+            Files.writeString(newFile, Util.fixIncludes(lines, false));
             return FileVisitResult.CONTINUE;
         }
         return super.visitFile(file, attrs);

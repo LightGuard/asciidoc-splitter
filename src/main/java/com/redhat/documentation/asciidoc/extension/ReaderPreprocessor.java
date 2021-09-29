@@ -33,11 +33,17 @@ public class ReaderPreprocessor extends Preprocessor {
         var idPattern = Pattern.compile("\\[id=[\"'](?<moduleId>((con|ref|proc)-.+)|.+-(con|ref|proc))_\\{context}[\"']]");
         var levelOffsetPattern = Pattern.compile("(?<offsetSize>^=+) .*");
         var preProcessStartPattern = Pattern.compile("if(n?)(def|eval)::(.+)?\\[(.+)?]$");
+        var contextAttribPattern = Pattern.compile("^:context:.*$");
 
         // We need to look at each line to check for ifdefs, I wish there were a better way to do this.
         for (int i = 0; i < lines.size(); i++) {
             var currLine = lines.get(i);
             var idMatcher = idPattern.matcher(currLine);
+
+            // "strip out" attributes for this
+            if (contextAttribPattern.matcher(currLine).matches()) {
+                lines.set(i, SPLITTER_COMMENT + currLine);
+            }
 
             // Flip the comment section
             if (currLine.matches("^////")) {

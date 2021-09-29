@@ -1,5 +1,6 @@
 package com.redhat.documentation.asciidoc.cli;
 
+import com.redhat.documentation.asciidoc.extension.ReaderPreprocessor;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
@@ -28,5 +29,25 @@ public class OptaplannerVaccinationExtractionRunnerTest extends ExtractionRunner
                 "con-vaccination-contraints.adoc", "con-vaccination-scheduler.adoc", "con-optaplanner-solver.adoc",
                 "vaccination-native-proc.adoc", "vaccination-scheduler-package-proc.adoc", "con-continuous-planning.adoc",
                 "vaccination-scheduler-download-proc.adoc");
+    }
+
+    @Test
+    public void verifyRealWorldCorrectSplit() throws Exception {
+        executeRunner("docs/optaplanner-real-world", false);
+
+        // assembly
+        var assemblyDir = this.outputDirPath.resolve("assemblies");
+        assertThat(assemblyDir).exists();
+
+        final Path vaccinationAssemblyDoc = assemblyDir.resolve("assembly-planner-configuration.adoc");
+        assertThat(vaccinationAssemblyDoc).exists();
+        assertThat(Files.lines(vaccinationAssemblyDoc)).contains("include::modules/optaplanner-real-world/solving-a-problem-proc.adoc[leveloffset=+2]");
+        assertThat(Files.lines(vaccinationAssemblyDoc)).contains("include::modules/optaplanner-real-world/logback-proc.adoc[leveloffset=+2]");
+        assertThat(Files.lines(vaccinationAssemblyDoc)).doesNotContainSequence(ReaderPreprocessor.SPLITTER_COMMENT);
+
+        // Modules
+        var modulesDir = this.outputDirPath.resolve("modules").resolve("optaplanner-real-world");
+        assertThat(modulesDir).exists();
+        assertThat(modulesDir.toFile().list()).contains("logback-proc.adoc", "solving-a-problem-proc.adoc");
     }
 }

@@ -98,7 +98,12 @@ public class Extractor {
             createAndCopyDir(sourceDirPath.resolve("_images"), targetDirPath);
 
             // Create and setup titles-enterprise folder, if necessary
-            moveTitles(sourceDirPath.resolve(TITLES_ENTERPRISE), targetDirPath);
+            if (!Files.exists(targetDirPath.resolve(TITLES_ENTERPRISE))) {
+                logger.info("Copying files from " + TITLES_ENTERPRISE);
+                moveTitles(sourceDirPath.resolve(TITLES_ENTERPRISE), targetDirPath);
+            } else {
+                logger.info(TITLES_ENTERPRISE + " exists in output already, ignoring copy");
+            }
 
             // create symlinks in assemblies
             createAssemblySymlinks(sourceDirPath, targetDirPath);

@@ -45,7 +45,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
 
     @Test
     public void testDocTeamExample() throws Exception {
-        final var sourceDirectory = new File("./examples/sample/input");
+        final var sourceDirectory = new File("src/test/resources/docs/examples/sample/input");
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         new CommandLine(new ExtractionRunner()).execute(options);
@@ -94,7 +94,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
 
     @Test
     public void testArtifactsAndImages() throws Exception {
-        final var sourceDirectory = new File("./examples/kogito/input");
+        final var sourceDirectory = new File("src/test/resources/docs/examples/kogito/input");
 
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
@@ -113,7 +113,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
 
     @Test
     public void testSymlinkCreationUnderAssemblies() throws Exception {
-        final var sourceDirectory = new File("./examples/kogito/input");
+        final var sourceDirectory = new File("src/test/resources/docs/examples/kogito/input");
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         new CommandLine(new ExtractionRunner()).execute(options);
@@ -130,7 +130,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
 
     @Test
     public void testTitleDirectoryContents() throws Exception {
-        final var sourceDirectory = new File("./examples/kogito/input");
+        final var sourceDirectory = new File("src/test/resources/docs/examples/kogito/input");
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(), "-o", this.outputDirectory.getAbsolutePath()};
 
         new CommandLine(new ExtractionRunner()).execute(options);
@@ -170,7 +170,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
     // Test for Issue #60
     @Test
     public void testAdditionalResources() throws Exception {
-        final var sourceDirectory = new File("./examples/kogito/additional_resources");
+        final var sourceDirectory = new File("src/test/resources/docs/examples/kogito/additional_resources");
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(),
                 "-o", this.outputDirectory.getAbsolutePath(),
                 "-a", "KOGITO-ENT=true"
@@ -186,7 +186,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
 
     @Test
     public void testIgnoreFiles() throws Exception {
-        final var sourceDirectory = new File("./examples/kogito/ignore_files/asciidoc");
+        final var sourceDirectory = new File("src/test/resources/docs/examples/kogito/ignore_files/asciidoc");
         var options = new String[]{"-s", sourceDirectory.getAbsolutePath(),
                 "-o", this.outputDirectory.getAbsolutePath(),
                 "-i", "index.adoc"

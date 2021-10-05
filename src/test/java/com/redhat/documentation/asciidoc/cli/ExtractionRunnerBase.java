@@ -1,5 +1,11 @@
 package com.redhat.documentation.asciidoc.cli;
 
+import com.redhat.documentation.asciidoc.extraction.DeletionFileVisitor;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import picocli.CommandLine;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -8,14 +14,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.redhat.documentation.asciidoc.extraction.DeletionFileVisitor;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import picocli.CommandLine;
-
 public class ExtractionRunnerBase {
-    public static final String KOGITO_ASCIIDOC_FOLDER = "./examples/kogito/input/doc-content/src/main/asciidoc";
+    public static final String KOGITO_ASCIIDOC_FOLDER = "src/test/resources/docs/examples/kogito/input/doc-content/src/main/asciidoc";
     protected File outputDirectory;
     protected Path outputDirPath;
 

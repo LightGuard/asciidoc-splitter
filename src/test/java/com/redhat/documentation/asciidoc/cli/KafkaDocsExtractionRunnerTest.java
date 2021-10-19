@@ -1,11 +1,11 @@
 package com.redhat.documentation.asciidoc.cli;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import org.assertj.core.data.Index;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,5 +66,15 @@ public class KafkaDocsExtractionRunnerTest extends ExtractionRunnerBase {
         assertThat(Files.lines(module)).contains("[NOTE]", Index.atIndex(6 + pantheonV2LineOffset));
         assertThat(Files.lines(module)).contains("====", Index.atIndex(7 + pantheonV2LineOffset));
         assertThat(Files.lines(module)).contains("====", Index.atIndex(9 + pantheonV2LineOffset));
+    }
+
+    //    @Test
+    public void issue94ExtraBlankLineNecessary() throws Exception {
+//        executeRunner("docs/issue-94", pantheonV2);
+        executeRunner("docs/issue-94", false);
+
+        var assemblyDoc = assembliesDir.resolve("assembly-getting-started-rhoas-cli-kafka.adoc");
+        assertThat(assemblyDoc).exists();
+        assertThat(Files.lines(assemblyDoc)).contains("== Prerequisites");
     }
 }

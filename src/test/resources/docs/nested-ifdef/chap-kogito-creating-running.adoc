@@ -2450,7 +2450,7 @@ A custom task, typically a custom service task, that you can reuse across multip
 Work item handler::
 A Java object that contains the implementation logic for a custom task (work item).
 ////
-// tag::ref-kogito-glossary[]
+// end::ref-kogito-glossary[]
 endif::[]
 
 ifdef::KOGITO-ENT[]

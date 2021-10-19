@@ -1,12 +1,12 @@
 package com.redhat.documentation.asciidoc.cli;
 
-import java.io.File;
-import java.nio.file.Files;
-
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
+
+import java.io.File;
+import java.nio.file.Files;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -114,13 +114,13 @@ public class CornerCaseExtractionRunnerTest extends ExtractionRunnerBase {
         // single line preprocessor
         assertThat(assemblyLines.get(3)).startsWith("ifdef::");
 
-        assertThat(assemblyLines.get(13)).startsWith("ifdef::KOGITO-ENT[]");
-        assertThat(assemblyLines.get(18)).startsWith("endif::[]");
+        assertThat(assemblyLines.get(14)).startsWith("ifdef::KOGITO-ENT[]");
+        assertThat(assemblyLines.get(23)).startsWith("endif::[]");
 
-        assertThat(assemblyLines.get(44)).doesNotContain("endif::[]");
+        assertThat(assemblyLines.get(50)).doesNotContain("endif:[]");
 
-        assertThat(assemblyLines.get(47)).startsWith("ifdef::KOGITO-ENT[]");
-        assertThat(assemblyLines.get(56)).startsWith("endif::");
+        assertThat(assemblyLines.get(52)).startsWith("ifdef::KOGITO-ENT[]");
+        assertThat(assemblyLines.get(57)).startsWith("endif::");
 
         var moduleLines = Files.readAllLines(modulesDir.toPath().resolve("nested-ifdef").resolve("con-kogito-automation.adoc"));
         assertThat(moduleLines.get(36)).startsWith("ifdef::KOGITO-COMM[]");

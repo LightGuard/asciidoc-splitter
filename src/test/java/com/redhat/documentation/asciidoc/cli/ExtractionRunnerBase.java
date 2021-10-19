@@ -14,10 +14,14 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class ExtractionRunnerBase {
     public static final String KOGITO_ASCIIDOC_FOLDER = "src/test/resources/docs/examples/kogito/input/doc-content/src/main/asciidoc";
     protected File outputDirectory;
     protected Path outputDirPath;
+    protected Path assembliesDir;
+    protected Path modulesDir;
 
     @BeforeAll
     static void allSetUp() {
@@ -40,7 +44,7 @@ public class ExtractionRunnerBase {
         Files.walkFileTree(outputDirectory.toPath(), new DeletionFileVisitor());
     }
 
-    void executeRunner(String sourceDir, boolean pantheonV2) throws URISyntaxException {
+    int executeRunner(String sourceDir, boolean pantheonV2) throws URISyntaxException {
         final var sourceDirectory = new File(ExtractionRunner.class.getClassLoader().getResource(sourceDir).toURI());
         final List<String> options = new ArrayList<>(List.of("-s", sourceDirectory.getAbsolutePath(),
                 "-o", this.outputDirectory.getAbsolutePath()));
@@ -48,6 +52,14 @@ public class ExtractionRunnerBase {
         if (pantheonV2)
             options.add("--pantheonV2");
 
-        new CommandLine(new ExtractionRunner()).execute(options.toArray(new String[]{}));
+        var exitCode = new CommandLine(new ExtractionRunner()).execute(options.toArray(new String[]{}));
+
+        assembliesDir = this.outputDirPath.resolve("assemblies");
+        modulesDir = this.outputDirPath.resolve("modules");
+
+        assertThat(assembliesDir).exists();
+        assertThat(modulesDir).exists();
+
+        return exitCode;
     }
 }

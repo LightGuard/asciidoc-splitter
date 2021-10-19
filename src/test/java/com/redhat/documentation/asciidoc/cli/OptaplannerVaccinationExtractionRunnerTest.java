@@ -50,4 +50,14 @@ public class OptaplannerVaccinationExtractionRunnerTest extends ExtractionRunner
         assertThat(modulesDir).exists();
         assertThat(modulesDir.toFile().list()).contains("logback-proc.adoc", "solving-a-problem-proc.adoc");
     }
+
+    @Test
+    public void issue89LineBreaks() throws Exception {
+        var exitCode = executeRunner("docs/issue-89", false);
+
+        assertThat(exitCode).isEqualTo(0);
+        var assemblyDoc = assembliesDir.resolve("assembly-optaplanner-vaccination.adoc");
+        assertThat(Files.readAllLines(assemblyDoc).get(34)).doesNotContain("ifdef::OPTAPLANNER-COMM[]");
+        assertThat(Files.readAllLines(assemblyDoc).get(35)).doesNotContain("endif::OPTAPLANNER-COMM[]");
+    }
 }

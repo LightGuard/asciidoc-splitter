@@ -1,17 +1,17 @@
 package com.redhat.documentation.asciidoc.extraction.model;
 
+import com.redhat.documentation.asciidoc.Util;
+import com.redhat.documentation.asciidoc.extension.ReaderPreprocessor;
+import org.asciidoctor.ast.Document;
+import org.asciidoctor.ast.Section;
+import org.asciidoctor.ast.StructuralNode;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import com.redhat.documentation.asciidoc.Util;
-import com.redhat.documentation.asciidoc.extension.ReaderPreprocessor;
-import org.asciidoctor.ast.Document;
-import org.asciidoctor.ast.Section;
-import org.asciidoctor.ast.StructuralNode;
 
 /**
  * An Assembly is essentially a full document from an asciidoc perspective.
@@ -108,7 +108,7 @@ public class Assembly {
             var extractedModule = new ExtractedModule(wrapper.getSection(), wrapper.getSource());
             this.modules.add(extractedModule);
         });
-        this.source.append(processedBody);
+        this.source.append("\n").append(processedBody);
     }
 
     private int getPreambleEndLineNumber(StructuralNode doc, List<String> lines) {

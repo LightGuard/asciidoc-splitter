@@ -21,14 +21,17 @@ jobs:
         maven-args: "clean install"
 
     - name: Maven Release
-      uses: qcastel/github-actions-maven-release@v1.12.27
+      uses: qcastel/github-actions-maven-release@master
       env:
         JAVA_HOME: /usr/lib/jvm/java-11-openjdk/
       with:
         release-branch-name: main
       
-        access-token: ${{ secrets.GITREPO_ACCESS_TOKEN }}
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        gpg-enabled: "true"
+        gpg-key-id: ${{ secrets.GPG_KEY_ID }}
+        gpg-key: ${{ secrets.GPG_KEY }}
+
 
         git-release-bot-name: "release-bot"
         git-release-bot-email: "release-bot@example.com"

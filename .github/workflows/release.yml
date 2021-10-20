@@ -21,13 +21,13 @@ jobs:
         maven-args: "clean install"
 
     - name: Maven Release
-      uses: qcastel/github-actions-maven-release@v1.12.15
+      uses: qcastel/github-actions-maven-release@v1.12.27
       env:
         JAVA_HOME: /usr/lib/jvm/java-11-openjdk/
       with:
         release-branch-name: main
       
-        access-token: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+        access-token: ${{ secrets.GITREPO_ACCESS_TOKEN }}
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
         git-release-bot-name: "release-bot"

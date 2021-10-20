@@ -28,10 +28,7 @@ jobs:
         release-branch-name: main
       
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-        gpg-enabled: "true"
-        gpg-key-id: ${{ secrets.GPG_KEY_ID }}
-        gpg-key: ${{ secrets.GPG_KEY }}
-
+        gpg-enabled: "false"
 
         git-release-bot-name: "release-bot"
         git-release-bot-email: "release-bot@example.com"

@@ -112,8 +112,9 @@ public class Assembly {
     }
 
     private int getPreambleEndLineNumber(StructuralNode doc, List<String> lines) {
-        var nextSection = doc.findBy(Map.of("context", ":section")).get(1); // We need whatever the second section is
-        var sectionEndLineNumber = nextSection.getSourceLocation().getLineNumber() -1;
+        // Find the first module, it may not be the first section
+        var nextSection = doc.findBy(Map.of("context", ":section")).stream().filter(ExtractedModule::isNodeAModule).findFirst().orElseThrow();
+        var sectionEndLineNumber = nextSection.getSourceLocation().getLineNumber() - 1;
 
         var nextSectionLine = lines.get(sectionEndLineNumber);
         // We have to find the end of this section by looking at the next section and going back looking for

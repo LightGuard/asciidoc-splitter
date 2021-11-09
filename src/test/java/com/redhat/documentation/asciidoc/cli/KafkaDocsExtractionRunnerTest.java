@@ -68,13 +68,24 @@ public class KafkaDocsExtractionRunnerTest extends ExtractionRunnerBase {
         assertThat(Files.lines(module)).contains("====", Index.atIndex(9 + pantheonV2LineOffset));
     }
 
-    //    @Test
+    @ParameterizedTest(name = "pantheonV2: {0}")
+    @ValueSource(booleans = {true, false})
     public void issue94ExtraBlankLineNecessary() throws Exception {
-//        executeRunner("docs/issue-94", pantheonV2);
         executeRunner("docs/issue-94", false);
 
         var assemblyDoc = assembliesDir.resolve("assembly-getting-started-rhoas-cli-kafka.adoc");
         assertThat(assemblyDoc).exists();
         assertThat(Files.lines(assemblyDoc)).contains("== Prerequisites");
+    }
+
+    @ParameterizedTest(name = "pantheonV2: {0}")
+    @ValueSource(booleans = {true, false})
+    public void issue94endifGone() throws Exception {
+        executeRunner("docs/issue-94-kafka", false);
+
+        var assemblyDoc = assembliesDir.resolve("assembly-kafka-bin-scripts.adoc");
+        assertThat(assemblyDoc).exists();
+        assertThat(Files.readAllLines(assemblyDoc).get(55)).doesNotContain("endif::[]");
+        assertThat(Files.lines(assemblyDoc)).contains("[#conclusion]");
     }
 }

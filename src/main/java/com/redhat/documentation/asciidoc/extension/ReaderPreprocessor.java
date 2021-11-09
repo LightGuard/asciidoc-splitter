@@ -101,8 +101,8 @@ public class ReaderPreprocessor extends Preprocessor {
                 assemblyBody.append(lines.get(i - 1).trim()).append("\n");
             }
 
-            // Special case for additional resources
-            if ((currLine.contains("[role=\"_additional-resources\"]") &&
+            // Special case for additional resources or conclusion (kafka)
+            if (currLine.contains("[#conclusion]") || (currLine.contains("[role=\"_additional-resources\"]") &&
                     lines.get(i + 1).toLowerCase().contains("== additional resources")) && !withinComment) {
                 withinModule = false;
                 // Get the additional resources until a section break or the end of a preprocessor
@@ -143,10 +143,10 @@ public class ReaderPreprocessor extends Preprocessor {
                     assemblyBody.append(lines.get(i - 1)).append("\n").append(currLine).append("\n");
                 }
 
-                // Case for an ifdef and a tag
+                // Case for an ifdef and a module starting or ending additional resources or conclusion (for kafka)
                 if (preProcessStartPattern.matcher(currLine).matches()
                         && i + 1 < lines.size()
-                        && (idPattern.matcher(lines.get(i + 1)).matches() || lines.get(i + 1).contains("[role=\"_additional-resources\"]"))) {
+                        && (idPattern.matcher(lines.get(i + 1)).matches() || lines.get(i + 1).contains("[role=\"_additional-resources\"]") || lines.get(i + 1).contains("[#conclusion]"))) {
                     assemblyBody.append(currLine).append("\n");
                 }
 

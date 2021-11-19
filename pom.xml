@@ -1,10 +1,35 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.lightguard.documentation</groupId>
   <artifactId>asciidoc-splitter</artifactId>
   <packaging>jar</packaging>
   <version>1.6.0-SNAPSHOT</version>
   <name>asciidoc splitter</name>
+
+  <description>
+    Tool to take a chapter based documentation repository and split it into Red Hat's modularized format.
+    See https://redhat-documentation.github.io/modular-docs/ for more information about modularization.
+  </description>
+
+  <licenses>
+    <license>
+      <name>BSD-Style License</name>
+      <url>https://github.com/LightGuard/asciidoc-splitter/blob/main/LICENSE</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Jason Porter</name>
+      <email>jporter@redhat.com</email>
+      <organization>Red Hat</organization>
+      <organizationUrl>https://www.redhat.com</organizationUrl>
+    </developer>
+  </developers>
+
+  <url>https://github.com/lightguard/asciidoc-splitter</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

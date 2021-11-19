@@ -114,7 +114,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>com.redhat.documentation.asciidoc.cli.ExtractionRunner</mainClass>
+              <mainClass>io.github.lightguard.documentation.asciidoc.cli.ExtractionRunner</mainClass>
             </manifest>
           </archive>
         </configuration>

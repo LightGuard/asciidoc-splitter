@@ -84,7 +84,7 @@ public class Util {
      * Replaces "chap-" with "assembly-"
      *
      * @param source source line
-     * @return source line with "chap-" -> "assembly-" tweak
+     * @return source line with "chap-" to "assembly-" tweak
      */
     public static String replaceChapWithAssembly(String source) {
         return source.replaceAll("chap-", "assembly-");

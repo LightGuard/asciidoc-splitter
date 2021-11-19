@@ -3,7 +3,7 @@
   <groupId>io.github.lightguard.documentation</groupId>
   <artifactId>asciidoc-splitter</artifactId>
   <packaging>jar</packaging>
-  <version>1.5.3</version>
+  <version>1.5.4-SNAPSHOT</version>
   <name>asciidoc splitter</name>
 
   <description>
@@ -240,6 +240,6 @@
     <connection>scm:git:${project.scm.url}</connection>
     <developerConnection>scm:git:${project.scm.url}</developerConnection>
     <url>git@github.com:LightGuard/asciidoc-splitter.git</url>
-    <tag>v1.5.3</tag>
+    <tag>v1.5.1</tag>
   </scm>
 </project>

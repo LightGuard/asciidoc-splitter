@@ -18,7 +18,7 @@ VALID_ARGS=$?
 
 JAR_DIR=$(dirname "$0")/../lib
 JAR_NAME=${project.artifactId}-${project.version}.jar
-SPLITTER_COMMAND_BASE="java -cp ${JAR_DIR}/${JAR_NAME}:${JAR_DIR}/* com.redhat.documentation.asciidoc.cli.ExtractionRunner"
+SPLITTER_COMMAND_BASE="java -cp ${JAR_DIR}/${JAR_NAME}:${JAR_DIR}/* io.github.lightguard.documentation.asciidoc.cli.ExtractionRunner"
 HELP_COMMAND="${SPLITTER_COMMAND_BASE} -h"
 
 if [[ "$VALID_ARGS" -ne "0" ]]; then

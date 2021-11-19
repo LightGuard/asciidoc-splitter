@@ -8,33 +8,33 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.mainClass>com.redhat.documentation.asciidoc.cli.ExtractionRunner</project.mainClass>
-    <version.junit>5.7.0</version.junit>
+    <project.mainClass>io.github.lightguard.documentation.asciidoc.cli.ExtractionRunner</project.mainClass>
+    <version.junit>5.8.1</version.junit>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.asciidoctor</groupId>
       <artifactId>asciidoctorj</artifactId>
-      <version>2.2.0</version>
+      <version>2.5.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>info.picocli</groupId>
       <artifactId>picocli</artifactId>
-      <version>4.2.0</version>
+      <version>4.6.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jgit</groupId>
       <artifactId>org.eclipse.jgit</artifactId>
-      <version>5.7.0.202003110725-r</version>
+      <version>5.13.0.202109080827-r</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.logmanager</groupId>
       <artifactId>jboss-logmanager</artifactId>
-      <version>2.1.14.Final</version>
+      <version>2.1.18.Final</version>
       <scope>compile</scope>
     </dependency>
 
@@ -58,7 +58,7 @@
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>3.15.0</version>
+      <version>3.21.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -137,14 +137,43 @@
           <tagNameFormat>v@{project.version}</tagNameFormat>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.1.1</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
   <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
     <repository>
-      <id>github</id>
-      <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/LightGuard/asciidoc-splitter</url>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>
 

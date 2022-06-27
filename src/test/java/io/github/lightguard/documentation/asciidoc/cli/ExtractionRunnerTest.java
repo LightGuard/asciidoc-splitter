@@ -40,7 +40,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         var assembliesDir = new File(this.outputDirectory, "assemblies");
         assertThat(assembliesDir.listFiles(new AsciidocFileFilter())).hasSize(1);
         final var assemblyFile = Objects.requireNonNull(assembliesDir.listFiles(new AsciidocFileFilter()))[0];
-        assertThat(assemblyFile.getName()).isEqualTo("assembly-assembly-one.adoc");
+        assertThat(assemblyFile.getName()).isEqualTo("assembly-one.adoc");
     }
 
     @Test
@@ -301,7 +301,7 @@ public class ExtractionRunnerTest extends ExtractionRunnerBase {
         new CommandLine(new ExtractionRunner()).execute(options);
 
         var chap = outputDirectory.toPath().resolve("assemblies")
-                .resolve("assembly-assembly-one.adoc");
+                .resolve("assembly-one.adoc");
         var module = outputDirectory.toPath().resolve("modules").resolve("content-test").resolve("con-module-two.adoc");
 
         assertThat(Files.readAllLines(chap).get(2)).isEqualTo(":imagesdir: _images");

@@ -176,4 +176,19 @@ public class CornerCaseExtractionRunnerTest extends ExtractionRunnerBase {
         assertThat(Files.lines(assemblyFile)).contains("* {URL_PROCESS_SERVICES}[_{PROCESS_SERVICES}_]");
         assertThat(Files.lines(assemblyFile)).contains("* {URL_CONFIGURING_KOGITO}[_{CONFIGURING_KOGITO}_]");
     }
+
+    @Test
+    public void assemblyInsteadOfChap95Test() throws Exception {
+        this.executeRunner("docs/issue-95", false);
+
+        assertThat(assembliesDir.toFile().exists()).isTrue();
+        assertThat(assembliesDir.toFile().listFiles(pathname -> pathname.getName().contains(".adoc"))).hasSize(1);
+
+        var assemblyFile = assembliesDir.resolve("assembly-kogito-using-dmn-models.adoc");
+        assertThat(Files.lines(assemblyFile)).contains("[id='assembly-kogito-using-dmn-models']");
+
+        modulesDir = modulesDir.resolve("dmn");
+        assertThat(modulesDir.toFile().exists()).isTrue();
+        assertThat(modulesDir.toFile().listFiles(pathname -> pathname.getName().contains(".adoc"))).hasSizeGreaterThanOrEqualTo(1);
+    }
 }

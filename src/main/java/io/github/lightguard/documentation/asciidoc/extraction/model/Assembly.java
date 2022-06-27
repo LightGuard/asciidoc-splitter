@@ -39,6 +39,11 @@ public class Assembly {
             this.id = this.id.replaceAll("chap-", "");
         }
 
+        // remove "assembly-" if it is found
+        if (this.id.contains("assembly-")) {
+            this.id = this.id.replaceAll("assembly-", "");
+        }
+
         if (this.id.contains("{context}")) {
             this.idWithoutContext = this.id.substring(0, this.id.lastIndexOf("{context}") - 1);
         } else {

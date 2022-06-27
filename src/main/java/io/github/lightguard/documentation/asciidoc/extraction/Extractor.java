@@ -69,7 +69,7 @@ public class Extractor {
 
             for (File file : walker.getAdocFiles()) {
                 // We only want to process chap files, others should be moved to modules.
-                if (!file.getName().startsWith("chap-")) {
+                if (!file.getName().startsWith("chap-") && !file.getName().startsWith("assembly-")) {
                     try {
                         this.logger.fine("Copying non chap- file '" + file + "' to modules directory");
                         Path modulesDir = Files.createDirectories(targetDirPath.resolve("modules"));
